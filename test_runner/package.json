@@ -11,7 +11,7 @@
 		"extended-exceptions.js":  "latest",
 		"json2":                   "latest",
 		"mocha":                   "latest",
-		"network-constants":       "latest",
+		"network-constants.js":    "latest",
 		"store.js":                "latest",
 		"underscore":              "latest",
 		"when":                    "latest"

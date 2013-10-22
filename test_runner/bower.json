@@ -8,7 +8,7 @@
 		"extended-exceptions.js":  "latest",
 		"json2":                   "latest",
 		"mocha":                   "latest",
-		"network-constants":       "latest",
+		"network-constants.js":    "latest",
 		"requirejs":               "latest",
 		"requirejs-domready":      "latest",
 		"store.js":                "latest",

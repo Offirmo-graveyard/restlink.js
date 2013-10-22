@@ -1,9 +1,12 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>Extended exceptions Mocha Tests</title>
+	<title>Restlink Mocha Tests</title>
 	<link rel="stylesheet" href="bower_components/mocha/mocha.css" />
 	<script data-main="components.js" src="bower_components/requirejs/require.js"></script>
+
+	<!-- for scripts that have a syntax error -->
+	<!-- <script src="../src/server/response_enrichment.js"></script> -->
 </head>
 
 <body>
@@ -18,15 +21,50 @@
 
 		requirejs(
 		[
-			"jquery",
 			"mocha",
 			"domReady!",
 
-			"../spec/extended_exceptions_spec"
+			"../src/utils/spec/fast_timestamp_spec",
+			"../src/utils/spec/string_generics_spec.js",
+			"../src/utils/spec/cache_spec",
+			"../src/utils/spec/route_indexed_container_spec",
+
+			"../src/core/spec/response_spec",
+			"../src/core/spec/request_spec",
+
+			"../src/server/spec/rest_target_indexed_container_spec",
+
+			"../src/server/spec/response_enrichments_spec",
+
+			"../src/server/spec/transaction_spec",
+
+			"../src/server/spec/session_spec",
+			"../src/server/adapters/spec/base_spec",
+			"../src/server/middleware/spec/base_spec",
+			"../src/server/spec/core_spec",
+
+			/*
+				 "other_components/restlink.js/src/spec/client_adapter_base_spec",
+				 "other_components/restlink.js/src/spec/restlink_client_spec",
+				 "other_components/restlink.js/src/spec/restlink_server_spec",
+				 "other_components/restlink.js/src/spec/internals_server_adapter_base_spec",
+				 "other_components/restlink.js/src/spec/internals_server_adapter_direct_spec",
+				 "other_components/restlink.js/src/spec/internals_core_spec",
+				 "other_components/restlink.js/src/spec/internals_request_handler_base_spec",
+				 "other_components/restlink.js/src/spec/internals_request_handler_actual_spec",
+				 "other_components/restlink.js/src/spec/internals_session_spec",
+				 "other_components/restlink.js/src/spec/restlink_spec",
+
+				 "offirmo/app/spec/account_spec",
+				 "offirmo/app/spec/app_spec",
+				 "offirmo/app/spec/app_list_spec",
+				 "offirmo/app/spec/identity_spec",
+				 "offirmo/app/spec/identity_list_spec",
+				 "offirmo/app/spec/session_spec"*/
 		],
-		function($) {
+		function() {
 			mocha.checkLeaks();
-			mocha.globals(["jQuery"]);
+			//mocha.globals(["jQuery"]);
 
 			console.log("Starting tests...");
 			mocha.run();

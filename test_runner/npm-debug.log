@@ -1,0 +1,471 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'node',
+1 verbose cli   '/work/misc/cvm_data/compsets/node/result/tool.nodejs.0.10.5/bin/npm',
+1 verbose cli   'install' ]
+2 info using npm@1.3.11
+3 info using node@v0.10.5
+4 verbose readDependencies using package.json deps
+5 verbose install where, deps [ '/work/www/html_tests/app/other_components/restlink.js/test_runner',
+5 verbose install   [ 'amdefine',
+5 verbose install     'backbone',
+5 verbose install     'base-objects.js',
+5 verbose install     'chai',
+5 verbose install     'extended-exceptions.js',
+5 verbose install     'json2',
+5 verbose install     'mocha',
+5 verbose install     'network-constants',
+5 verbose install     'store.js',
+5 verbose install     'underscore',
+5 verbose install     'when' ] ]
+6 info preinstall restlink-test-runner@1.0.0
+7 verbose readDependencies using package.json deps
+8 verbose cache add [ 'base-objects.js@latest', null ]
+9 verbose cache add name=undefined spec="base-objects.js@latest" args=["base-objects.js@latest",null]
+10 verbose parsed url { protocol: null,
+10 verbose parsed url   slashes: null,
+10 verbose parsed url   auth: null,
+10 verbose parsed url   host: null,
+10 verbose parsed url   port: null,
+10 verbose parsed url   hostname: null,
+10 verbose parsed url   hash: null,
+10 verbose parsed url   search: null,
+10 verbose parsed url   query: null,
+10 verbose parsed url   pathname: 'base-objects.js@latest',
+10 verbose parsed url   path: 'base-objects.js@latest',
+10 verbose parsed url   href: 'base-objects.js@latest' }
+11 verbose cache add name="base-objects.js" spec="latest" args=["base-objects.js","latest"]
+12 verbose parsed url { protocol: null,
+12 verbose parsed url   slashes: null,
+12 verbose parsed url   auth: null,
+12 verbose parsed url   host: null,
+12 verbose parsed url   port: null,
+12 verbose parsed url   hostname: null,
+12 verbose parsed url   hash: null,
+12 verbose parsed url   search: null,
+12 verbose parsed url   query: null,
+12 verbose parsed url   pathname: 'latest',
+12 verbose parsed url   path: 'latest',
+12 verbose parsed url   href: 'latest' }
+13 verbose addNamed [ 'base-objects.js', 'latest' ]
+14 verbose addNamed [ null, null ]
+15 verbose cache add [ 'extended-exceptions.js@latest', null ]
+16 verbose cache add name=undefined spec="extended-exceptions.js@latest" args=["extended-exceptions.js@latest",null]
+17 verbose parsed url { protocol: null,
+17 verbose parsed url   slashes: null,
+17 verbose parsed url   auth: null,
+17 verbose parsed url   host: null,
+17 verbose parsed url   port: null,
+17 verbose parsed url   hostname: null,
+17 verbose parsed url   hash: null,
+17 verbose parsed url   search: null,
+17 verbose parsed url   query: null,
+17 verbose parsed url   pathname: 'extended-exceptions.js@latest',
+17 verbose parsed url   path: 'extended-exceptions.js@latest',
+17 verbose parsed url   href: 'extended-exceptions.js@latest' }
+18 verbose cache add name="extended-exceptions.js" spec="latest" args=["extended-exceptions.js","latest"]
+19 verbose parsed url { protocol: null,
+19 verbose parsed url   slashes: null,
+19 verbose parsed url   auth: null,
+19 verbose parsed url   host: null,
+19 verbose parsed url   port: null,
+19 verbose parsed url   hostname: null,
+19 verbose parsed url   hash: null,
+19 verbose parsed url   search: null,
+19 verbose parsed url   query: null,
+19 verbose parsed url   pathname: 'latest',
+19 verbose parsed url   path: 'latest',
+19 verbose parsed url   href: 'latest' }
+20 verbose addNamed [ 'extended-exceptions.js', 'latest' ]
+21 verbose addNamed [ null, null ]
+22 silly lockFile 60d08f02-base-objects-js-latest base-objects.js@latest
+23 verbose lock base-objects.js@latest /home/offirmo/.npm/60d08f02-base-objects-js-latest.lock
+24 verbose cache add [ 'json2@latest', null ]
+25 verbose cache add name=undefined spec="json2@latest" args=["json2@latest",null]
+26 verbose parsed url { protocol: null,
+26 verbose parsed url   slashes: null,
+26 verbose parsed url   auth: null,
+26 verbose parsed url   host: null,
+26 verbose parsed url   port: null,
+26 verbose parsed url   hostname: null,
+26 verbose parsed url   hash: null,
+26 verbose parsed url   search: null,
+26 verbose parsed url   query: null,
+26 verbose parsed url   pathname: 'json2@latest',
+26 verbose parsed url   path: 'json2@latest',
+26 verbose parsed url   href: 'json2@latest' }
+27 verbose cache add name="json2" spec="latest" args=["json2","latest"]
+28 verbose parsed url { protocol: null,
+28 verbose parsed url   slashes: null,
+28 verbose parsed url   auth: null,
+28 verbose parsed url   host: null,
+28 verbose parsed url   port: null,
+28 verbose parsed url   hostname: null,
+28 verbose parsed url   hash: null,
+28 verbose parsed url   search: null,
+28 verbose parsed url   query: null,
+28 verbose parsed url   pathname: 'latest',
+28 verbose parsed url   path: 'latest',
+28 verbose parsed url   href: 'latest' }
+29 verbose addNamed [ 'json2', 'latest' ]
+30 verbose addNamed [ null, null ]
+31 silly lockFile 9290fa98-json2-latest json2@latest
+32 verbose lock json2@latest /home/offirmo/.npm/9290fa98-json2-latest.lock
+33 verbose cache add [ 'chai@latest', null ]
+34 verbose cache add name=undefined spec="chai@latest" args=["chai@latest",null]
+35 verbose parsed url { protocol: null,
+35 verbose parsed url   slashes: null,
+35 verbose parsed url   auth: null,
+35 verbose parsed url   host: null,
+35 verbose parsed url   port: null,
+35 verbose parsed url   hostname: null,
+35 verbose parsed url   hash: null,
+35 verbose parsed url   search: null,
+35 verbose parsed url   query: null,
+35 verbose parsed url   pathname: 'chai@latest',
+35 verbose parsed url   path: 'chai@latest',
+35 verbose parsed url   href: 'chai@latest' }
+36 verbose cache add name="chai" spec="latest" args=["chai","latest"]
+37 verbose parsed url { protocol: null,
+37 verbose parsed url   slashes: null,
+37 verbose parsed url   auth: null,
+37 verbose parsed url   host: null,
+37 verbose parsed url   port: null,
+37 verbose parsed url   hostname: null,
+37 verbose parsed url   hash: null,
+37 verbose parsed url   search: null,
+37 verbose parsed url   query: null,
+37 verbose parsed url   pathname: 'latest',
+37 verbose parsed url   path: 'latest',
+37 verbose parsed url   href: 'latest' }
+38 verbose addNamed [ 'chai', 'latest' ]
+39 verbose addNamed [ null, null ]
+40 silly lockFile 332f8fe7-chai-latest chai@latest
+41 verbose lock chai@latest /home/offirmo/.npm/332f8fe7-chai-latest.lock
+42 verbose cache add [ 'mocha@latest', null ]
+43 verbose cache add name=undefined spec="mocha@latest" args=["mocha@latest",null]
+44 verbose parsed url { protocol: null,
+44 verbose parsed url   slashes: null,
+44 verbose parsed url   auth: null,
+44 verbose parsed url   host: null,
+44 verbose parsed url   port: null,
+44 verbose parsed url   hostname: null,
+44 verbose parsed url   hash: null,
+44 verbose parsed url   search: null,
+44 verbose parsed url   query: null,
+44 verbose parsed url   pathname: 'mocha@latest',
+44 verbose parsed url   path: 'mocha@latest',
+44 verbose parsed url   href: 'mocha@latest' }
+45 verbose cache add name="mocha" spec="latest" args=["mocha","latest"]
+46 verbose parsed url { protocol: null,
+46 verbose parsed url   slashes: null,
+46 verbose parsed url   auth: null,
+46 verbose parsed url   host: null,
+46 verbose parsed url   port: null,
+46 verbose parsed url   hostname: null,
+46 verbose parsed url   hash: null,
+46 verbose parsed url   search: null,
+46 verbose parsed url   query: null,
+46 verbose parsed url   pathname: 'latest',
+46 verbose parsed url   path: 'latest',
+46 verbose parsed url   href: 'latest' }
+47 verbose addNamed [ 'mocha', 'latest' ]
+48 verbose addNamed [ null, null ]
+49 silly lockFile 12215997-mocha-latest mocha@latest
+50 verbose lock mocha@latest /home/offirmo/.npm/12215997-mocha-latest.lock
+51 verbose cache add [ 'network-constants@latest', null ]
+52 verbose cache add name=undefined spec="network-constants@latest" args=["network-constants@latest",null]
+53 verbose parsed url { protocol: null,
+53 verbose parsed url   slashes: null,
+53 verbose parsed url   auth: null,
+53 verbose parsed url   host: null,
+53 verbose parsed url   port: null,
+53 verbose parsed url   hostname: null,
+53 verbose parsed url   hash: null,
+53 verbose parsed url   search: null,
+53 verbose parsed url   query: null,
+53 verbose parsed url   pathname: 'network-constants@latest',
+53 verbose parsed url   path: 'network-constants@latest',
+53 verbose parsed url   href: 'network-constants@latest' }
+54 verbose cache add name="network-constants" spec="latest" args=["network-constants","latest"]
+55 verbose parsed url { protocol: null,
+55 verbose parsed url   slashes: null,
+55 verbose parsed url   auth: null,
+55 verbose parsed url   host: null,
+55 verbose parsed url   port: null,
+55 verbose parsed url   hostname: null,
+55 verbose parsed url   hash: null,
+55 verbose parsed url   search: null,
+55 verbose parsed url   query: null,
+55 verbose parsed url   pathname: 'latest',
+55 verbose parsed url   path: 'latest',
+55 verbose parsed url   href: 'latest' }
+56 verbose addNamed [ 'network-constants', 'latest' ]
+57 verbose addNamed [ null, null ]
+58 silly lockFile de442616-network-constants-latest network-constants@latest
+59 verbose lock network-constants@latest /home/offirmo/.npm/de442616-network-constants-latest.lock
+60 verbose cache add [ 'store.js@latest', null ]
+61 verbose cache add name=undefined spec="store.js@latest" args=["store.js@latest",null]
+62 verbose parsed url { protocol: null,
+62 verbose parsed url   slashes: null,
+62 verbose parsed url   auth: null,
+62 verbose parsed url   host: null,
+62 verbose parsed url   port: null,
+62 verbose parsed url   hostname: null,
+62 verbose parsed url   hash: null,
+62 verbose parsed url   search: null,
+62 verbose parsed url   query: null,
+62 verbose parsed url   pathname: 'store.js@latest',
+62 verbose parsed url   path: 'store.js@latest',
+62 verbose parsed url   href: 'store.js@latest' }
+63 verbose cache add name="store.js" spec="latest" args=["store.js","latest"]
+64 verbose parsed url { protocol: null,
+64 verbose parsed url   slashes: null,
+64 verbose parsed url   auth: null,
+64 verbose parsed url   host: null,
+64 verbose parsed url   port: null,
+64 verbose parsed url   hostname: null,
+64 verbose parsed url   hash: null,
+64 verbose parsed url   search: null,
+64 verbose parsed url   query: null,
+64 verbose parsed url   pathname: 'latest',
+64 verbose parsed url   path: 'latest',
+64 verbose parsed url   href: 'latest' }
+65 verbose addNamed [ 'store.js', 'latest' ]
+66 verbose addNamed [ null, null ]
+67 silly lockFile 995a4d5a-store-js-latest store.js@latest
+68 verbose lock store.js@latest /home/offirmo/.npm/995a4d5a-store-js-latest.lock
+69 silly lockFile bf26d578-extended-exceptions-js-latest extended-exceptions.js@latest
+70 verbose lock extended-exceptions.js@latest /home/offirmo/.npm/bf26d578-extended-exceptions-js-latest.lock
+71 verbose cache add [ 'underscore@latest', null ]
+72 verbose cache add name=undefined spec="underscore@latest" args=["underscore@latest",null]
+73 verbose parsed url { protocol: null,
+73 verbose parsed url   slashes: null,
+73 verbose parsed url   auth: null,
+73 verbose parsed url   host: null,
+73 verbose parsed url   port: null,
+73 verbose parsed url   hostname: null,
+73 verbose parsed url   hash: null,
+73 verbose parsed url   search: null,
+73 verbose parsed url   query: null,
+73 verbose parsed url   pathname: 'underscore@latest',
+73 verbose parsed url   path: 'underscore@latest',
+73 verbose parsed url   href: 'underscore@latest' }
+74 verbose cache add name="underscore" spec="latest" args=["underscore","latest"]
+75 verbose parsed url { protocol: null,
+75 verbose parsed url   slashes: null,
+75 verbose parsed url   auth: null,
+75 verbose parsed url   host: null,
+75 verbose parsed url   port: null,
+75 verbose parsed url   hostname: null,
+75 verbose parsed url   hash: null,
+75 verbose parsed url   search: null,
+75 verbose parsed url   query: null,
+75 verbose parsed url   pathname: 'latest',
+75 verbose parsed url   path: 'latest',
+75 verbose parsed url   href: 'latest' }
+76 verbose addNamed [ 'underscore', 'latest' ]
+77 verbose addNamed [ null, null ]
+78 silly lockFile 546e1155-underscore-latest underscore@latest
+79 verbose lock underscore@latest /home/offirmo/.npm/546e1155-underscore-latest.lock
+80 verbose cache add [ 'when@latest', null ]
+81 verbose cache add name=undefined spec="when@latest" args=["when@latest",null]
+82 verbose parsed url { protocol: null,
+82 verbose parsed url   slashes: null,
+82 verbose parsed url   auth: null,
+82 verbose parsed url   host: null,
+82 verbose parsed url   port: null,
+82 verbose parsed url   hostname: null,
+82 verbose parsed url   hash: null,
+82 verbose parsed url   search: null,
+82 verbose parsed url   query: null,
+82 verbose parsed url   pathname: 'when@latest',
+82 verbose parsed url   path: 'when@latest',
+82 verbose parsed url   href: 'when@latest' }
+83 verbose cache add name="when" spec="latest" args=["when","latest"]
+84 verbose parsed url { protocol: null,
+84 verbose parsed url   slashes: null,
+84 verbose parsed url   auth: null,
+84 verbose parsed url   host: null,
+84 verbose parsed url   port: null,
+84 verbose parsed url   hostname: null,
+84 verbose parsed url   hash: null,
+84 verbose parsed url   search: null,
+84 verbose parsed url   query: null,
+84 verbose parsed url   pathname: 'latest',
+84 verbose parsed url   path: 'latest',
+84 verbose parsed url   href: 'latest' }
+85 verbose addNamed [ 'when', 'latest' ]
+86 verbose addNamed [ null, null ]
+87 silly lockFile 44ce592e-when-latest when@latest
+88 verbose lock when@latest /home/offirmo/.npm/44ce592e-when-latest.lock
+89 verbose cache add [ 'amdefine@latest', null ]
+90 verbose cache add name=undefined spec="amdefine@latest" args=["amdefine@latest",null]
+91 verbose parsed url { protocol: null,
+91 verbose parsed url   slashes: null,
+91 verbose parsed url   auth: null,
+91 verbose parsed url   host: null,
+91 verbose parsed url   port: null,
+91 verbose parsed url   hostname: null,
+91 verbose parsed url   hash: null,
+91 verbose parsed url   search: null,
+91 verbose parsed url   query: null,
+91 verbose parsed url   pathname: 'amdefine@latest',
+91 verbose parsed url   path: 'amdefine@latest',
+91 verbose parsed url   href: 'amdefine@latest' }
+92 verbose cache add name="amdefine" spec="latest" args=["amdefine","latest"]
+93 verbose parsed url { protocol: null,
+93 verbose parsed url   slashes: null,
+93 verbose parsed url   auth: null,
+93 verbose parsed url   host: null,
+93 verbose parsed url   port: null,
+93 verbose parsed url   hostname: null,
+93 verbose parsed url   hash: null,
+93 verbose parsed url   search: null,
+93 verbose parsed url   query: null,
+93 verbose parsed url   pathname: 'latest',
+93 verbose parsed url   path: 'latest',
+93 verbose parsed url   href: 'latest' }
+94 verbose addNamed [ 'amdefine', 'latest' ]
+95 verbose addNamed [ null, null ]
+96 silly lockFile 72390f2b-amdefine-latest amdefine@latest
+97 verbose lock amdefine@latest /home/offirmo/.npm/72390f2b-amdefine-latest.lock
+98 verbose cache add [ 'backbone@latest', null ]
+99 verbose cache add name=undefined spec="backbone@latest" args=["backbone@latest",null]
+100 verbose parsed url { protocol: null,
+100 verbose parsed url   slashes: null,
+100 verbose parsed url   auth: null,
+100 verbose parsed url   host: null,
+100 verbose parsed url   port: null,
+100 verbose parsed url   hostname: null,
+100 verbose parsed url   hash: null,
+100 verbose parsed url   search: null,
+100 verbose parsed url   query: null,
+100 verbose parsed url   pathname: 'backbone@latest',
+100 verbose parsed url   path: 'backbone@latest',
+100 verbose parsed url   href: 'backbone@latest' }
+101 verbose cache add name="backbone" spec="latest" args=["backbone","latest"]
+102 verbose parsed url { protocol: null,
+102 verbose parsed url   slashes: null,
+102 verbose parsed url   auth: null,
+102 verbose parsed url   host: null,
+102 verbose parsed url   port: null,
+102 verbose parsed url   hostname: null,
+102 verbose parsed url   hash: null,
+102 verbose parsed url   search: null,
+102 verbose parsed url   query: null,
+102 verbose parsed url   pathname: 'latest',
+102 verbose parsed url   path: 'latest',
+102 verbose parsed url   href: 'latest' }
+103 verbose addNamed [ 'backbone', 'latest' ]
+104 verbose addNamed [ null, null ]
+105 silly lockFile baed96ca-backbone-latest backbone@latest
+106 verbose lock backbone@latest /home/offirmo/.npm/baed96ca-backbone-latest.lock
+107 info addNameTag [ 'base-objects.js', 'latest' ]
+108 info addNameTag [ 'json2', 'latest' ]
+109 info addNameTag [ 'chai', 'latest' ]
+110 info addNameTag [ 'mocha', 'latest' ]
+111 info addNameTag [ 'network-constants', 'latest' ]
+112 info addNameTag [ 'store.js', 'latest' ]
+113 info addNameTag [ 'extended-exceptions.js', 'latest' ]
+114 verbose url raw base-objects.js
+115 verbose url resolving [ 'https://registry.npmjs.org/', './base-objects.js' ]
+116 verbose url resolved https://registry.npmjs.org/base-objects.js
+117 info trying registry request attempt 1 at 00:20:30
+118 http GET https://registry.npmjs.org/base-objects.js
+119 verbose url raw network-constants
+120 verbose url resolving [ 'https://registry.npmjs.org/', './network-constants' ]
+121 verbose url resolved https://registry.npmjs.org/network-constants
+122 info trying registry request attempt 1 at 00:20:30
+123 http GET https://registry.npmjs.org/network-constants
+124 info addNameTag [ 'underscore', 'latest' ]
+125 info addNameTag [ 'when', 'latest' ]
+126 info addNameTag [ 'amdefine', 'latest' ]
+127 info addNameTag [ 'backbone', 'latest' ]
+128 verbose url raw extended-exceptions.js
+129 verbose url resolving [ 'https://registry.npmjs.org/', './extended-exceptions.js' ]
+130 verbose url resolved https://registry.npmjs.org/extended-exceptions.js
+131 info trying registry request attempt 1 at 00:20:30
+132 http GET https://registry.npmjs.org/extended-exceptions.js
+133 verbose url raw json2
+134 verbose url resolving [ 'https://registry.npmjs.org/', './json2' ]
+135 verbose url resolved https://registry.npmjs.org/json2
+136 info trying registry request attempt 1 at 00:20:30
+137 verbose etag "B7LQISVG4TYT6H2CGFMQ0BD4V"
+138 http GET https://registry.npmjs.org/json2
+139 verbose registry.get chai not expired, no request
+140 verbose addNamed [ 'chai', '1.8.1' ]
+141 verbose addNamed [ '1.8.1', '1.8.1' ]
+142 silly lockFile dc8ef39a-chai-1-8-1 chai@1.8.1
+143 verbose lock chai@1.8.1 /home/offirmo/.npm/dc8ef39a-chai-1-8-1.lock
+144 verbose registry.get mocha not expired, no request
+145 verbose addNamed [ 'mocha', '1.13.0' ]
+146 verbose addNamed [ '1.13.0', '1.13.0' ]
+147 silly lockFile 85f05c77-mocha-1-13-0 mocha@1.13.0
+148 verbose lock mocha@1.13.0 /home/offirmo/.npm/85f05c77-mocha-1-13-0.lock
+149 verbose url raw underscore
+150 verbose url resolving [ 'https://registry.npmjs.org/', './underscore' ]
+151 verbose url resolved https://registry.npmjs.org/underscore
+152 info trying registry request attempt 1 at 00:20:30
+153 verbose etag "5B5TFBCUD4EE1HARVYGBG8GFE"
+154 http GET https://registry.npmjs.org/underscore
+155 verbose url raw when
+156 verbose url resolving [ 'https://registry.npmjs.org/', './when' ]
+157 verbose url resolved https://registry.npmjs.org/when
+158 info trying registry request attempt 1 at 00:20:30
+159 verbose etag "474FXN0WCPFVU5E885294DVZL"
+160 http GET https://registry.npmjs.org/when
+161 verbose registry.get amdefine not expired, no request
+162 verbose addNamed [ 'amdefine', '0.1.0' ]
+163 verbose addNamed [ '0.1.0', '0.1.0' ]
+164 silly lockFile 3c57e17c-amdefine-0-1-0 amdefine@0.1.0
+165 verbose lock amdefine@0.1.0 /home/offirmo/.npm/3c57e17c-amdefine-0-1-0.lock
+166 verbose url raw backbone
+167 verbose url resolving [ 'https://registry.npmjs.org/', './backbone' ]
+168 verbose url resolved https://registry.npmjs.org/backbone
+169 info trying registry request attempt 1 at 00:20:30
+170 verbose etag "IM0IE84CHVULE8W4JMV3MCDZ"
+171 http GET https://registry.npmjs.org/backbone
+172 verbose url raw store.js
+173 verbose url resolving [ 'https://registry.npmjs.org/', './store.js' ]
+174 verbose url resolved https://registry.npmjs.org/store.js
+175 info trying registry request attempt 1 at 00:20:30
+176 verbose etag "7XKB478NTFNS61KIWVS78HCJE"
+177 http GET https://registry.npmjs.org/store.js
+178 silly lockFile dc8ef39a-chai-1-8-1 chai@1.8.1
+179 silly lockFile dc8ef39a-chai-1-8-1 chai@1.8.1
+180 silly lockFile 85f05c77-mocha-1-13-0 mocha@1.13.0
+181 silly lockFile 85f05c77-mocha-1-13-0 mocha@1.13.0
+182 silly lockFile 332f8fe7-chai-latest chai@latest
+183 silly lockFile 332f8fe7-chai-latest chai@latest
+184 silly lockFile 12215997-mocha-latest mocha@latest
+185 silly lockFile 12215997-mocha-latest mocha@latest
+186 silly lockFile 3c57e17c-amdefine-0-1-0 amdefine@0.1.0
+187 silly lockFile 3c57e17c-amdefine-0-1-0 amdefine@0.1.0
+188 info already installed chai@1.8.1
+189 info already installed mocha@1.13.0
+190 silly lockFile 72390f2b-amdefine-latest amdefine@latest
+191 silly lockFile 72390f2b-amdefine-latest amdefine@latest
+192 info already installed amdefine@0.1.0
+193 http 404 https://registry.npmjs.org/base-objects.js
+194 silly registry.get cb [ 404,
+194 silly registry.get   { server: 'CouchDB/1.3.1 (Erlang OTP/R15B03)',
+194 silly registry.get     date: 'Tue, 22 Oct 2013 22:20:30 GMT',
+194 silly registry.get     'content-type': 'application/json',
+194 silly registry.get     'content-length': '52',
+194 silly registry.get     'cache-control': 'must-revalidate' } ]
+195 silly lockFile 60d08f02-base-objects-js-latest base-objects.js@latest
+196 silly lockFile 60d08f02-base-objects-js-latest base-objects.js@latest
+197 error 404 'base-objects.js' is not in the npm registry.
+197 error 404 You should bug the author to publish it
+197 error 404
+197 error 404 Maybe try 'npm search base objects'
+197 error 404
+197 error 404 Note that you can also install from a
+197 error 404 tarball, folder, or http url, or git url.
+198 error System Linux 3.2.0-52-virtual
+199 error command "node" "/work/misc/cvm_data/compsets/node/result/tool.nodejs.0.10.5/bin/npm" "install"
+200 error cwd /work/www/html_tests/app/other_components/restlink.js/test_runner
+201 error node -v v0.10.5
+202 error npm -v 1.3.11
+203 error code E404
+204 verbose exit [ 1, true ]

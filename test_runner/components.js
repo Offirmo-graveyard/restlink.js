@@ -24,30 +24,39 @@ requirejs.config({
 
 	/////////////////////
 	paths: {
-		// shim plugins
-		"chai"             : "bower_components/chai/chai",
-		"jquery"           : "bower_components/jquery/jquery",
-		"mocha"            : "bower_components/mocha/mocha",
 		// AMD plugins (dirs or direct)
-		"extended-exceptions" : "../extended_exceptions"
+		"base-objects"        : "bower_components/base-objects.js", // dir
+		"extended-exceptions" : "bower_components/extended-exceptions.js/extended_exceptions", // direct
+		"network-constants"   : "bower_components/network-constants.js", // dir
+		"restlink"            : "../src", // dir
+		// shim plugins
+		"backbone"            : "bower_components/backbone/backbone",
+		"chai"                : "bower_components/chai/chai",
+		"json2"               : "bower_components/json2/json2",
+		"mocha"               : "bower_components/mocha/mocha",
+		"underscore"          : "bower_components/underscore/underscore",
+		"store"               : "bower_components/store.js/store",
+		"when"                : "bower_components/when/when"
 	},
 
 
 	/////////////////////
 	shim: {
-		"jquery": {
-			exports: [ "$", "jQuery" ]
-		},
 		"mocha" : {
-			deps: [
-				"jquery"
-			],
+			deps: [ ],
 			exports: "mocha",
-			init: function (jquery) {
+			init: function () {
 				console.log("Hello from mocha shim ! Setting up mocha...");
 				this.mocha.setup("bdd");
 				return this.mocha;
 			}
+		},
+		"store": {
+			deps: [ "json2" ],
+			exports: "store"
+		},
+		"underscore": {
+			exports: "_"
 		}
 	}
 });

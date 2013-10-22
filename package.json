@@ -1,12 +1,27 @@
 {
-	"name" : "accounting",
-	"description" : "number, money and currency parsing/formatting library",
-	"homepage": "http://josscrowcroft.github.com/accounting.js",
-	"keywords" : ["accounting", "number", "money", "currency", "format", "utilities"],
-	"author": "Joss Crowcroft <josscrowcroft@gmail.com> (http://www.josscrowcroft.com)",
-	"contributors" : [],
-	"dependencies" : {},
-	"repository" : {"type": "git", "url": "git://github.com/josscrowcroft/accounting.js.git"},
-	"main" : "accounting.js",
-	"version" : "0.3.2"
+	"name": "restlink.js",
+	"version": "0.1.0",
+	"description": "A powerful REST server for node.js + browser with batteries (optional middlewares including sessions, security, local, http and socket.io interfaces...) WORK IN PROGRESS",
+	"keywords": [
+		"REST",
+		"browser",
+		"server"
+	],
+	"license": "public domain",
+	"author": "Offirmo <offirmo.net@gmail.com> (http://offirmo.net)",
+	"repository": {
+		"type": "git",
+		"url":  "https://github.com/Offirmo/restlink.js.git"
+	},
+	"dependencies": {
+		"base-objects.js":         "latest",
+		"extended-exceptions.js":  "latest",
+		"network-constants":       "latest",
+		"store.js":                "latest",
+		"underscore":              "latest",
+		"when":                    "latest"
+	},
+	"engines": {
+		"node": ">=0.6"
+	}
 }

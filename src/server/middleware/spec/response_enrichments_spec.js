@@ -4,7 +4,7 @@ define(
 [
 	'chai',
 	'when',
-	'restlink/server/response_enrichments',
+	'restlink/server/middleware/response_enrichments',
 	'restlink/core/response',
 	'mocha'
 ],
@@ -15,21 +15,41 @@ function(chai, when, CUT, Response) {
 	chai.should();
 	chai.Assertion.includeStack = true; // defaults to false
 
-	describe('Restlink Response Enrichment for middleware', function() {
+	describe('Offirmo Middleware Response Enrichment', function() {
 
-		describe('initialization', function() {
+		describe('processing', function() {
 
-			it('should work', function() {
-				var out = Response.make_new();
-				CUT.process(out);
+			it('should work in nominal case', function() {
+				var response = Response.make_new();
+				var fake_request = {};
+				var fake_context = {};
+				CUT.process(response, fake_request, fake_context);
 			});
 
 			it('should set default values', function() {
-				var out = Response.make_new();
-				CUT.process(out);
+				var response = Response.make_new();
+				var fake_request = {};
+				CUT.process(response, fake_request);
 
-				out.middleware_.should.exist;
-				out.should.respondTo("send");
+				response.middleware_.should.exist;
+				response.should.respondTo("send");
+			});
+
+			it('should work in nominal case with no context', function() {
+				var response = Response.make_new();
+				var fake_request = {};
+				CUT.process(response, fake_request);
+			});
+
+			it('should not work in mandatory args are missing', function() {
+				// no args at all
+				var tempfn1 = function() { CUT.process(); };
+				tempfn1.should.throw(Error, "Offirmo Middleware : No response to enrich !");
+
+				// no request
+				var response = Response.make_new();
+				var tempfn2 = function() { CUT.process(response); };
+				tempfn2.should.throw(Error, "Offirmo Middleware : A request is needed to enrich a response !");
 			});
 
 		}); // describe feature
@@ -38,28 +58,31 @@ function(chai, when, CUT, Response) {
 		describe('response sending', function() {
 
 			it('should detect problems', function() {
-				var out = Response.make_new();
-				CUT.process(out);
+				var response = Response.make_new();
+				var fake_request = {};
+				CUT.process(response, fake_request);
 
 				// should throw since no promises set
-				var tempfn = function() { out.send(); };
+				var tempfn = function() { response.send(); };
 				tempfn.should.throw(Error, "Empty deferred chain : middleware error during processing ?");
 			});
 
 			it('should work in nominal case', function(signalAsyncTestFinished) {
 				var out = Response.make_new();
 				var fake_request = {};
-				var fake_transaction = {};
-				CUT.process(out, fake_transaction, fake_request);
+				var fake_context = {};
+				CUT.process(out, fake_request, fake_context);
 
+				// insert a root deferred
 				var deferred = when.defer();
 				var promise = deferred.promise;
 				out.middleware_.deferred_chain_.push(deferred);
 
+				// it is now allowed to send the response
 				out.send();
 
-				promise.spread(function(transaction, request, response) {
-					transaction.should.equal(fake_transaction);
+				promise.spread(function(context, request, response) {
+					context.should.equal(fake_context);
 					request.should.equal(fake_request);
 					response.should.equal(out);
 					signalAsyncTestFinished();
@@ -72,8 +95,8 @@ function(chai, when, CUT, Response) {
 			it('should correctly handle a middleware chain', function(signalAsyncTestFinished) {
 				var out = Response.make_new();
 				var fake_request = {};
-				var fake_transaction = {};
-				CUT.process(out, fake_transaction, fake_request);
+				var fake_context = {};
+				CUT.process(out, fake_request, fake_context);
 
 				// simulate a middleware chain
 				var deferred_head = when.defer();
@@ -86,8 +109,8 @@ function(chai, when, CUT, Response) {
 
 				out.send();
 
-				promise_tail.spread(function(transaction, request, response) {
-					transaction.should.equal(fake_transaction);
+				promise_tail.spread(function(context, request, response) {
+					context.should.equal(fake_context);
 					request.should.equal(fake_request);
 					response.should.equal(out);
 
@@ -101,8 +124,8 @@ function(chai, when, CUT, Response) {
 					expect(false).to.be.ok;
 				});
 
-				promise_head.spread(function(transaction, request, response) {
-					transaction.should.equal(fake_transaction);
+				promise_head.spread(function(context, request, response) {
+					context.should.equal(fake_context);
 					request.should.equal(fake_request);
 					response.should.equal(out);
 

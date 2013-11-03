@@ -84,7 +84,7 @@ function(_, BaseRequestHandler, RouteIndexedContainer, EE, http_constants) {
 		var entry = container.ensure(route, action);
 
 		if(entry.callback && !replace_existing)
-			throw EE.InvalidArgument("Conflict : a callback is already set for this REST endpoint.");
+			throw new EE.InvalidArgument("Conflict : a callback is already set for this REST endpoint.");
 
 		entry.callback = callback;
 	};

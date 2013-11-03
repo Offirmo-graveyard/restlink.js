@@ -31,6 +31,7 @@ function(_, Response) {
 
 		this.uri          = undefined;
 		this.method       = undefined;
+		// meta roughly equals http headers
 		// https://en.wikipedia.org/wiki/List_of_HTTP_header_fields
 		this.meta         = {};
 		// https://en.wikipedia.org/wiki/Internet_media_type

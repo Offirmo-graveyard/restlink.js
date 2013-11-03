@@ -79,7 +79,7 @@ function(_, http_constants) {
 	Object.freeze(exceptions);
 	Object.freeze(methods);
 
-	var DefinedClass = function RestlinkRequest() {
+	var DefinedClass = function RestlinkResponse() {
 		_.defaults( this, defaults );
 		// other inits...
 		methods.init.apply(this, arguments);

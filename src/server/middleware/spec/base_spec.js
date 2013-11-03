@@ -21,7 +21,7 @@ function(chai, CUT, ServerCore, Request, Response, http_constants) {
 	request.method = 'BREW';
 	request.uri = '/stanford/teapot';
 
-	describe('Restlink base middleware', function() {
+	describe('Offirmo Middleware Base', function() {
 
 		describe('instantiation', function() {
 
@@ -54,23 +54,21 @@ function(chai, CUT, ServerCore, Request, Response, http_constants) {
 
 		describe('request handling', function() {
 
-			it('should work in basic mode', function(signalAsyncTestFinished) {
-				var out = CUT.make_new(function process(req, res) {
+			it('should allow a basic processing', function(signalAsyncTestFinished) {
+				var out = CUT.make_new(function process(context, req, res) {
+					res.return_code = http_constants.status_codes.status_400_client_error_bad_request;
+					res.content = "I'm a teapot !";
 					res.send();
 				});
 
-				var core = ServerCore.make_new();
-				core.startup();
-				core.use(out);
-				var session = core.create_session();
-				var trans = session.create_transaction(request);
+				var trans = {};
+				var promise = out.head_process_request(trans, request);
 
-				var promise = trans.forward_to_handler_and_intercept_response(out);
 				promise.spread(function on_success(context, request, response){
 					response.method.should.equal('BREW');
 					response.uri.should.equal('/stanford/teapot');
-					response.return_code.should.equal(http_constants.status_codes.status_501_server_error_not_implemented);
-					response.content.should.equals('Not Implemented');
+					response.return_code.should.equal(http_constants.status_codes.status_400_client_error_bad_request);
+					response.content.should.equal("I'm a teapot !");
 					signalAsyncTestFinished();
 				});
 				promise.otherwise(function on_failure(context, request, response){
@@ -78,89 +76,99 @@ function(chai, CUT, ServerCore, Request, Response, http_constants) {
 				});
 			});
 
-			it('should work in advanced mode', function(signalAsyncTestFinished) {
-				var out = CUT.make_new(function process(req, res, next) {
+			it('should provide a default error processing', function(signalAsyncTestFinished) {
+				var out = CUT.make_new( /* no processing function */ );
+				var trans = {};
 
-					},
-					function process_back(req, res) {
+				var promise = out.head_process_request(trans, request);
 
-					});
-			});
-
-		}); // describe feature
-
-		describe('utilities', function() {
-
-			it('should allow easy error generation', function(signalAsyncTestFinished) {
-				var out = CUT.make_new();
-				// override default implementation
-				out.handle_request = function(transaction, request) {
-					this.resolve_with_error(transaction, request, http_constants.status_codes.status_403_client_forbidden);
-				};
-
-				var core = ServerCore.make_new();
-				core.startup();
-				var session = core.create_session();
-				var trans = session.create_transaction(request);
-
-				var promise = trans.forward_to_handler_and_intercept_response(out);
-				promise.spread(function(transaction, request, response) {
+				promise.spread(function on_success(context, request, response){
 					response.method.should.equal('BREW');
 					response.uri.should.equal('/stanford/teapot');
-					response.return_code.should.equal(http_constants.status_codes.status_403_client_forbidden);
-					response.content.should.equals('Forbidden');
-					signalAsyncTestFinished();
-				});
-				promise.otherwise(function(){
-					expect(false).to.be.ok;
-				});
-			});
-
-			it('should allow easy common errors generation : not implemented', function(signalAsyncTestFinished) {
-				var out = CUT.make_new();
-				// override default implementation
-				out.handle_request = function(transaction, request) {
-					this.resolve_with_not_implemented(transaction, request);
-				};
-
-				var core = ServerCore.make_new();
-				core.startup();
-				var session = core.create_session();
-				var trans = session.create_transaction(request);
-
-				var promise = trans.forward_to_handler_and_intercept_response(out);
-				promise.spread(function(transaction, request, response) {
-					response.return_code.should.equal(http_constants.status_codes.status_501_server_error_not_implemented);
-					signalAsyncTestFinished();
-				});
-				promise.otherwise(function(){
-					expect(false).to.be.ok;
-				});
-			});
-
-			it('should allow easy common errors generation : internal error', function(signalAsyncTestFinished) {
-				var out = CUT.make_new();
-				// override default implementation
-				out.handle_request = function(transaction, request) {
-					this.resolve_with_internal_error(transaction, request);
-				};
-
-				var core = ServerCore.make_new();
-				core.startup();
-				var session = core.create_session();
-				var trans = session.create_transaction(request);
-
-				var promise = trans.forward_to_handler_and_intercept_response(out);
-				promise.spread(function(transaction, request, response) {
 					response.return_code.should.equal(http_constants.status_codes.status_500_server_error_internal_error);
 					signalAsyncTestFinished();
 				});
-				promise.otherwise(function(){
+				promise.otherwise(function on_failure(context, request, response){
 					expect(false).to.be.ok;
 				});
 			});
 
+			it('should allow a chained processing', function(signalAsyncTestFinished) {
+				var out_head = CUT.make_new(function process(context, req, res, next) {
+					res.meta["tag"] = "out_head was here !";
+					next();
+				});
+				var out_tail = CUT.make_new(function process(context, req, res, next) {
+					res.return_code = http_constants.status_codes.status_400_client_error_bad_request;
+					res.content = "I'm a teapot !";
+					res.send();
+				});
+
+				// build the chain
+				out_head.use(out_tail);
+
+				var trans = {};
+				var promise = out_head.head_process_request(trans, request);
+				promise.spread(function on_success(context, request, response){
+					response.method.should.equal('BREW');
+					response.uri.should.equal('/stanford/teapot');
+					response.return_code.should.equal(http_constants.status_codes.status_400_client_error_bad_request);
+					response.content.should.equal("I'm a teapot !");
+					expect(response.meta["tag"]).to.equal("out_head was here !");
+					signalAsyncTestFinished();
+				});
+				promise.otherwise(function on_failure(context, request, response){
+					expect(false).to.be.ok;
+				});
+			});
+
+			it('should allow an advanced chained processing', function(signalAsyncTestFinished) {
+				var out_head = CUT.make_new(function process(context, req, res, next) {
+					res.meta["tag1"] = "out_head will be back !";
+					next(function(context, req, res) {
+						res.meta["tag2"] = "out_head is back !";
+						res.send();
+					});
+				});
+				var out_tail = CUT.make_new(function process(context, req, res, next) {
+					res.return_code = http_constants.status_codes.status_400_client_error_bad_request;
+					res.content = "I'm a teapot !";
+					res.send();
+				});
+
+				// build the chain
+				out_head.use(out_tail);
+
+				var trans = {};
+				var promise = out_head.head_process_request(trans, request);
+				promise.spread(function on_success(context, request, response){
+					response.method.should.equal('BREW');
+					response.uri.should.equal('/stanford/teapot');
+					response.return_code.should.equal(http_constants.status_codes.status_400_client_error_bad_request);
+					response.content.should.equal("I'm a teapot !");
+					expect(response.meta["tag1"]).to.equal("out_head will be back !");
+					expect(response.meta["tag2"]).to.equal("out_head is back !");
+					signalAsyncTestFinished();
+				});
+				promise.otherwise(function on_failure(context, request, response){
+					expect(false).to.be.ok;
+				});
+			});
+
+			it('should handle when send is not called');
+			// I have no idea how to do that right now...
+
+			it('should handle when next is called from the tail', function() {
+				var out = CUT.make_new(function process(context, req, res, next) {
+					next(); // but no next MW !!
+				});
+
+				var tempfn = function() { out.head_process_request({}, request); };
+				tempfn.should.throw(Error, "Can't forward to next middleware, having none !");
+			});
 		}); // describe feature
+
+
 
 	}); // describe CUT
 }); // requirejs module

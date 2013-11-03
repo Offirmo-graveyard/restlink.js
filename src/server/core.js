@@ -10,11 +10,10 @@ define(
 	'extended-exceptions',
 	'base-objects/offinh/startable_object',
 	'restlink/server/rest_target_indexed_shared_container',
-	'restlink/server/response_enrichments',
 	'restlink/server/session',
 	'restlink/server/middleware/base'
 ],
-function(_, when, EE, StartableObject, RestIndexedContainer, ResponseMWEnricher, ServerSession, BaseRequestHandler) {
+function(_, when, EE, StartableObject, RestIndexedContainer, ServerSession, BaseRequestHandler) {
 	"use strict";
 
 	// to use when no request handler set
@@ -117,6 +116,14 @@ function(_, when, EE, StartableObject, RestIndexedContainer, ResponseMWEnricher,
 		return session;
 	};
 
+	// utility, very useful for unit tests
+	methods.startup_create_session_and_create_transaction = function() {
+		if(!this.is_started())
+			this.startup();
+		var session = this.create_session();
+		return session.create_transaction();
+	};
+
 	methods.terminate_session = function(session) {
 		session.invalidate();
 
@@ -128,10 +135,8 @@ function(_, when, EE, StartableObject, RestIndexedContainer, ResponseMWEnricher,
 		if(!this.is_started())
 			throw new EE.IllegalStateError("Can't create new session : server is stopped !");
 
-		var response = request.make_response();
-		ResponseMWEnricher.process(response, transaction, request );
-
-		return this.head_middleware_.process_request(transaction, request, response);
+		// REM : middleware will correctly create the response if not provided
+		return this.head_middleware_.process_request_(transaction, request);
 	};
 
 	/// TOSORT

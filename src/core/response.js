@@ -50,6 +50,24 @@ function(_, http_constants) {
 	methods.with_meta         = function(meta)    { this.meta         = meta;     return this; };
 	methods.with_content      = function(content) { this.content      = content;  return this; };
 
+	// utilities
+	methods.set_to_error      = function(error_code, optional_content) {
+		this.return_code = error_code;
+		if(typeof optional_content !== "undefined") {
+			this.content = optional_content;
+		}
+		else {
+			this.content = http_constants.status_messages[error_code];
+		}
+		return this; // for fluid
+	};
+	methods.set_to_internal_error = function(optional_content) {
+		return this.set_to_error(http_constants.status_codes.status_500_server_error_internal_error, optional_content);
+	};
+	methods.set_to_not_implemented = function(optional_content) {
+		return this.set_to_error(http_constants.status_codes.status_501_server_error_not_implemented, optional_content);
+	};
+
 	// utility
 	function make_new_from_request(request, attrs) {
 		var default_response = this.make_new();

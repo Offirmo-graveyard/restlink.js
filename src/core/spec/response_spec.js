@@ -15,6 +15,11 @@ function(chai, CUT, Request, http_constants) {
 	chai.should();
 	chai.Assertion.includeStack = true; // defaults to false
 
+	var request = Request.make_new();
+	request.method = 'BREW';
+	request.uri = '/stanford/teapot';
+
+
 	describe('Restlink Response', function() {
 
 		describe('instantiation', function() {
@@ -29,13 +34,10 @@ function(chai, CUT, Request, http_constants) {
 				var out = CUT.make_new();
 
 				out.return_code.should.equal(http_constants.status_codes.status_500_server_error_internal_error);
+				expect(out.content).to.be.undefined;
 			});
 
 			it('should be instantiable from a request (basic)', function() {
-				var request = Request.make_new();
-				request.method = 'BREW';
-				request.uri = '/stanford/teapot';
-
 				// basic version
 				var out = CUT.make_new_from_request(request);
 				//console.log(out);
@@ -47,10 +49,6 @@ function(chai, CUT, Request, http_constants) {
 			});
 
 			it('should be instantiable from a request (advanced)', function() {
-				var request = Request.make_new();
-				request.method = 'BREW';
-				request.uri = '/stanford/teapot';
-
 				// more advanced version
 				var out = CUT.make_new_from_request(request, {
 					return_code: http_constants.status_codes.status_400_client_error_bad_request,
@@ -70,12 +68,11 @@ function(chai, CUT, Request, http_constants) {
 		describe('utilities', function() {
 
 			it('should provide convenient fluid setters', function() {
-				var request = Request.make_new();
-				request.method = 'BREW';
-				request.uri = '/stanford/teapot';
-
-				// more advanced version
-				var out = CUT.make_new_from_request(request).with_status(400).with_content("Dude, I'm a teapot !").with_meta({ 'traceroute': true });
+				// using setters to change fields
+				var out = CUT.make_new_from_request(request)
+						.with_status(400)
+						.with_content("Dude, I'm a teapot !")
+						.with_meta({ 'traceroute': true });
 
 				out.method.should.equal('BREW');
 				out.uri.should.equal('/stanford/teapot');
@@ -84,76 +81,67 @@ function(chai, CUT, Request, http_constants) {
 				out.meta.should.deep.equal({ 'traceroute': true });
 			});
 
-			it('should allow easy error generation', function(signalAsyncTestFinished) {
-				var out = CUT.make_new();
-				// override default implementation
-				out.handle_request = function(transaction, request) {
-					this.resolve_with_error(transaction, request, http_constants.status_codes.status_403_client_forbidden);
-				};
 
-				var core = ServerCore.make_new();
-				core.startup();
-				var session = core.create_session();
-				var trans = session.create_transaction(request);
+			it('should allow easy error generation', function() {
+				var out = CUT.make_new_from_request(request);
+				expect(out.content).to.be.undefined; // check
 
-				var promise = trans.forward_to_handler_and_intercept_response(out);
-				promise.spread(function(transaction, request, response) {
-					console.log("in spread !");
-					response.method.should.equal('BREW');
-					response.uri.should.equal('/stanford/teapot');
-					response.return_code.should.equal(http_constants.status_codes.status_403_client_forbidden);
-					response.content.should.equals('Forbidden');
-					signalAsyncTestFinished();
-				});
-				promise.otherwise(function(){
-					expect(false).to.be.ok;
-				});
+				out.set_to_error(http_constants.status_codes.status_403_client_forbidden);
+
+				out.method.should.equal('BREW');
+				out.uri.should.equal('/stanford/teapot');
+				out.return_code.should.equal(http_constants.status_codes.status_403_client_forbidden);
+				out.content.should.equals('Forbidden');
+
+				// same but with a content
+				out.set_to_error(http_constants.status_codes.status_403_client_forbidden, "my error content");
+
+				out.method.should.equal('BREW');
+				out.uri.should.equal('/stanford/teapot');
+				out.return_code.should.equal(http_constants.status_codes.status_403_client_forbidden);
+				out.content.should.equals("my error content");
 			});
 
-			it('should allow easy common errors generation : not implemented', function(signalAsyncTestFinished) {
-				var out = CUT.make_new();
-				// override default implementation
-				out.handle_request = function(transaction, request) {
-					this.resolve_with_not_implemented(transaction, request);
-				};
 
-				var core = ServerCore.make_new();
-				core.startup();
-				var session = core.create_session();
-				var trans = session.create_transaction(request);
+			it('should allow easy common errors generation : not implemented', function() {
+				var out = CUT.make_new_from_request(request);
+				expect(out.content).to.be.undefined; // check
 
-				var promise = trans.forward_to_handler_and_intercept_response(out);
-				promise.spread(function(transaction, request, response) {
-					console.log("in spread !");
-					response.return_code.should.equal(http_constants.status_codes.status_501_server_error_not_implemented);
-					signalAsyncTestFinished();
-				});
-				promise.otherwise(function(){
-					expect(false).to.be.ok;
-				});
+				out.set_to_not_implemented();
+
+				out.method.should.equal('BREW');
+				out.uri.should.equal('/stanford/teapot');
+				out.return_code.should.equal(http_constants.status_codes.status_501_server_error_not_implemented);
+				out.content.should.equals('Not Implemented');
+
+				// same but with a content
+				out.set_to_not_implemented("my NIMP content");
+
+				out.method.should.equal('BREW');
+				out.uri.should.equal('/stanford/teapot');
+				out.return_code.should.equal(http_constants.status_codes.status_501_server_error_not_implemented);
+				out.content.should.equals("my NIMP content");
 			});
 
-			it('should allow easy common errors generation : internal error', function(signalAsyncTestFinished) {
-				var out = CUT.make_new();
-				// override default implementation
-				out.handle_request = function(transaction, request) {
-					this.resolve_with_internal_error(transaction, request);
-				};
 
-				var core = ServerCore.make_new();
-				core.startup();
-				var session = core.create_session();
-				var trans = session.create_transaction(request);
+			it('should allow easy common errors generation : internal error', function() {
+				var out = CUT.make_new_from_request(request);
+				expect(out.content).to.be.undefined; // check
 
-				var promise = trans.forward_to_handler_and_intercept_response(out);
-				promise.spread(function(transaction, request, response) {
-					console.log("in spread !");
-					response.return_code.should.equal(http_constants.status_codes.status_500_server_error_internal_error);
-					signalAsyncTestFinished();
-				});
-				promise.otherwise(function(){
-					expect(false).to.be.ok;
-				});
+				out.set_to_internal_error();
+
+				out.method.should.equal('BREW');
+				out.uri.should.equal('/stanford/teapot');
+				out.return_code.should.equal(http_constants.status_codes.status_500_server_error_internal_error);
+				out.content.should.equals('Internal Server Error');
+
+				// same but with a content
+				out.set_to_internal_error("my IE content");
+
+				out.method.should.equal('BREW');
+				out.uri.should.equal('/stanford/teapot');
+				out.return_code.should.equal(http_constants.status_codes.status_500_server_error_internal_error);
+				out.content.should.equals("my IE content");
 			});
 
 		}); // describe feature

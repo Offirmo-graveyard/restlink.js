@@ -1,6 +1,6 @@
-/* A generic RestLink request handler
- * Meant to be inserted in a server or in a handler chain
- * can handle requests or dispatch them to other objects.
+/* A generic RestLink middleware
+ * Meant to be inserted in a server or in a middleware chain
+ * can handle requests or dispatch them to next middleware object.
  * API derived from express.js / connect.js for least surprise.
  */
 if (typeof define !== 'function') { var define = require('amdefine')(module); }
@@ -30,7 +30,7 @@ function(_, when, EE, ResponseEnricher) {
 	////////////////////////////////////
 	//defaults. = ;
 
-	// default implementation, to be overriden of course
+	// default implementation, to be overriden or replaced (choice)
 	// @param context : user-provided context object (passed along but untouched by the middleware. Can be left to undefined.
 	// @param request : a request object that will be passed along. Can be anything.
 	// @param response : a response object that will be passed along. Can be anything, will have been "enriched" with the middleware special methods.
@@ -44,6 +44,7 @@ function(_, when, EE, ResponseEnricher) {
 			response.send();
 		}
 	};
+	defaults.back_processing_function_ = undefined; // none by default or would cause overhead
 	defaults.next_middleware_ = undefined; //< if chain, the middleware just after us to whom we may transfer the processing
 
 	////////////////////////////////////
@@ -55,7 +56,7 @@ function(_, when, EE, ResponseEnricher) {
 
 
 	// add a chained middleware after this one.
-	// will be inserted at the end of current chain.
+	// will be inserted at the end of current chain if any.
 	methods.use = function(middleware) {
 		if(!this.next_middleware_) {
 			this.next_middleware_ = middleware;
@@ -65,26 +66,31 @@ function(_, when, EE, ResponseEnricher) {
 		}
 	};
 
+	function register_back_function(response, back_function, that) {
+		var deferred = when.defer();
+		response.middleware_.deferred_chain_.push(deferred);
+		deferred.promise.spread(function(context, request, response) {
+			back_function(context, request, response, that);
+		});
+	}
 
 	// implementation of method "next" which is provided as a param
 	// if a back function is given, it'll have to call send() again to continue the processing.
-	function next_implementation(current_mw, context, request, response, optional_back_function) {
-		if(!current_mw.next_middleware_) {
+	function next_implementation(that, context, request, response, optional_back_function) {
+		if(!that.next_middleware_) {
 			// no middleware after us !
 			// we should NOT have called next, then !
 			throw new EE.IllegalStateError("Can't forward to next middleware, having none !");
 		}
 		else {
+			// should optional replace the integrated or add to it ?
+			// addition for now.
 			if(typeof optional_back_function !== "undefined") {
-				var deferred = when.defer();
-				response.middleware_.deferred_chain_.push(deferred);
-				deferred.promise.spread(function(context, request, response) {
-					optional_back_function(context, request, response);
-				});
+				register_back_function(response, optional_back_function, that);
 			}
 		}
 
-		current_mw.next_middleware_.process_request_(context, request, response);
+		that.next_middleware_.process_request_(context, request, response);
 	}
 
 
@@ -99,12 +105,17 @@ function(_, when, EE, ResponseEnricher) {
 			next_implementation(current_mw, context, request, response, optional_back_function);
 		};
 
+		// register the default back function if any
+		if(typeof this.back_processing_function_ !== "undefined") {
+			register_back_function(response, this.back_processing_function_, current_mw);
+		}
+
 		// call the (hopefully) user-defined processing function
-		this.processing_function_(context, request, response, next);
+		this.processing_function_(context, request, response, next, this);
 	};
 
 
-	// Launch of the middleware processing chain.
+	// Launch the middleware processing chain.
 	// should only be called on the head middleware !
 	// Not mandatory if you wan to initialize the middleware manually
 	methods.head_process_request = function(context, request, response) {
@@ -146,7 +157,10 @@ function(_, when, EE, ResponseEnricher) {
 
 		// other inits...
 		if(typeof process_func !== "undefined") {
-			this.processing_function_ = process_func;
+			this.processing_function_ = process_func; // replace
+		}
+		if(typeof process_back_func !== "undefined") {
+			this.back_processing_function_ = process_back_func;
 		}
 	};
 

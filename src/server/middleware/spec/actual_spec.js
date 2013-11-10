@@ -3,7 +3,6 @@ if (typeof define !== 'function') { var define = require('amdefine')(module); }
 define(
 [
 	'chai',
-	'jquery',
 	'restlink/server/request_handlers/actual',
 	'restlink/server/request_handlers/base',
 	'restlink/server/rest_target_indexed_shared_container',
@@ -12,7 +11,7 @@ define(
 	'network-constants/http',
 	'mocha'
 ],
-function(chai, jQuery, CUT, BaseRequestHandler, RestIndexedContainer, ServerCore, Request, /*Response,*/ http_constants) {
+function(chai, CUT, BaseRequestHandler, RestIndexedContainer, ServerCore, Request, http_constants) {
 	"use strict";
 
 	var expect = chai.expect;
@@ -120,9 +119,8 @@ function(chai, jQuery, CUT, BaseRequestHandler, RestIndexedContainer, ServerCore
 				});
 			});
 
-			it('should control callbacks behaviour', function() {
-				//add a spy on returned promise to check params type
-			});
+			it('should control callbacks behaviour');
+			// TODO add a spy on returned promise to check params type
 
 			it('should return a 404 not_found error when called on an unknown route', function(signalAsyncTestFinished) {
 				var out = CUT.make_new();

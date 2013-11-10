@@ -9,14 +9,19 @@ define(
 	'restlink/core/request',
 	'restlink/core/response',
 	'restlink/server/adapters/base',
+	'restlink/server/middleware/integrated',
 	'mocha'
 ],
-function(chai, _, when, CUT, Request, Response, ServerAdapterBase) {
+function(chai, _, when, CUT, Request, Response, ServerAdapterBase, IntegratedMWs) {
 	"use strict";
 
 	var expect = chai.expect;
 	chai.should();
 	chai.Assertion.includeStack = true; // defaults to false
+
+	var request = Request.make_new();
+	request.method = 'BREW';
+	request.uri = '/stanford/teapot';
 
 
 
@@ -66,7 +71,7 @@ function(chai, _, when, CUT, Request, Response, ServerAdapterBase) {
 				var out = CUT.make_new();
 
 				var tempfn = function() { out.startup(); };
-				tempfn.should.throw(Error, "Can't process requests : this adapter is stopped.");
+				tempfn.should.throw(Error, "No middleware provided !");
 			});
 
 		}); // describe feature
@@ -83,6 +88,7 @@ function(chai, _, when, CUT, Request, Response, ServerAdapterBase) {
 
 			it('should correctly propagate startup/shutdown', function() {
 				var out = CUT.make_new();
+				out.use({}); // provide fake MW
 
 				// first with an adapter added before start
 				var test_adapter1 = ServerAdapterBase.make_new();
@@ -107,6 +113,7 @@ function(chai, _, when, CUT, Request, Response, ServerAdapterBase) {
 
 				it('should allow session creation but only when started', function() {
 					var out = CUT.make_new();
+					out.use({}); // provide fake MW
 
 					var tempfn = function() { var session = out.create_session(); };
 					tempfn.should.throw(Error, "Can't create new session : server is stopped !");
@@ -118,6 +125,7 @@ function(chai, _, when, CUT, Request, Response, ServerAdapterBase) {
 
 				it('should allow session termination', function() {
 					var out = CUT.make_new();
+					out.use({}); // provide fake MW
 
 					out.startup();
 					var session = out.create_session(); // OK
@@ -137,16 +145,49 @@ function(chai, _, when, CUT, Request, Response, ServerAdapterBase) {
 
 		describe('middleware management', function() {
 
-			it('should allow insertion', function() {
-				todo
+			it('should allow insertion', function(signalAsyncTestFinished) {
+				var out = CUT.make_new();
+				out.use(IntegratedMWs.default());
+
+				var trans = out.startup_create_session_and_create_transaction();
+
+				var promise = out.process_request(trans, request);
+				promise.spread(function on_success(context, request, response){
+					response.return_code.should.equal(501);
+					response.content.should.equal("Server is misconfigured. Please add middlewares to handle requests !");
+					signalAsyncTestFinished();
+				});
+				promise.otherwise(function on_failure(context, request, response){
+					expect(false).to.be.ok;
+				});
 			});
 
-			it('should avoid conflicts', function() {
-				todo
-			});
+			it('should allow insertion of a chain', function(signalAsyncTestFinished) {
+				var out = CUT.make_new();
+				out.use(IntegratedMWs.logger());
+				out.use(IntegratedMWs.base(function process(context, req, res, next) {
+					res.meta["tag1"] = "base was here !";
+					next();
+				},
+				function back_process(context, req, res) {
+					res.meta["tag2"] = "base was back !";
+					res.send();
+				}));
+				out.use(IntegratedMWs.default());
 
-			it('should allow customization', function() {
-				todo
+				var trans = out.startup_create_session_and_create_transaction();
+
+				var promise = out.process_request(trans, request);
+				promise.spread(function on_success(context, request, response){
+					response.return_code.should.equal(501);
+					response.content.should.equal("Server is misconfigured. Please add middlewares to handle requests !");
+					expect(response.meta["tag1"]).to.equal("base was here !");
+					expect(response.meta["tag2"]).to.equal("base was back !");
+					signalAsyncTestFinished();
+				});
+				promise.otherwise(function on_failure(context, request, response){
+					expect(false).to.be.ok;
+				});
 			});
 
 		}); // describe feature

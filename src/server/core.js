@@ -11,14 +11,10 @@ define(
 	'base-objects/offinh/startable_object',
 	'restlink/server/rest_target_indexed_shared_container',
 	'restlink/server/session',
-	'restlink/server/middleware/base'
+	'restlink/server/middleware/integrated',
 ],
-function(_, when, EE, StartableObject, RestIndexedContainer, ServerSession, BaseRequestHandler) {
+function(_, when, EE, StartableObject, RestIndexedContainer, ServerSession, IntegratedMiddlewares) {
 	"use strict";
-
-	// to use when no request handler set
-	// shared (since no state)
-	var default_request_handler = BaseRequestHandler.make_new();
 
 
 	////////////////////////////////////
@@ -88,6 +84,14 @@ function(_, when, EE, StartableObject, RestIndexedContainer, ServerSession, Base
 			adapter.startup(this_);
 		});
 	};
+	// for tests
+	methods.startup_with_default_mw = function() {
+		// add a default middleware
+		this.use(IntegratedMiddlewares.default.make_new());
+
+		// call the original function
+		this.startup();
+	};
 
 	// override of parent
 	methods.shutdown = function() {
@@ -136,7 +140,7 @@ function(_, when, EE, StartableObject, RestIndexedContainer, ServerSession, Base
 			throw new EE.IllegalStateError("Can't create new session : server is stopped !");
 
 		// REM : middleware will correctly create the response if not provided
-		return this.head_middleware_.process_request_(transaction, request);
+		return this.head_middleware_.head_process_request(transaction, request);
 	};
 
 	/// TOSORT

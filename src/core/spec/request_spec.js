@@ -27,7 +27,9 @@ function(chai, CUT, Response) {
 
 			it('should set default values', function() {
 				var out = CUT.make_new();
-				//out.get('denomination').should.exist.and.equal('Anonymous');
+				expect(out.meta).to.deep.equal({});
+				expect(out.content_type).to.equal("application/json");
+				expect(out.date).to.not.be.undefined;
 			});
 
 		}); // describe feature
@@ -59,11 +61,12 @@ function(chai, CUT, Response) {
 				resp1.uri.should.equal('/stanford/teapot');
 				resp1.return_code.should.equal(500);
 				resp1.meta.should.deep.equal({});
-				expect(resp1.content).to.be.undefined;
+				expect(resp1.content).to.equal("");
 
 				// check if it's the same result as another way of creating a response
 				// this ensure coherency of both methods
 				var resp2 = Response.make_new_from_request(out);
+
 				resp1.method.should.equal(resp2.method);
 				resp1.uri.should.equal(resp2.uri);
 				resp1.return_code.should.equal(resp2.return_code);

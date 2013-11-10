@@ -76,6 +76,33 @@ function(chai, CUT, ServerCore, Request, Response, http_constants) {
 				});
 			});
 
+
+			it('should allow a basic back processing', function(signalAsyncTestFinished) {
+				var out = CUT.make_new(function process(context, req, res) {
+					res.content = "I'm a teapot !";
+					res.send();
+				},
+				function process(context, req, res) {
+					res.return_code = http_constants.status_codes.status_400_client_error_bad_request;
+					res.content += " Really, dude.";
+					res.send();
+				});
+
+				var trans = {};
+				var promise = out.head_process_request(trans, request);
+
+				promise.spread(function on_success(context, request, response){
+					response.method.should.equal('BREW');
+					response.uri.should.equal('/stanford/teapot');
+					response.return_code.should.equal(http_constants.status_codes.status_400_client_error_bad_request);
+					response.content.should.equal("I'm a teapot ! Really, dude.");
+					signalAsyncTestFinished();
+				});
+				promise.otherwise(function on_failure(context, request, response){
+					expect(false).to.be.ok;
+				});
+			});
+
 			it('should provide a default error processing', function(signalAsyncTestFinished) {
 				var out = CUT.make_new( /* no processing function */ );
 				var trans = {};
@@ -124,15 +151,26 @@ function(chai, CUT, ServerCore, Request, Response, http_constants) {
 
 			it('should allow an advanced chained processing', function(signalAsyncTestFinished) {
 				var out_head = CUT.make_new(function process(context, req, res, next) {
-					res.meta["tag1"] = "out_head will be back !";
-					next(function(context, req, res) {
-						res.meta["tag2"] = "out_head is back !";
+					// init of control fields
+					// mark our passage
+					res.content += "H1>";
+					next(function additional_back_process(context, req, res) {
+						res.content += "<H1";
 						res.send();
 					});
+				},
+				function back_process(context, req, res, next) {
+					res.content += "<H1b";
+					res.send();
 				});
-				var out_tail = CUT.make_new(function process(context, req, res, next) {
+
+				var out_tail = CUT.make_new(function process(context, req, res) {
 					res.return_code = http_constants.status_codes.status_400_client_error_bad_request;
-					res.content = "I'm a teapot !";
+					res.content += "H2>";
+					res.send();
+				},
+				function back_process(context, req, res) {
+					res.content += "<H2";
 					res.send();
 				});
 
@@ -142,12 +180,11 @@ function(chai, CUT, ServerCore, Request, Response, http_constants) {
 				var trans = {};
 				var promise = out_head.head_process_request(trans, request);
 				promise.spread(function on_success(context, request, response){
+					console.log(response);
 					response.method.should.equal('BREW');
 					response.uri.should.equal('/stanford/teapot');
 					response.return_code.should.equal(http_constants.status_codes.status_400_client_error_bad_request);
-					response.content.should.equal("I'm a teapot !");
-					expect(response.meta["tag1"]).to.equal("out_head will be back !");
-					expect(response.meta["tag2"]).to.equal("out_head is back !");
+					response.content.should.equal("H1>H2><H2<H1<H1b");
 					signalAsyncTestFinished();
 				});
 				promise.otherwise(function on_failure(context, request, response){
@@ -155,7 +192,10 @@ function(chai, CUT, ServerCore, Request, Response, http_constants) {
 				});
 			});
 
-			it('should handle when send is not called');
+			it('should handle when neither send nor next are not called');
+			// I have no idea how to do that right now...
+
+			it('should handle when both send and next are called');
 			// I have no idea how to do that right now...
 
 			it('should handle when next is called from the tail', function() {

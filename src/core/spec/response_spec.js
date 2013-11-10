@@ -34,7 +34,7 @@ function(chai, CUT, Request, http_constants) {
 				var out = CUT.make_new();
 
 				out.return_code.should.equal(http_constants.status_codes.status_500_server_error_internal_error);
-				expect(out.content).to.be.undefined;
+				expect(out.content).to.equals("");
 			});
 
 			it('should be instantiable from a request (basic)', function() {
@@ -45,7 +45,7 @@ function(chai, CUT, Request, http_constants) {
 				out.uri.should.equal('/stanford/teapot');
 				out.return_code.should.equal(http_constants.status_codes.status_500_server_error_internal_error);
 				out.meta.should.deep.equal({});
-				expect(out.content).to.be.undefined;
+				expect(out.content).to.equals("");
 			});
 
 			it('should be instantiable from a request (advanced)', function() {
@@ -84,7 +84,7 @@ function(chai, CUT, Request, http_constants) {
 
 			it('should allow easy error generation', function() {
 				var out = CUT.make_new_from_request(request);
-				expect(out.content).to.be.undefined; // check
+				expect(out.content).to.equals(""); // check
 
 				out.set_to_error(http_constants.status_codes.status_403_client_forbidden);
 
@@ -105,7 +105,7 @@ function(chai, CUT, Request, http_constants) {
 
 			it('should allow easy common errors generation : not implemented', function() {
 				var out = CUT.make_new_from_request(request);
-				expect(out.content).to.be.undefined; // check
+				expect(out.content).to.equals(""); // check
 
 				out.set_to_not_implemented();
 
@@ -126,7 +126,7 @@ function(chai, CUT, Request, http_constants) {
 
 			it('should allow easy common errors generation : internal error', function() {
 				var out = CUT.make_new_from_request(request);
-				expect(out.content).to.be.undefined; // check
+				expect(out.content).to.equals(""); // check
 
 				out.set_to_internal_error();
 

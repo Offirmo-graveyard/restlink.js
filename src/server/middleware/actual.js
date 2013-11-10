@@ -1,5 +1,5 @@
-/* The RestLink request handler
- * that actually handle requests (i.e. doesn't transfer them to other handlers)
+/* The RestLink request handler middleware
+ * that dispatch requests to previously registered functions.
  */
 if (typeof define !== 'function') { var define = require('amdefine')(module); }
 

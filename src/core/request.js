@@ -37,6 +37,8 @@ function(_, Response) {
 		// https://en.wikipedia.org/wiki/Internet_media_type
 		this.content_type = "application/json"; // default
 		this.content      = undefined;
+		// date of reception. Useful to have it here for replay !
+		this.date = new Date();
 
 		// NOT STANDARD REST IF CHANGED !
 		this.is_long_living = false; //< is this request considered "permanent" ?

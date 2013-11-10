@@ -34,7 +34,7 @@ function(_, http_constants) {
 		this.meta         = {};
 		// https://en.wikipedia.org/wiki/Internet_media_type
 		this.content_type = undefined;
-		this.content      = undefined;
+		this.content      = ""; // empty better than undefined, so handlers can concat without having to test for undefined
 	};
 
 
@@ -79,6 +79,9 @@ function(_, http_constants) {
 			content_type : request.content_type
 			// REM : status already has a default
 		}, default_response);
+
+		// then auto values
+		temp_response.date = new Date();
 
 		// then overwrite with explicite values (if any)
 		attrs || (attrs = {});

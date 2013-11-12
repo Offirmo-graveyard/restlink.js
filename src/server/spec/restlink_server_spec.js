@@ -3,12 +3,11 @@ if (typeof define !== 'function') { var define = require('amdefine')(module); }
 define(
 [
 	'chai',
-	'restlink/restlink_server',
-	'restlink/server_internals/adapters/direct',
-	'restlink/request',
-	'restlink/response',
+	'restlink/server/restlink_server',
+	'restlink/server/adapters/direct',
+	'restlink/core/request',
+	'restlink/core/response',
 	'network-constants/http',
-
 	'mocha'
 ],
 function(chai, CUT, DirectServerAdapter, Request, Response, http_constants) {
@@ -22,8 +21,9 @@ function(chai, CUT, DirectServerAdapter, Request, Response, http_constants) {
 	test_request.method = 'BREW';
 	test_request.uri = '/stanford/teapot';
 
-	describe('Restlink server', function() {
 
+
+	describe('Restlink Server', function() {
 
 
 		describe('instantiation', function() {
@@ -89,7 +89,7 @@ function(chai, CUT, DirectServerAdapter, Request, Response, http_constants) {
 				var direct_adapter = DirectServerAdapter.make_new();
 				out.add_adapter(direct_adapter);
 
-				out.startup();
+				out.startup_with_default_mw_if_needed();
 
 				var client = direct_adapter.new_connection();
 

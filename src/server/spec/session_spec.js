@@ -54,6 +54,7 @@ function(chai, CUT, ServerCore) {
 
 			it('should come from a core', function() {
 				var core = ServerCore.make_new();
+				core.use({}); // fake MW
 				core.startup();
 				var out = core.create_session();
 

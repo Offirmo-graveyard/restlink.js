@@ -103,6 +103,8 @@ function(_, FastTimestamp, Transaction) {
 			trans.invalidate();
 		});
 		this.transactions_ = []; // no need to keep invalidated transactions
+		// release refs (really needed ?)
+		this.request = undefined;
 	};
 
 	/** check current validity
@@ -116,14 +118,14 @@ function(_, FastTimestamp, Transaction) {
 	 *
 	 */
 	methods.create_transaction = function(restlink_request) {
-		var new_transaction = undefined;
+		var new_transaction;
 
 		if(this.is_valid())
 		{
 			new_transaction = Transaction.make_new();
 			new_transaction.parent_session = this;
 			if( typeof restlink_request !== "undefined")
-				new_transaction.set_request(restlink_request);
+				new_transaction.request = restlink_request;
 
 			// keep ref for further inspection, invalidation or timeout
 			this.transactions_.push(new_transaction);

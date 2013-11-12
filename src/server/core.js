@@ -85,9 +85,11 @@ function(_, when, EE, StartableObject, RestIndexedContainer, ServerSession, Inte
 		});
 	};
 	// for tests
-	methods.startup_with_default_mw = function() {
-		// add a default middleware
-		this.use(IntegratedMiddlewares.default.make_new());
+	methods.startup_with_default_mw_if_needed = function() {
+		if(typeof this.head_middleware_ === 'undefined') {
+			// add a default middleware
+			this.use(IntegratedMiddlewares.default());
+		}
 
 		// call the original function
 		this.startup();
@@ -123,7 +125,7 @@ function(_, when, EE, StartableObject, RestIndexedContainer, ServerSession, Inte
 	// utility, very useful for unit tests
 	methods.startup_create_session_and_create_transaction = function() {
 		if(!this.is_started())
-			this.startup();
+			this.startup_with_default_mw_if_needed();
 		var session = this.create_session();
 		return session.create_transaction();
 	};

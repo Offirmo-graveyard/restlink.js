@@ -44,8 +44,9 @@ function(_, EE) {
 	////////////////////////////////////
 	//methods. = ;
 	methods.startup = function(server) {
-		if(typeof server === 'undefined')
+		if(typeof server === 'undefined') {
 			throw new EE.InvalidArgument("Can't start adapter : missing server argument !");
+		}
 		this.server_ = server;
 		this.started_ = true;
 	};

@@ -6,8 +6,8 @@ if (typeof define !== 'function') { var define = require('amdefine')(module); }
 define(
 [
 	'underscore',
-	'restlink/server_internals/request_handlers/base',
-	'restlink/route_indexed_container',
+	'restlink/server/middleware/base',
+	'restlink/utils/route_indexed_container',
 	'extended-exceptions',
 	'network-constants/http'
 ],

@@ -54,15 +54,19 @@ function(_, RestlinkMiddlewareBase) {
 
 	////////////////////////////////////
 	// inheriting and extending base fields
-	_.defaults( constants, RestlinkMiddlewareBase.constants );
-	Object.freeze(constants);
+
+	// prototypal inheritance from RestlinkMiddlewareBase
+	_.defaults( constants,  RestlinkMiddlewareBase.constants );
 	_.defaults( exceptions, RestlinkMiddlewareBase.exceptions );
+	_.defaults( defaults,   RestlinkMiddlewareBase.defaults );
+	_.defaults( methods,    RestlinkMiddlewareBase.methods );
+
+	Object.freeze(constants);
 	Object.freeze(exceptions);
-	_.defaults( defaults, RestlinkMiddlewareBase.defaults );
 	Object.freeze(defaults);
-	_.defaults( methods, RestlinkMiddlewareBase.methods );
 	Object.freeze(methods);
 
+	// contructor
 	var DefinedClass = function RestlinkLoggingMiddleware(mode, custom_log_function) {
 
 		// analyze and fix params

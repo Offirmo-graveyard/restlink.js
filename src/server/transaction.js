@@ -33,7 +33,7 @@ function(_, when, EE) {
 		// init of member objects
 
 		// direct access allowed
-		this.parent_session = undefined; //< the session we belong to. If closed, we close too.
+		this.parent_session = undefined; //< the session we belong to. If closed, we should be closed too.
 		this.request        = undefined; //< the request which caused the creation of this transaction
 
 		// direct access not allowed (use accessors)

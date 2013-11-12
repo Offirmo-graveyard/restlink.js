@@ -55,6 +55,7 @@ function(chai, CUT, ServerCore, Request, Response, RestIndexedContainer, EE) {
 
 			it('should come from a core via a session', function() {
 				var core = ServerCore.make_new();
+				core.use({}); // fake MW
 				core.startup();
 				var session = core.create_session();
 				var out = session.create_transaction();

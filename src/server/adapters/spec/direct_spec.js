@@ -3,15 +3,14 @@ if (typeof define !== 'function') { var define = require('amdefine')(module); }
 define(
 [
 	'chai',
-	'jquery',
 	'restlink/server/adapters/direct',
-	'restlink/request',
-	'restlink/response',
+	'restlink/core/request',
+	'restlink/core/response',
 	'restlink/server/core',
 	'network-constants/http',
 	'mocha'
 ],
-function(chai, jQuery, CUT, Request, Response, ServerCore, http_constants) {
+function(chai, CUT, Request, Response, ServerCore, http_constants) {
 	"use strict";
 
 	var expect = chai.expect;
@@ -74,7 +73,7 @@ function(chai, jQuery, CUT, Request, Response, ServerCore, http_constants) {
 				// give it a real server
 				var server_core = ServerCore.make_new();
 				server_core.add_adapter(out_);
-				server_core.startup();
+				server_core.startup_with_default_mw_if_needed();
 
 				var out = out_.new_connection();
 
@@ -86,8 +85,8 @@ function(chai, jQuery, CUT, Request, Response, ServerCore, http_constants) {
 				promise.spread(function on_success(request, response){
 					response.method.should.equal('BREW');
 					response.uri.should.equal('/stanford/teapot');
-					response.return_code.should.equal(http_constants.status_codes.status_500_server_error_internal_error);
-					response.content.should.equal("Can't process request, Server misconfigured : no request handler set !");
+					response.return_code.should.equal(http_constants.status_codes.status_501_server_error_not_implemented);
+					response.content.should.equal("Server is misconfigured. Please add middlewares to handle requests !");
 					signalAsyncTestFinished();
 				});
 				promise.otherwise(function on_failure(){

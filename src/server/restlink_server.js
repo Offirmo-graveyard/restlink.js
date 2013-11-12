@@ -8,11 +8,12 @@ define(
 	'underscore',
 	'base-objects/offinh/named_object',
 	'base-objects/offinh/startable_object',
-	'restlink/server_internals/server_core',
-	'restlink/server_internals/request_handlers/actual',
-	'restlink/server_internals/adapters/direct'
+	'restlink/server/core',
+	'restlink/server/middleware/integrated',
+	'restlink/server/middleware/actual',
+	'restlink/server/adapters/direct'
 ],
-function(_, NamedObject, StartableObject, ServerCore, ActualRequestHandler, DirectServerAdapter) {
+function(_, NamedObject, StartableObject, ServerCore, IntegratedMiddlewares, ActualRequestHandler, DirectServerAdapter) {
 	"use strict";
 
 
@@ -32,9 +33,8 @@ function(_, NamedObject, StartableObject, ServerCore, ActualRequestHandler, Dire
 	methods.init = function() {
 		// init of member objects
 		this.core_ = ServerCore.make_new();
-		this.handler_built_ = false;
 
-		// always the direct, for convenience
+		// always add the direct adapter, for convenience
 		var direct_adapter = DirectServerAdapter.make_new();
 		this.add_adapter( direct_adapter );
 		// we also keep a ref to it for later use
@@ -51,7 +51,7 @@ function(_, NamedObject, StartableObject, ServerCore, ActualRequestHandler, Dire
 
 
 	methods.startup = function() {
-		this.ensure_request_handler_();
+		this.ensure_middleware_();
 
 		// call parent
 		StartableObject.methods.startup.call(this);
@@ -76,15 +76,16 @@ function(_, NamedObject, StartableObject, ServerCore, ActualRequestHandler, Dire
 		return this.direct_adapter_.new_connection();
 	};
 
-	// to be overriden
-	methods.build_request_handler_ = function() {
-		var actual_handler = ActualRequestHandler.make_new();
-		this.core_.set_request_handler(actual_handler);
+	// to be overriden if needed
+	methods.build_middleware_ = function() {
+		this.core_.use( IntegratedMiddlewares.logger() );
+		this.core_.use( IntegratedMiddlewares.actual() );
+		this.core_.use( IntegratedMiddlewares.default() );
 	};
 
-	methods.ensure_request_handler_ = function() {
-		if(!this.handler_built_) {
-			this.build_request_handler_();
+	methods.ensure_middleware_ = function() {
+		if(!this.core_.head_middleware_) {
+			this.build_middleware_();
 		}
 	};
 

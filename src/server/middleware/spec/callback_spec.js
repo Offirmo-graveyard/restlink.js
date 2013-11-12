@@ -3,11 +3,11 @@ if (typeof define !== 'function') { var define = require('amdefine')(module); }
 define(
 [
 	'chai',
-	'restlink/server/request_handlers/actual',
-	'restlink/server/request_handlers/base',
+	'restlink/server/middleware/callback',
+	'restlink/server/middleware/base',
 	'restlink/server/rest_target_indexed_shared_container',
 	'restlink/server/core',
-	'restlink/request',
+	'restlink/core/request',
 	'network-constants/http',
 	'mocha'
 ],
@@ -24,7 +24,7 @@ function(chai, CUT, BaseRequestHandler, RestIndexedContainer, ServerCore, Reques
 
 
 
-	describe('Restlink actual request handler', function() {
+	describe('Restlink Callback Middleware', function() {
 
 
 
@@ -61,6 +61,7 @@ function(chai, CUT, BaseRequestHandler, RestIndexedContainer, ServerCore, Reques
 				var out = CUT.make_new();
 
 				var core = ServerCore.make_new();
+				core.use(out);
 				core.startup();
 				var session = core.create_session();
 

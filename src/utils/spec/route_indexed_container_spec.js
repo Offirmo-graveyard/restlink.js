@@ -49,19 +49,19 @@ function(chai, _, CUT, EE) {
 				var out = CUT.make_new();
 
 				// empty route, bad !
-				var tempfn = function() { out.insert( "", -1); }
+				var tempfn = function() { out.insert( "", -1); };
 				tempfn.should.throw(CUT.exceptions.MalformedRouteError, "Route malformed : missing start !");
 
 				// double slash, bad
-				var tempfn = function() { out.insert("//", -1); }
+				tempfn = function() { out.insert("//", -1); };
 				tempfn.should.throw(CUT.exceptions.MalformedRouteError, "Route malformed : empty segment !");
 
 				// consecutive id in sequence, bad
-				var tempfn = function() { out.insert("/foo/:id/:id", -1); }
+				tempfn = function() { out.insert("/foo/:id/:id", -1); };
 				tempfn.should.throw(CUT.exceptions.MalformedRouteError, "Route malformed : a route can't have several consecutive ids !");
 
 				// id directly after root, bad
-				var tempfn = function() { out.insert("/:id", -1); }
+				tempfn = function() { out.insert("/:id", -1); };
 				tempfn.should.throw(CUT.exceptions.MalformedRouteError, "Route malformed : root can't be followed by an id !");
 			});
 
@@ -70,7 +70,7 @@ function(chai, _, CUT, EE) {
 
 				out.insert( "/agent",              20);
 
-				var tempfn = function() { out.insert("/agent", 30); }
+				var tempfn = function() { out.insert("/agent", 30); };
 				tempfn.should.throw(EE.InvalidArgument, "Conflict : This route already has attached data !");
 				out.at("/agent").should.equal(20);
 
@@ -93,7 +93,7 @@ function(chai, _, CUT, EE) {
 				out.at("/agent/").should.equal(20);
 
 				// concurrent case : this is the same !
-				var tempfn = function() { out.insert("/agent/", 21); }
+				var tempfn = function() { out.insert("/agent/", 21); };
 				tempfn.should.throw(EE.InvalidArgument, "This route already has attached data !");
 			});
 
@@ -117,15 +117,15 @@ function(chai, _, CUT, EE) {
 			it('should enforce limits on route size', function() {
 				var out = CUT.make_new();
 
-				var tempfn = function() { out.insert("/abcdefghijklmnopqrstuvwxyzabcdef", 30); }
+				var tempfn = function() { out.insert("/abcdefghijklmnopqrstuvwxyzabcdef", 30); };
 				tempfn.should.throw(CUT.exceptions.MalformedRouteError, "Route malformed : segment too long !");
 
-				var tempfn = function() { out.at("" +
+				tempfn = function() { out.at("" +
 				"/abcdefghi/abcdefghi/abcdefghi/abcdefghi/abcdefghi" +
 				"/abcdefghi/abcdefghi/abcdefghi/abcdefghi/abcdefghi" +
 				"/abcdefghi/abcdefghi/abcdefghi/abcdefghi/abcdefghi" +
 				"/abcdefghi/abcdefghi/abcdefghi/abcdefghi/abcdefghi" +
-				"/").should.equal(30); }
+				"/").should.equal(30); };
 				tempfn.should.throw(CUT.exceptions.MalformedRouteError, "Route malformed : route too long !");
 			});
 		}); // describe feature

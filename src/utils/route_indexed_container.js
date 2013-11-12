@@ -23,29 +23,28 @@ function(_, EE) {
 
 	////////////////////////////////////
 	//constants. = ;
-	constants.max_route_length   = 200;
-	constants.max_segment_length = 30;
-	constants.max_segment_count  = 30;
-	constants.id_marker          = ':id';
+	constants.max_route_length       = 200;
+	constants.max_segment_length     = 30;
+	constants.max_segment_count      = 30;
+	constants.id_marker              = ':id';
 	constants.segment_control_regexp = /\w+/; // too tight ?
-	constants.child_member_radix = "child:";
+	constants.child_member_radix     = "child:";
 
 
 
 	////////////////////////////////////
-	//defaults. = ;
 	defaults.root_node_ = undefined; //< we'll use a tree
 
 
 	////////////////////////////////////
 	//exceptions. = ;
 
-	exceptions.MalformedRouteError = EE.create_custom_error("MalformedRouteError", EE.RuntimeError),
+	exceptions.MalformedRouteError = EE.create_custom_error("MalformedRouteError", EE.RuntimeError);
 	Object.freeze(exceptions.MalformedRouteError);
 
 	// route too long must have its own exception
 	// because it has a known status code
-	exceptions.RouteTooLongError  = EE.create_custom_error("RouteTooLongError",   exceptions.MalformedRouteError),
+	exceptions.RouteTooLongError  = EE.create_custom_error("RouteTooLongError", exceptions.MalformedRouteError);
 	Object.freeze(exceptions.RouteTooLongError);
 
 
@@ -60,7 +59,8 @@ function(_, EE) {
 	///
 	constants.id_member_name = compute_child_member_name(constants.id_marker);
 
-	function node(parent, segment) {
+	// node constructor
+	function Node(parent, segment) {
 		this.segment_ = segment;
 		this.is_id_ = (segment === constants.id_marker);
 		this.parent_ = parent; // beware of circular references
@@ -74,7 +74,7 @@ function(_, EE) {
 	}
 
 	function validate_segment(segment) {
-		if(segment != constants.id_marker) {
+		if(segment !== constants.id_marker) {
 
 			if(segment.length <= 0)
 				throw new exceptions.MalformedRouteError("Route malformed : empty segment !");
@@ -207,7 +207,7 @@ function(_, EE) {
 				// this segment is not known. create it ?
 				if(creation_allowed) {
 					validate_segment(segment); // will throw if incorrect
-					var new_node = new node(current_node, segment);
+					var new_node = new Node(current_node, segment);
 					if(new_node.is_id()) {
 						if(current_node.is_id())
 							throw new exceptions.MalformedRouteError("Route malformed : a route can't have several consecutive ids !");
@@ -303,7 +303,7 @@ function(_, EE) {
 
 	var DefinedClass = function RouteIndexedContainer() {
 		_.defaults( this, defaults );
-		this.root_node_ = new node(undefined, "/"); // '/' ~discutable
+		this.root_node_ = new Node(undefined, "/"); // '/' ~discutable
 	};
 
 	DefinedClass.prototype.constants  = constants;

@@ -84,7 +84,6 @@ function(chai, CUT, Request, http_constants) {
 
 			it('should allow easy error generation', function() {
 				var out = CUT.make_new_from_request(request);
-				expect(out.content).to.equals(""); // check
 
 				out.set_to_error(http_constants.status_codes.status_403_client_forbidden);
 
@@ -105,7 +104,6 @@ function(chai, CUT, Request, http_constants) {
 
 			it('should allow easy common errors generation : not implemented', function() {
 				var out = CUT.make_new_from_request(request);
-				expect(out.content).to.equals(""); // check
 
 				out.set_to_not_implemented();
 
@@ -126,7 +124,6 @@ function(chai, CUT, Request, http_constants) {
 
 			it('should allow easy common errors generation : internal error', function() {
 				var out = CUT.make_new_from_request(request);
-				expect(out.content).to.equals(""); // check
 
 				out.set_to_internal_error();
 
@@ -142,6 +139,26 @@ function(chai, CUT, Request, http_constants) {
 				out.uri.should.equal('/stanford/teapot');
 				out.return_code.should.equal(http_constants.status_codes.status_500_server_error_internal_error);
 				out.content.should.equals("my IE content");
+			});
+
+
+			it('should allow easy common errors generation : not found', function() {
+				var out = CUT.make_new_from_request(request);
+
+				out.set_to_not_found();
+
+				out.method.should.equal('BREW');
+				out.uri.should.equal('/stanford/teapot');
+				out.return_code.should.equal(http_constants.status_codes.status_404_client_error_not_found);
+				out.content.should.equals('Not Found');
+
+				// same but with a content
+				out.set_to_not_found("my 404 content");
+
+				out.method.should.equal('BREW');
+				out.uri.should.equal('/stanford/teapot');
+				out.return_code.should.equal(http_constants.status_codes.status_404_client_error_not_found);
+				out.content.should.equals("my 404 content");
 			});
 
 		}); // describe feature

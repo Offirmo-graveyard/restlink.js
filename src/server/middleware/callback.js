@@ -11,7 +11,7 @@ define(
 	'extended-exceptions',
 	'network-constants/http'
 ],
-function(_, BaseRequestHandler, RouteIndexedContainer, EE, http_constants) {
+function(_, RestlinkMiddlewareBase, RouteIndexedContainer, EE, http_constants) {
 	"use strict";
 
 
@@ -23,7 +23,6 @@ function(_, BaseRequestHandler, RouteIndexedContainer, EE, http_constants) {
 
 
 	////////////////////////////////////
-	//constants. = ;
 	constants.shared_container_key = "ActualRequestHandler";
 
 
@@ -38,43 +37,55 @@ function(_, BaseRequestHandler, RouteIndexedContainer, EE, http_constants) {
 	////////////////////////////////////
 	//methods. = ;
 
-	// override of parent
-	methods.handle_request = function(transaction, request) {
+
+	////////////////////////////////////
+	// for overriding parent
+	function processing_function(context, request, response, next, that) {
 
 		var handled = false; // for now
 		try {
-			var match_infos = transaction.get_match_infos();
+			var match_infos = context.get_match_infos();
 			if(!match_infos.route_found) {
-				return this.resolve_with_error(transaction, request, http_constants.status_codes.status_404_client_error_not_found);
+				response.set_to_not_found();
+				response.send();
 			}
-			if(!match_infos.action_found) {
-				return this.resolve_with_error(transaction, request, http_constants.status_codes.status_501_server_error_not_implemented);
+			else if(!match_infos.action_found) {
+				response.set_to_not_implemented();
+				response.send();
 			}
-			if(!match_infos.found) {
+			else if(!match_infos.found) {
 				// should have been filtered by above tests !
-				return this.resolve_with_error(transaction, request, http_constants.status_codes.status_500_server_error_internal_error);
+				response.set_to_internal_error();
+				response.send();
 			}
-			var my_data = match_infos.payload.get_and_optionally_create_data(constants.shared_container_key);
+			else {
+				var my_data = match_infos.payload.get_and_optionally_create_data(constants.shared_container_key);
 
-			if( typeof my_data['callback'] === 'function' ) {
-				return my_data.callback(transaction, request);
+				if( typeof my_data.callback === 'function' ) {
+					// should call send when ready.
+					// May not call next.
+					my_data.callback(context, request, response);
+				}
 			}
 		}
 		catch(err) {
 			if (err instanceof RouteIndexedContainer.exceptions.RouteTooLongError) {
-				return this.resolve_with_error(transaction, request, http_constants.status_codes.status_414_client_error_request_uri_too_long);
+				response.set_to_error(http_constants.status_codes.status_414_client_error_request_uri_too_long);
+				response.send();
 			}
-			if (err instanceof RouteIndexedContainer.exceptions.MalformedRouteError) {
-				return this.resolve_with_error(transaction, request, http_constants.status_codes.status_400_client_error_bad_request);
+			else if (err instanceof RouteIndexedContainer.exceptions.MalformedRouteError) {
+				response.set_to_error(http_constants.status_codes.status_400_client_error_bad_request);
+				response.send();
 			}
-			// unknown other error
-			return this.resolve_with_error(transaction, request, http_constants.status_codes.status_500_server_error_internal_error, err.message + "/n" + err.stack);
+			else {// unknown other error
+				response.set_to_internal_error(err.message + "/n" + err.stack);
+				response.send();
+			}
 		}
 
 		// not handled yet ?
-		// TODO forward to delegate instead
-		return this.resolve_with_not_implemented(transaction, request);
-	};
+		next();
+	}
 
 	methods.add_callback_handler = function(rest_indexed_container, route, action, callback, replace_existing) {
 		if (typeof replace_existing === 'undefined') { replace_existing = false; }
@@ -97,17 +108,16 @@ function(_, BaseRequestHandler, RouteIndexedContainer, EE, http_constants) {
 	Object.freeze(methods);
 
 	var DefinedClass = function RestlinkRequestHandlerActual() {
+
+		// call parent constructor
+		RestlinkMiddlewareBase.klass.prototype.constructor.apply(this, [ processing_function ]);
+
+		// now apply our own defaults (in this order this time)
 		_.defaults( this, defaults );
-
-		// optional : call parent constructor
-		BaseRequestHandler.klass.prototype.constructor.apply(this, arguments);
-
-		// do our own inits
-		//methods.init.apply(this, arguments);
 	};
 
 	// prototype chain (class) inheritance from base
-	DefinedClass.prototype = Object.create(BaseRequestHandler.klass.prototype);
+	DefinedClass.prototype = Object.create(RestlinkMiddlewareBase.klass.prototype);
 	DefinedClass.prototype.constructor = DefinedClass;
 
 	DefinedClass.prototype.constants  = constants;

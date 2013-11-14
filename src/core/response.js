@@ -67,6 +67,9 @@ function(_, http_constants) {
 	methods.set_to_not_implemented = function(optional_content) {
 		return this.set_to_error(http_constants.status_codes.status_501_server_error_not_implemented, optional_content);
 	};
+	methods.set_to_not_found = function(optional_content) {
+		return this.set_to_error(http_constants.status_codes.status_404_client_error_not_found, optional_content);
+	};
 
 	// utility
 	function make_new_from_request(request, attrs) {

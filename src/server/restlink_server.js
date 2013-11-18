@@ -1,5 +1,6 @@
 /* A generic REST 'server' executing REST operations
  * transport agnostic : can run on server or in client
+ * Note : this class is merely a facade arond server/core with an easier API.
  */
 if (typeof define !== 'function') { var define = require('amdefine')(module); }
 
@@ -9,11 +10,11 @@ define(
 	'base-objects/offinh/named_object',
 	'base-objects/offinh/startable_object',
 	'restlink/server/core',
+	'restlink/server/middleware/callback',
 	'restlink/server/middleware/integrated',
-	'restlink/server/middleware/actual',
 	'restlink/server/adapters/direct'
 ],
-function(_, NamedObject, StartableObject, ServerCore, IntegratedMiddlewares, ActualRequestHandler, DirectServerAdapter) {
+function(_, NamedObject, StartableObject, ServerCore, CallbackMiddleware, IntegratedMiddlewares, DirectServerAdapter) {
 	"use strict";
 
 
@@ -30,6 +31,20 @@ function(_, NamedObject, StartableObject, ServerCore, IntegratedMiddlewares, Act
 	////////////////////////////////////
 	//defaults. = ;
 
+	function build_middleware_chain_default_impl_() {
+		this.core_.use( IntegratedMiddlewares.logger() );
+		this.core_.use( IntegratedMiddlewares.callback() );
+		this.core_.use( IntegratedMiddlewares.not_found() );
+	};
+	// to be overriden if needed
+	defaults.build_middleware_chain = build_middleware_chain_default_impl_;
+
+
+	////////////////////////////////////
+	//exceptions. = ;
+
+
+	////////////////////////////////////
 	methods.init = function() {
 		// init of member objects
 		this.core_ = ServerCore.make_new();
@@ -41,14 +56,11 @@ function(_, NamedObject, StartableObject, ServerCore, IntegratedMiddlewares, Act
 		this.direct_adapter_ = direct_adapter;
 	};
 
-
-	////////////////////////////////////
-	//exceptions. = ;
-
-
-	////////////////////////////////////
-	//methods. = ;
-
+	methods.ensure_middleware_ = function() {
+		if(!this.core_.head_middleware_) {
+			this.build_middleware_chain();
+		}
+	};
 
 	methods.startup = function() {
 		this.ensure_middleware_();
@@ -76,21 +88,8 @@ function(_, NamedObject, StartableObject, ServerCore, IntegratedMiddlewares, Act
 		return this.direct_adapter_.new_connection();
 	};
 
-	// to be overriden if needed
-	methods.build_middleware_ = function() {
-		this.core_.use( IntegratedMiddlewares.logger() );
-		this.core_.use( IntegratedMiddlewares.actual() );
-		this.core_.use( IntegratedMiddlewares.default() );
-	};
-
-	methods.ensure_middleware_ = function() {
-		if(!this.core_.head_middleware_) {
-			this.build_middleware_();
-		}
-	};
-
-	methods.add_callback_handler = function(route, method, handler, replace_existing) {
-		ActualRequestHandler.add_callback_handler(this.core_.rest_indexed_shared_container, route, method, handler, replace_existing);
+	methods.on = function(route, method, handler, replace_existing) {
+		CallbackMiddleware.add_callback_handler(this.core_.rest_indexed_shared_container, route, method, handler, replace_existing);
 	};
 
 	methods.add_restful_rsrc_handler = function(restful_handler, replace_existing) {

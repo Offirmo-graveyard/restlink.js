@@ -80,11 +80,11 @@ function(chai, CUT, DirectServerAdapter, Request, Response, http_constants) {
 
 			it('should work', function(signalAsyncTestFinished) {
 				var out = CUT.make_new();
-				// let's try the direct adapter
+				// let's try the direct adapter (even it already has one)
 				var direct_adapter = DirectServerAdapter.make_new();
 				out.add_adapter(direct_adapter);
 
-				out.startup_with_default_mw_if_needed();
+				out.startup();
 
 				var client = direct_adapter.new_connection();
 
@@ -148,7 +148,7 @@ function(chai, CUT, DirectServerAdapter, Request, Response, http_constants) {
 					return deferred.promise();
 				};
 
-				out.add_callback_handler("/stanford/teapot", "BREW", teapot_BREW_callback);
+				out.on("/stanford/teapot", "BREW", teapot_BREW_callback);
 
 				out.startup();
 				var client = out.open_direct_connection();

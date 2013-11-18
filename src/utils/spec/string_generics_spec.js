@@ -10,8 +10,12 @@ function(chai) {
 	"use strict";
 
 	var expect = chai.expect;
+	chai.should();
+	chai.Assertion.includeStack = true; // defaults to false
+
 
 	describe('String generics', function() {
+
 
 		describe('startsWith', function() {
 			it('should work', function() {

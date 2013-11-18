@@ -5,7 +5,7 @@ define(
 	'chai',
 	'restlink/server/middleware/logger',
 	'restlink/server/middleware/base',
-	'restlink/server/middleware/default',
+	'restlink/server/middleware/no_middleware',
 	'restlink/server/core',
 	'restlink/core/request',
 	'network-constants/http',
@@ -18,14 +18,8 @@ function(chai, CUT, BaseRequestHandler, DefaultRequestHandler, ServerCore, Reque
 	chai.should();
 	chai.Assertion.includeStack = true; // defaults to false
 
-	var request = Request.make_new();
-	request.method = 'BREW';
-	request.uri = '/stanford/teapot';
-
-
 
 	describe('Restlink logger middleware', function() {
-
 
 
 		describe('instantiation', function() {
@@ -55,6 +49,7 @@ function(chai, CUT, BaseRequestHandler, DefaultRequestHandler, ServerCore, Reque
 				out.use( DefaultRequestHandler.make_new() ); // we MUST have another handler after us since logger doesn't send the response
 
 				var trans = {};
+				var request = Request.make_new_stanford_teapot();
 				var promise = out.head_process_request(trans, request);
 
 				promise.spread(function on_success(context, request, response) {
@@ -84,6 +79,7 @@ function(chai, CUT, BaseRequestHandler, DefaultRequestHandler, ServerCore, Reque
 				out.use( DefaultRequestHandler.make_new() ); // we MUST have another handler after us since logger doesn't send the response
 
 				var trans = {};
+				var request = Request.make_new_stanford_teapot();
 				var promise = out.head_process_request(trans, request);
 
 				promise.spread(function on_success(context, request, response) {

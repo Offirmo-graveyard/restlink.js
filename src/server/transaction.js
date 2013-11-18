@@ -48,28 +48,6 @@ function(_, when, EE) {
 	////////////////////////////////////
 	//methods. = ;
 
-	// result of url+action decoding
-	/*methods.get_match_infos = function() {
-		if(!this.match_infos_) {
-			if(!this.request) {
-				throw new EE.InvalidArgument("Can't compute match infos : This transaction request is unknown !");
-			}
-			else if(!this.parent_session) {
-				throw new EE.InvalidArgument("Can't compute match infos : This transaction parent session is unknown !");
-			}
-			else {
-				var server = this.parent_session.get_server();
-				if(!server || !server.rest_indexed_shared_container) {
-					throw new EE.InvalidArgument("Can't compute match infos : This transaction parents are not fully initialized !");
-				}
-				else {
-					this.match_infos_ = server.rest_indexed_shared_container.shared_detailed_at(this.request.uri, this.request.method);
-				}
-			}
-		}
-		return this.match_infos_;
-	};*/
-
 	/* We may want to forcefully end a transaction.
 	 * When marked for termination :
 	 * - no request should be accepted (should not happen since 1 trans = 1 req)

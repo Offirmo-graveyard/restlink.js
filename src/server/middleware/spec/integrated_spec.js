@@ -15,13 +15,9 @@ function(chai, CUT, Request, http_constants) {
 	chai.should();
 	chai.Assertion.includeStack = true; // defaults to false
 
-	var request = Request.make_new();
-	request.method = 'BREW';
-	request.uri = '/stanford/teapot';
-
-
 
 	describe('Restlink listing of integrated middlewares', function() {
+
 
 		// we replicate the most complicated tests of each
 
@@ -37,6 +33,7 @@ function(chai, CUT, Request, http_constants) {
 			});
 
 			var trans = {};
+			var request = Request.make_new_stanford_teapot();
 			var promise = out.head_process_request(trans, request);
 
 			promise.spread(function on_success(context, request, response){
@@ -51,23 +48,7 @@ function(chai, CUT, Request, http_constants) {
 			});
 		});
 
-		it('should expose the default one with proper parameters', function(signalAsyncTestFinished) {
-			var out = CUT.default();
-			out.should.exist;
-			out.should.be.an('object');
 
-			var trans = {};
-			var promise = out.head_process_request(trans, request);
-
-			promise.spread(function on_success(context, request, response){
-				response.return_code.should.equal(http_constants.status_codes.status_501_server_error_not_implemented);
-				response.content.should.equal("Server is misconfigured. Please add middlewares to handle requests !");
-				signalAsyncTestFinished();
-			});
-			promise.otherwise(function on_failure(context, request, response){
-				expect(false).to.be.ok;
-			});
-		});
 
 		it('should expose the logger one with proper parameters', function(signalAsyncTestFinished) {
 
@@ -81,9 +62,10 @@ function(chai, CUT, Request, http_constants) {
 			};
 
 			var out = CUT.logger(custom_log_function);
-			out.use( CUT.default() ); // we MUST have another handler after us since logger doesn't send the response
+			out.use( CUT.no_middleware() ); // we MUST have another handler after us since logger doesn't send the response
 
 			var trans = {};
+			var request = Request.make_new_stanford_teapot();
 			var promise = out.head_process_request(trans, request);
 
 			promise.spread(function on_success(context, request, response) {
@@ -105,6 +87,29 @@ function(chai, CUT, Request, http_constants) {
 				expect(false).to.be.ok;
 			});
 		});
+
+
+
+		it('should expose the default one with proper parameters', function(signalAsyncTestFinished) {
+			var out = CUT.no_middleware();
+			out.should.exist;
+			out.should.be.an('object');
+
+			var trans = {};
+			var request = Request.make_new_stanford_teapot();
+			var promise = out.head_process_request(trans, request);
+
+			promise.spread(function on_success(context, request, response){
+				response.return_code.should.equal(http_constants.status_codes.status_501_server_error_not_implemented);
+				response.content.should.equal("Server is misconfigured. Please add middlewares to handle requests !");
+				signalAsyncTestFinished();
+			});
+			promise.otherwise(function on_failure(context, request, response){
+				expect(false).to.be.ok;
+			});
+		});
+
+		it("should expose the 'not found' one with proper parameters");
 
 	}); // describe CUT
 }); // requirejs module

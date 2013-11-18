@@ -56,6 +56,7 @@ function(chai, _, jQuery, CUT, BaseObject, Response, ClientAdapterBase, http_con
 
 	describe('Restlink_client', function() {
 
+
 		describe('instantiation', function() {
 
 			it('should be instantiable', function() {

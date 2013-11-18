@@ -15,12 +15,9 @@ function(chai, CUT, Request, http_constants) {
 	chai.should();
 	chai.Assertion.includeStack = true; // defaults to false
 
-	var request = Request.make_new();
-	request.method = 'BREW';
-	request.uri = '/stanford/teapot';
-
 
 	describe('Restlink Response', function() {
+
 
 		describe('instantiation', function() {
 
@@ -39,6 +36,7 @@ function(chai, CUT, Request, http_constants) {
 
 			it('should be instantiable from a request (basic)', function() {
 				// basic version
+				var request = Request.make_new_stanford_teapot();
 				var out = CUT.make_new_from_request(request);
 				//console.log(out);
 				out.method.should.equal('BREW');
@@ -50,6 +48,7 @@ function(chai, CUT, Request, http_constants) {
 
 			it('should be instantiable from a request (advanced)', function() {
 				// more advanced version
+				var request = Request.make_new_stanford_teapot();
 				var out = CUT.make_new_from_request(request, {
 					return_code: http_constants.status_codes.status_400_client_error_bad_request,
 					content: "I'm a teapot !",
@@ -69,6 +68,7 @@ function(chai, CUT, Request, http_constants) {
 
 			it('should provide convenient fluid setters', function() {
 				// using setters to change fields
+				var request = Request.make_new_stanford_teapot();
 				var out = CUT.make_new_from_request(request)
 						.with_status(400)
 						.with_content("Dude, I'm a teapot !")
@@ -83,6 +83,7 @@ function(chai, CUT, Request, http_constants) {
 
 
 			it('should allow easy error generation', function() {
+				var request = Request.make_new_stanford_teapot();
 				var out = CUT.make_new_from_request(request);
 
 				out.set_to_error(http_constants.status_codes.status_403_client_forbidden);
@@ -103,6 +104,7 @@ function(chai, CUT, Request, http_constants) {
 
 
 			it('should allow easy common errors generation : not implemented', function() {
+				var request = Request.make_new_stanford_teapot();
 				var out = CUT.make_new_from_request(request);
 
 				out.set_to_not_implemented();
@@ -123,6 +125,7 @@ function(chai, CUT, Request, http_constants) {
 
 
 			it('should allow easy common errors generation : internal error', function() {
+				var request = Request.make_new_stanford_teapot();
 				var out = CUT.make_new_from_request(request);
 
 				out.set_to_internal_error();
@@ -143,6 +146,7 @@ function(chai, CUT, Request, http_constants) {
 
 
 			it('should allow easy common errors generation : not found', function() {
+				var request = Request.make_new_stanford_teapot();
 				var out = CUT.make_new_from_request(request);
 
 				out.set_to_not_found();

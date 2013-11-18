@@ -15,7 +15,9 @@ function(chai, CUT, Request, http_constants) {
 	chai.should();
 	chai.Assertion.includeStack = true; // defaults to false
 
+
 	describe('Restlink base client adapter', function() {
+
 
 		describe('instantiation', function() {
 

@@ -19,17 +19,11 @@ function(chai, _, when, CUT, Request, Response, ServerAdapterBase, IntegratedMWs
 	chai.should();
 	chai.Assertion.includeStack = true; // defaults to false
 
-	var request = Request.make_new();
-	request.method = 'BREW';
-	request.uri = '/stanford/teapot';
-
-
 
 	describe('Restlink server internal core', function() {
 
 
-
-		describe('instantiation', function() {
+		describe('instantition', function() {
 
 			it('should be possible', function() {
 				var out = CUT.make_new();
@@ -135,7 +129,24 @@ function(chai, _, when, CUT, Request, Response, ServerAdapterBase, IntegratedMWs
 					session.is_valid().should.be.false;
 				});
 
-				it('should allow handling');
+
+				it('should allow handling', function(signalAsyncTestFinished) {
+					var out = CUT.make_new();
+
+					var trans = out.startup_create_session_and_create_transaction();
+
+					// will return something by default even if no handler
+					var request = Request.make_new_stanford_teapot();
+					var promise = out.process_request(trans, request);
+					promise.spread(function on_success(context, request, response){
+						response.return_code.should.equal(501);
+						response.content.should.equal("Server is misconfigured. Please add middlewares to handle requests !");
+						signalAsyncTestFinished();
+					});
+					promise.otherwise(function on_failure(context, request, response){
+						expect(false).to.be.ok;
+					});
+				});
 
 			});
 
@@ -147,10 +158,11 @@ function(chai, _, when, CUT, Request, Response, ServerAdapterBase, IntegratedMWs
 
 			it('should allow insertion', function(signalAsyncTestFinished) {
 				var out = CUT.make_new();
-				out.use(IntegratedMWs.default());
+				out.use(IntegratedMWs.no_middleware());
 
 				var trans = out.startup_create_session_and_create_transaction();
 
+				var request = Request.make_new_stanford_teapot();
 				var promise = out.process_request(trans, request);
 				promise.spread(function on_success(context, request, response){
 					response.return_code.should.equal(501);
@@ -173,10 +185,11 @@ function(chai, _, when, CUT, Request, Response, ServerAdapterBase, IntegratedMWs
 					res.meta["tag2"] = "base was back !";
 					res.send();
 				}));
-				out.use(IntegratedMWs.default());
+				out.use(IntegratedMWs.no_middleware());
 
 				var trans = out.startup_create_session_and_create_transaction();
 
+				var request = Request.make_new_stanford_teapot();
 				var promise = out.process_request(trans, request);
 				promise.spread(function on_success(context, request, response){
 					response.return_code.should.equal(501);

@@ -18,11 +18,9 @@ function(chai, CUT, ServerCore, Request, Response, RestIndexedContainer, EE) {
 	chai.should();
 	chai.Assertion.includeStack = true; // defaults to false
 
-	var request = Request.make_new();
-	request.method = 'BREW';
-	request.uri = '/stanford/teapot';
 
 	describe('Restlink server transaction', function() {
+
 
 		describe('instantiation', function() {
 
@@ -66,26 +64,6 @@ function(chai, CUT, ServerCore, Request, Response, RestIndexedContainer, EE) {
 			});
 
 		}); // describe feature
-
-		/*
-		describe('matching infos', function() {
-
-			it('should be computed on demand', function() {
-				// the object need to be full fledged this time
-				var core = ServerCore.make_new();
-				core.startup();
-				var session = core.create_session();
-				var out = session.create_transaction();
-
-				out.set_request(request);
-
-				var match_infos = out.get_match_infos();
-				match_infos.should.exist;
-				match_infos.found.should.be.false;
-			});
-
-		}); // describe feature
-*/
 
 
 	}); // describe CUT

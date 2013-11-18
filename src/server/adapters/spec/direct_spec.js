@@ -17,12 +17,9 @@ function(chai, CUT, Request, Response, ServerCore, http_constants) {
 	chai.should();
 	chai.Assertion.includeStack = true; // defaults to false
 
-	var request = Request.make_new();
-	request.method = 'BREW';
-	request.uri = '/stanford/teapot';
-
 
 	describe('Restlink direct server adapter', function() {
+
 
 		describe('instantiation', function() {
 
@@ -78,6 +75,7 @@ function(chai, CUT, Request, Response, ServerCore, http_constants) {
 				var out = out_.new_connection();
 
 				// go for it
+				var request = Request.make_new_stanford_teapot();
 				var promise = out.send_request(request);
 
 				// check result (expected error : we only configured as much)

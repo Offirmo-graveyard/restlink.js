@@ -15,7 +15,9 @@ function(chai, when, CUT, Response) {
 	chai.should();
 	chai.Assertion.includeStack = true; // defaults to false
 
+
 	describe('Offirmo Middleware Response Enrichment', function() {
+
 
 		describe('processing', function() {
 

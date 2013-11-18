@@ -11,8 +11,11 @@ function(chai, CUT) {
 
 	var expect = chai.expect;
 	chai.should();
+	chai.Assertion.includeStack = true; // defaults to false
+
 
 	describe('Fast timestamps', function() {
+
 
 		describe('generation', function() {
 

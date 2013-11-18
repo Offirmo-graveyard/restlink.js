@@ -17,11 +17,6 @@ function(chai, CUT, DirectServerAdapter, Request, Response, http_constants) {
 	chai.should();
 	chai.Assertion.includeStack = true; // defaults to false
 
-	var test_request = Request.make_new();
-	test_request.method = 'BREW';
-	test_request.uri = '/stanford/teapot';
-
-
 
 	describe('Restlink Server', function() {
 
@@ -94,7 +89,8 @@ function(chai, CUT, DirectServerAdapter, Request, Response, http_constants) {
 				var client = direct_adapter.new_connection();
 
 				// go for it
-				var promise = client.send_request(test_request);
+				var request = Request.make_new_stanford_teapot();
+				var promise = client.send_request(request);
 
 				// check result : should 404 but not 500
 				promise.spread(function on_success(request, response){
@@ -116,7 +112,8 @@ function(chai, CUT, DirectServerAdapter, Request, Response, http_constants) {
 				var client = out.open_direct_connection();
 
 				// go for it
-				var promise = client.send_request(test_request);
+				var request = Request.make_new_stanford_teapot();
+				var promise = client.send_request(request);
 
 				// check result : should 404 but not 500
 				promise.spread(function on_success(request, response){
@@ -156,7 +153,8 @@ function(chai, CUT, DirectServerAdapter, Request, Response, http_constants) {
 				out.startup();
 				var client = out.open_direct_connection();
 
-				var promise = client.send_request(test_request);
+				var request = Request.make_new_stanford_teapot();
+				var promise = client.send_request(request);
 				promise.spread(function on_success(request, response){
 					response.method.should.equal("BREW");
 					response.uri.should.equal("/stanford/teapot");

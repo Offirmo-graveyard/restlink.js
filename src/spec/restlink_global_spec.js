@@ -18,7 +18,6 @@ function(chai, _, RestlinkServer, Request, BaseObject) {
 
 
 
-
 	var TestModel = BaseObject.extend({
 
 		defaults: function(){
@@ -42,6 +41,7 @@ function(chai, _, RestlinkServer, Request, BaseObject) {
 
 
 	describe('[Integration] Restlink server', function() {
+
 
 		describe('simple setup', function() {
 

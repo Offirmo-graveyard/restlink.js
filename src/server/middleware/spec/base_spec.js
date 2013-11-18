@@ -17,11 +17,9 @@ function(chai, CUT, ServerCore, Request, Response, http_constants) {
 	chai.should();
 	chai.Assertion.includeStack = true; // defaults to false
 
-	var request = Request.make_new();
-	request.method = 'BREW';
-	request.uri = '/stanford/teapot';
 
 	describe('Offirmo Middleware Base', function() {
+
 
 		describe('instantiation', function() {
 
@@ -62,6 +60,7 @@ function(chai, CUT, ServerCore, Request, Response, http_constants) {
 				});
 
 				var trans = {};
+				var request = Request.make_new_stanford_teapot();
 				var promise = out.head_process_request(trans, request);
 
 				promise.spread(function on_success(context, request, response){
@@ -89,6 +88,7 @@ function(chai, CUT, ServerCore, Request, Response, http_constants) {
 				});
 
 				var trans = {};
+				var request = Request.make_new_stanford_teapot();
 				var promise = out.head_process_request(trans, request);
 
 				promise.spread(function on_success(context, request, response){
@@ -107,6 +107,7 @@ function(chai, CUT, ServerCore, Request, Response, http_constants) {
 				var out = CUT.make_new( /* no processing function */ );
 				var trans = {};
 
+				var request = Request.make_new_stanford_teapot();
 				var promise = out.head_process_request(trans, request);
 
 				promise.spread(function on_success(context, request, response){
@@ -135,6 +136,7 @@ function(chai, CUT, ServerCore, Request, Response, http_constants) {
 				out_head.use(out_tail);
 
 				var trans = {};
+				var request = Request.make_new_stanford_teapot();
 				var promise = out_head.head_process_request(trans, request);
 				promise.spread(function on_success(context, request, response){
 					response.method.should.equal('BREW');
@@ -178,6 +180,7 @@ function(chai, CUT, ServerCore, Request, Response, http_constants) {
 				out_head.use(out_tail);
 
 				var trans = {};
+				var request = Request.make_new_stanford_teapot();
 				var promise = out_head.head_process_request(trans, request);
 				promise.spread(function on_success(context, request, response){
 					console.log(response);
@@ -192,7 +195,7 @@ function(chai, CUT, ServerCore, Request, Response, http_constants) {
 				});
 			});
 
-			it('should handle when neither send nor next are not called');
+			it('should handle when neither send nor next are called');
 			// I have no idea how to do that right now...
 
 			it('should handle when both send and next are called');
@@ -203,6 +206,7 @@ function(chai, CUT, ServerCore, Request, Response, http_constants) {
 					next(); // but no next MW !!
 				});
 
+				var request = Request.make_new_stanford_teapot();
 				var tempfn = function() { out.head_process_request({}, request); };
 				tempfn.should.throw(Error, "Can't forward to next middleware, having none !");
 			});

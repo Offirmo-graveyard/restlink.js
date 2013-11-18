@@ -10,9 +10,10 @@ define(
 	'underscore',
 	'when',
 	'extended-exceptions',
+	'restlink/server/middleware/request_enrichments',
 	'restlink/server/middleware/response_enrichments'
 ],
-function(_, when, EE, ResponseEnricher) {
+function(_, when, EE, RequestEnricher, ResponseEnricher) {
 	"use strict";
 
 
@@ -120,30 +121,49 @@ function(_, when, EE, ResponseEnricher) {
 	// Not mandatory if you wan to initialize the middleware manually
 	methods.head_process_request = function(context, request, response) {
 
+		// add some utility methods to the request
+		RequestEnricher.process(request, context);
+
 		// create the response if not created yet
 		if(typeof response === "undefined") {
-			response = request.make_response(); // REM this response is set to "internal error" by default
-
-			// we add some utility methods to the response
-			ResponseEnricher.process(response, request, context);
+			response = this.prepare_response_for_processing_(request);
 		}
 
 		// initiate the middleware chain
-		// by inserting a root deferred
+		// and get the corresponding promise
+		var promise = this.init_middleware_chain_on_this_response(response);
+
+		// now use the usual function
+		this.process_request_(context, request, response);
+
+		return promise;
+	};
+
+	methods.prepare_response_for_processing_ = function(request) {
+		var response = request.make_response(); // REM this response is set to "internal error" by default
+
+		// we add some utility methods to the response
+		ResponseEnricher.process(response, request, context);
+
+		return response;
+	};
+	// initiate the middleware chain
+	// by inserting a first deferred
+	methods.init_middleware_chain_on_this_response = function(response) {
+		// check params
 		if(response.middleware_.deferred_chain_.length !== 0) {
 			// WAT ? what is the use of calling this function
 			// if everything is already done ??
 			throw new EE.InvalidArgument("Offirmo Middleware : Middleware chain already initialized !");
 		}
-		var deferred = when.defer();
-		deferred.debug_mark = true;
-		response.middleware_.deferred_chain_.push(deferred);
 
-		// now use the usual function
-		this.process_request_(context, request, response);
+		// insert first deferred
+		var deferred = when.defer();
+		response.middleware_.deferred_chain_.push(deferred);
 
 		return deferred.promise;
 	};
+
 
 
 	////////////////////////////////////

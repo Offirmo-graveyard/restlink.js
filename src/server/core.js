@@ -88,7 +88,7 @@ function(_, when, EE, StartableObject, RestIndexedContainer, ServerSession, Inte
 	methods.startup_with_default_mw_if_needed = function() {
 		if(typeof this.head_middleware_ === 'undefined') {
 			// add a default middleware
-			this.use(IntegratedMiddlewares.default());
+			this.use(IntegratedMiddlewares.no_middleware());
 		}
 
 		// call the original function

@@ -13,7 +13,9 @@ function(chai, CUT) {
 	chai.should();
 	chai.Assertion.includeStack = true; // defaults to false
 
+
 	describe('Restlink base server adapter', function() {
+
 
 		describe('instantiation', function() {
 

@@ -14,5 +14,8 @@
 		"store.js":                "latest",
 		"underscore":              "latest",
 		"when":                    "latest"
+	},
+	"to_review": {
+		"json-mask":               "latest"
 	}
 }

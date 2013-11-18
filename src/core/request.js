@@ -64,6 +64,12 @@ function(_, Response) {
 	methods.make_response = function(attrs) {
 		return Response.make_new_from_request(this, attrs);
 	};
+	function make_new_stanford_teapot() {
+		var request = new DefinedClass();
+		request.method = 'BREW';
+		request.uri = '/stanford/teapot';
+		return request;
+	}
 
 	////////////////////////////////////
 	Object.freeze(constants);
@@ -92,6 +98,8 @@ function(_, Response) {
 		'constants'  : constants,
 		'exceptions' : exceptions,
 		'defaults'   : defaults,
-		'methods'    : methods
+		'methods'    : methods,
+		// useful for tests
+		'make_new_stanford_teapot' : make_new_stanford_teapot
 	};
 }); // requirejs module

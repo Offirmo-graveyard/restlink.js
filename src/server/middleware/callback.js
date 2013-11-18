@@ -44,19 +44,24 @@ function(_, RestlinkMiddlewareBase, RouteIndexedContainer, EE, http_constants) {
 
 		var handled = false; // for now
 		try {
-			var match_infos = context.get_match_infos();
+			var match_infos = request.get_match_infos();
 			if(!match_infos.route_found) {
-				response.set_to_not_found();
+				// will forward to next handler.
+				// not handled.
+				/*response.set_to_not_found();
 				response.send();
+				handled = true;*/
 			}
 			else if(!match_infos.action_found) {
 				response.set_to_not_implemented();
 				response.send();
+				handled = true;
 			}
 			else if(!match_infos.found) {
 				// should have been filtered by above tests !
 				response.set_to_internal_error();
 				response.send();
+				handled = true;
 			}
 			else {
 				var my_data = match_infos.payload.get_and_optionally_create_data(constants.shared_container_key);
@@ -65,6 +70,7 @@ function(_, RestlinkMiddlewareBase, RouteIndexedContainer, EE, http_constants) {
 					// should call send when ready.
 					// May not call next.
 					my_data.callback(context, request, response);
+					handled = true; // hopefully, if the callback is well written...
 				}
 			}
 		}
@@ -72,19 +78,27 @@ function(_, RestlinkMiddlewareBase, RouteIndexedContainer, EE, http_constants) {
 			if (err instanceof RouteIndexedContainer.exceptions.RouteTooLongError) {
 				response.set_to_error(http_constants.status_codes.status_414_client_error_request_uri_too_long);
 				response.send();
+				handled = true;
 			}
 			else if (err instanceof RouteIndexedContainer.exceptions.MalformedRouteError) {
 				response.set_to_error(http_constants.status_codes.status_400_client_error_bad_request);
 				response.send();
+				handled = true;
 			}
 			else {// unknown other error
 				response.set_to_internal_error(err.message + "/n" + err.stack);
 				response.send();
+				handled = true;
 			}
 		}
 
-		// not handled yet ?
-		next();
+		if(handled) {
+			// do nothing, since it's handled...
+		}
+		else {
+			// not handled yet ?
+			next();
+		}
 	}
 
 	methods.add_callback_handler = function(rest_indexed_container, route, action, callback, replace_existing) {

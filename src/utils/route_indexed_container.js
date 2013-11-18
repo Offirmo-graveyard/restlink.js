@@ -37,11 +37,8 @@ function(_, EE) {
 
 
 	////////////////////////////////////
-	//exceptions. = ;
-
 	exceptions.MalformedRouteError = EE.create_custom_error("MalformedRouteError", EE.RuntimeError);
 	Object.freeze(exceptions.MalformedRouteError);
-
 	// route too long must have its own exception
 	// because it has a known status code
 	exceptions.RouteTooLongError  = EE.create_custom_error("RouteTooLongError", exceptions.MalformedRouteError);
@@ -73,7 +70,7 @@ function(_, EE) {
 		};
 	}
 
-	function validate_segment(segment) {
+	function validate_segment_(segment) {
 		if(segment !== constants.id_marker) {
 
 			if(segment.length <= 0)
@@ -82,24 +79,24 @@ function(_, EE) {
 			if(segment.length > constants.max_segment_length)
 				throw new exceptions.MalformedRouteError("Route malformed : segment too long !");
 
-			if(! segment.match(constants.segment_control_regexp))
+			if(!segment.match(constants.segment_control_regexp))
 				throw new exceptions.MalformedRouteError("Route malformed : illegal segment format !");
 		}
 		return true;
 	}
 
-	function check_and_split_route(route) {
-		if(route === "/") {
+	function check_and_split_route_into_segments_(route) {
+		// special case
+		if(route === "/")
 			return []; // empty
-		}
 
 		if(route.length > constants.max_route_length)
 			throw new exceptions.MalformedRouteError("Route malformed : route too long !");
 
-		if(! route.startsWith("/") ) {
+		if(! route.startsWith("/") )
 			throw new exceptions.MalformedRouteError("Route malformed : missing start !");
-		}
-		route = route.slice(1); // to skip first / which complicate the splitting
+
+		route = route.slice(1); // to skip first '/' which complicate the splitting
 
 		if(route.endsWith("/")) {
 			// trailing slash is allowed
@@ -107,18 +104,18 @@ function(_, EE) {
 			route = route.slice(0, - 1);
 		}
 
+		// we can now use standard lib split()
 		return route.split('/', constants.max_segment_count + 1);
 	}
 
 
 	////////////////////////////////////
-	//methods. = ;
-
 	// read only, no creation
-	methods.get_node = function(route) {
+	// may throw
+	methods.get_node_ = function(route) {
 		var current_node = this.root_node_;
 
-		var segments = check_and_split_route(route);
+		var segments = check_and_split_route_into_segments_(route);
 
 		_.every(segments, function(segment) {
 
@@ -138,7 +135,7 @@ function(_, EE) {
 	};
 
 	// read and write as parametered
-	methods.find_and_optionally_create_node = function(route, ids_allowed, creation_allowed) {
+	methods.find_and_optionally_create_node_ = function(route, ids_allowed, creation_allowed) {
 
 		/// check params
 		if(!_.isString(route)) throw new EE.InvalidArgument("route arg should be a string !");
@@ -151,7 +148,7 @@ function(_, EE) {
 
 		/// init
 		var current_node = this.root_node_;
-		var segments = check_and_split_route(route);
+		var segments = check_and_split_route_into_segments_(route);
 		if(segments.length === constants.max_segment_count + 1) // indicate maximum was reached
 			throw new exceptions.MalformedRouteError("Route malformed : route too complex !");
 		var match_result = {
@@ -206,7 +203,7 @@ function(_, EE) {
 			{
 				// this segment is not known. create it ?
 				if(creation_allowed) {
-					validate_segment(segment); // will throw if incorrect
+					validate_segment_(segment); // will throw if incorrect
 					var new_node = new Node(current_node, segment);
 					if(new_node.is_id()) {
 						if(current_node.is_id())
@@ -252,7 +249,7 @@ function(_, EE) {
 
 	// create if needed
 	methods.create_nodes = function(route) {
-		var match_infos = this.find_and_optionally_create_node(route, true, true);
+		var match_infos = this.find_and_optionally_create_node_(route, true, true);
 		return match_infos.segments[match_infos.segments.length-1].internal_node;
 	};
 
@@ -285,12 +282,12 @@ function(_, EE) {
 	};
 
 	methods.at = function(route) {
-		var node = this.get_node(route);
+		var node = this.get_node_(route);
 		return node ? node.payload_ : undefined;
 	};
 
 	methods.detailed_at = function(route) {
-		return this.find_and_optionally_create_node(route, false, false);
+		return this.find_and_optionally_create_node_(route, false, false);
 	};
 
 

@@ -42,6 +42,10 @@ requirejs.config({
 
 	/////////////////////
 	shim: {
+		"backbone": {
+			deps: [ "underscore" ],
+			exports: "Backbone"
+		},
 		"mocha" : {
 			deps: [ ],
 			exports: "mocha",

@@ -7,12 +7,12 @@ if (typeof define !== 'function') { var define = require('amdefine')(module); }
 define(
 [
 	'underscore',
-	'jquery',
-	'restlink/cache',
-	'restlink/request',
-	'restlink/response'
+	'when',
+	'restlink/utils/cache',
+	'restlink/core/request',
+	'restlink/core/response'
 ],
-function(_, jQuery, cache, Request, Response) {
+function(_, when, cache, Request, Response) {
 	"use strict";
 
 	var constants = {
@@ -130,7 +130,7 @@ function(_, jQuery, cache, Request, Response) {
 				if(!options.force_server_request && !model.really_needs_refresh()){
 					// this object is already considered valid, no need to query the server nor the cache
 					// TODO store a copy in the cache ? Already in the cache ?
-					var result_deferred = jQuery.Deferred();
+					var result_deferred = when.defer();
 					var result_promise = result_deferred.promise(); // the object we'll return
 					result_deferred.resolve(); // ok
 					return result_promise;

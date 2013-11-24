@@ -4,15 +4,14 @@ define(
 [
 	'chai',
 	'underscore',
-	'jquery',
-	'restlink/restlink_client',
+	'restlink/client/client',
 	'base-objects/backbone/base_object',
-	'restlink/response',
-	'restlink/client_adapter_base',
+	'restlink/core/response',
+	'restlink/client/base',
 	'network-constants/http',
 	'mocha'
 ],
-function(chai, _, jQuery, CUT, BaseObject, Response, ClientAdapterBase, http_constants) {
+function(chai, _, CUT, BaseObject, Response, ClientAdapterBase, http_constants) {
 	"use strict";
 
 	var expect = chai.expect;
@@ -26,7 +25,7 @@ function(chai, _, jQuery, CUT, BaseObject, Response, ClientAdapterBase, http_con
 			return_code: http_constants.status_codes.status_200_ok,
 			content: {
 				attr1: 34,
-				attr2: [ 'jquery' ],
+				attr2: [ 'hello' ],
 				attr3: { code: 222 }
 			}
 		});
@@ -74,8 +73,6 @@ function(chai, _, jQuery, CUT, BaseObject, Response, ClientAdapterBase, http_con
 
 		describe('GET', function() {
 
-			it('should be able to create');
-
 			it('should be able to read', function(done) {
 				var out = CUT.make_new();
 				out.set_restlink_adapter(test_adapter);
@@ -91,11 +88,13 @@ function(chai, _, jQuery, CUT, BaseObject, Response, ClientAdapterBase, http_con
 				});
 				promise.then(function(){
 					model.get('attr1').should.equal(34);
-					model.get('attr2').should.deep.equal([ 'jquery' ]);
+					model.get('attr2').should.deep.equal([ 'hello' ]);
 					model.get('attr3').should.deep.equal({ code: 222 });
 					done();
 				});
 			});
+
+			it('should be able to create');
 
 			it('should be able to update');
 

@@ -4,8 +4,8 @@ define(
 [
 	'chai',
 	'underscore',
-	'restlink/restlink_server',
-	'restlink/request',
+	'restlink/server/restlink_server',
+	'restlink/core/request',
 	'base-objects/backbone/base_object',
 	'mocha'
 ],
@@ -40,7 +40,7 @@ function(chai, _, RestlinkServer, Request, BaseObject) {
 
 
 
-	describe('[Integration] Restlink server', function() {
+	describe('[Integration] Restlink', function() {
 
 
 		describe('simple setup', function() {
@@ -62,7 +62,7 @@ function(chai, _, RestlinkServer, Request, BaseObject) {
 					transaction.respond(response);
 				};
 
-				restlink_server.add_callback_handler("/stanford/teapot", "BREW", teapot_BREW_callback);
+				restlink_server.on("/stanford/teapot", "BREW", teapot_BREW_callback);
 
 				// start the server
 				restlink_server.startup();

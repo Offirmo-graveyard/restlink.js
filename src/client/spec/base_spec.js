@@ -3,8 +3,8 @@ if (typeof define !== 'function') { var define = require('amdefine')(module); }
 define(
 [
 	'chai',
-	'restlink/client_adapter_base',
-	'restlink/request',
+	'restlink/client/base',
+	'restlink/core/request',
 	'network-constants/http',
 	'mocha'
 ],
@@ -48,7 +48,7 @@ function(chai, CUT, Request, http_constants) {
 					response.uri.should.equal('/stanford/teapot');
 					response.return_code.should.equal(http_constants.status_codes.status_501_server_error_not_implemented);
 					response.meta.should.deep.equal({ error_msg: 'ClientAdapterBase process_request is to be implemented in a derived class !' });
-					expect(response.content).to.be.undefined;
+					expect(response.content).to.be.empty;
 					signalAsyncTestFinished();
 				});
 				promise.otherwise(function(){

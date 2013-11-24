@@ -7,7 +7,7 @@ define(
 [
 	'underscore',
 	'when',
-	'restlink/response',
+	'restlink/core/response',
 	'network-constants/http'
 ],
 function(_, when, Response, http_constants) {
@@ -28,9 +28,8 @@ function(_, when, Response, http_constants) {
 
 
 	////////////////////////////////////
-	//defaults. = ;
-
 	defaults.debug_mode = true; // add controls, etc.
+
 	methods.init = function() {
 		// init of member objects
 		//...
@@ -42,8 +41,6 @@ function(_, when, Response, http_constants) {
 
 
 	////////////////////////////////////
-	//methods. = ;
-
 	methods.process_request = function(request) {
 		var result_deferred = when.defer();
 
@@ -55,12 +52,10 @@ function(_, when, Response, http_constants) {
 	// this method is to be overriden
 	methods.resolve_request_ = function(request, result_deferred) {
 		// build a response
-		var response = request.make_response({
-			return_code: http_constants.status_codes.status_501_server_error_not_implemented,
-			meta: {
-				error_msg: 'ClientAdapterBase process_request is to be implemented in a derived class !'
-			}
-		});
+		var response = request.make_response()
+			.with_status(http_constants.status_codes.status_501_server_error_not_implemented)
+			.with_meta({ error_msg: 'ClientAdapterBase process_request is to be implemented in a derived class !' });
+
 		result_deferred.resolve([request, response]);
 	};
 
@@ -77,6 +72,7 @@ function(_, when, Response, http_constants) {
 
 	var DefinedClass = function ClientAdapterBase() {
 		_.defaults( this, defaults );
+
 		// other inits...
 		methods.init.apply(this, arguments);
 	};

@@ -1,27 +1,37 @@
 {
-	"name": "restlink.js",
+	"name": "restlink",
 	"version": "0.1.0",
 	"description": "A powerful REST server for node.js + browser with batteries (optional middlewares including sessions, security, local, http and socket.io interfaces...) WORK IN PROGRESS",
-	"keywords": [
-		"REST",
-		"browser",
-		"server"
-	],
+	"keywords": "REST, middleware, browser, server",
 	"license": "public domain",
 	"author": "Offirmo <offirmo.net@gmail.com> (http://offirmo.net)",
+	"homepage": "https://github.com/Offirmo/restlink.js",
+	"main": "src",
+	files" : [
+		"src"
+	],
 	"repository": {
 		"type": "git",
-		"url":  "https://github.com/Offirmo/restlink.js.git"
+		"url": "https://github.com/Offirmo/restlink.js.git"
 	},
 	"dependencies": {
-		"base-objects.js":         "latest",
-		"extended-exceptions.js":  "latest",
-		"network-constants":       "latest",
-		"store.js":                "latest",
-		"underscore":              "latest",
-		"when":                    "latest"
+		"base-objects": "latest",
+		"extended-exceptions": "latest",
+		"network-constants": "latest",
+		"store.js": "latest",
+		"underscore": "latest",
+		"when": "latest"
 	},
 	"engines": {
-		"node": ">=0.6"
+		"node": ">=0.10.0"
+	},
+	"bugs": {
+		"url": "https://github.com/Offirmo/restlink.js/issues"
+	},
+	"directories": {
+		"doc": "doc"
+	},
+	"scripts": {
+		"test": "cd test_runner && npm install && make"
 	}
 }

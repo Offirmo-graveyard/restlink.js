@@ -4,16 +4,18 @@
 	"version": "1.0.0",
 	"private": true,
 	"dependencies": {
-		"amdefine":                "latest",
-		"backbone":                "latest",
-		"base-objects.js":         "latest",
-		"chai":                    "latest",
-		"extended-exceptions.js":  "latest",
-		"json2":                   "latest",
-		"mocha":                   "latest",
-		"network-constants.js":    "latest",
-		"store.js":                "latest",
 		"underscore":              "latest",
-		"when":                    "latest"
+		"backbone":                "latest",
+		"base-objects":            "latest",
+		"extended-exceptions":     "latest",
+		"json2":                   "latest",
+		"network-constants":       "latest",
+		"store.js":                "latest",
+		"when":                    "latest",
+		
+		
+		"amdefine":                "latest",
+		"chai":                    "latest",
+		"mocha":                   "latest"
 	}
 }

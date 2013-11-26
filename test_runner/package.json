@@ -13,6 +13,7 @@
 		"store.js":                "latest",
 		"when":                    "latest",
 		
+		"restlink":                "latest",
 		
 		"amdefine":                "latest",
 		"chai":                    "latest",

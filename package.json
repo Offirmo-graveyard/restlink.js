@@ -7,7 +7,7 @@
 	"author": "Offirmo <offirmo.net@gmail.com> (http://offirmo.net)",
 	"homepage": "https://github.com/Offirmo/restlink.js",
 	"main": "src",
-	files" : [
+	"files" : [
 		"src"
 	],
 	"repository": {

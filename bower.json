@@ -1,0 +1,14 @@
+	{
+	"name": "restlink.js",
+	"version": "0.1.0",
+	"description": "A powerful REST server for node.js + browser with batteries (optional middlewares including sessions, security, local, http and socket.io interfaces...) WORK IN PROGRESS",
+	"keywords": [
+		"REST",
+		"browser",
+		"server",
+		"middleware"
+	],
+	"license": "public domain",
+	"authors": [ "Offirmo <offirmo.net@gmail.com>" ],
+	"homepage": "https://github.com/Offirmo/restlink.js",
+}

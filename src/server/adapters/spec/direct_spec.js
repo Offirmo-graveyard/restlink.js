@@ -76,7 +76,7 @@ function(chai, CUT, Request, Response, ServerCore, http_constants) {
 
 				// go for it
 				var request = Request.make_new_stanford_teapot();
-				var promise = out.send_request(request);
+				var promise = out.process_request(request);
 
 				// check result (expected error : we only configured as much)
 

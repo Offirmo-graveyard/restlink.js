@@ -90,7 +90,7 @@ function(chai, CUT, DirectServerAdapter, Request, Response, http_constants) {
 
 				// go for it
 				var request = Request.make_new_stanford_teapot();
-				var promise = client.send_request(request);
+				var promise = client.process_request(request);
 
 				// check result : should 404 but not 500
 				promise.spread(function on_success(request, response){
@@ -113,7 +113,7 @@ function(chai, CUT, DirectServerAdapter, Request, Response, http_constants) {
 
 				// go for it
 				var request = Request.make_new_stanford_teapot();
-				var promise = client.send_request(request);
+				var promise = client.process_request(request);
 
 				// check result : should 404 but not 500
 				promise.spread(function on_success(request, response){
@@ -154,7 +154,7 @@ function(chai, CUT, DirectServerAdapter, Request, Response, http_constants) {
 				var client = out.open_direct_connection();
 
 				var request = Request.make_new_stanford_teapot();
-				var promise = client.send_request(request);
+				var promise = client.process_request(request);
 				promise.spread(function on_success(request, response){
 					response.method.should.equal("BREW");
 					response.uri.should.equal("/stanford/teapot");

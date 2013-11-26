@@ -7,10 +7,12 @@ define(
 [
 	'underscore',
 	'when',
+	'restlink/core/request',
 	'restlink/server/adapters/base',
+	'restlink/client/base',
 	'extended-exceptions'
 ],
-function(_, when, ServerBaseAdapter, EE) {
+function(_, when, Request, ServerBaseAdapter, BaseClient, EE) {
 	"use strict";
 
 
@@ -27,12 +29,12 @@ function(_, when, ServerBaseAdapter, EE) {
 
 	////////////////////////////////////
 	// internal class
-	function ClientAdapterDirect(server) {
+	function DirectRestlinkClient(server) {
 		var session = server.create_session();
 		var connected = true; // by default at start
 
 		// REM : this creates a closure
-		this.send_request = function(request) {
+		this.process_request = function(request) {
 			if(!connected) {
 				throw new EE.IllegalStateError("Can't send request : This client is disconnected !");
 			}
@@ -59,6 +61,9 @@ function(_, when, ServerBaseAdapter, EE) {
 			session.invalidate();
 		};
 	}
+	DirectRestlinkClient.prototype.make_new_request = function() {
+		return Request.make_new();
+	} ;
 
 	////////////////////////////////////
 	//defaults. = ;
@@ -86,7 +91,7 @@ function(_, when, ServerBaseAdapter, EE) {
 			// should also never happen
 			throw new Error("Can't open connection : server adapter is misconfigured (no server).");
 		}
-		return new ClientAdapterDirect(this.server_);
+		return new DirectRestlinkClient(this.server_);
 	};
 
 	////////////////////////////////////

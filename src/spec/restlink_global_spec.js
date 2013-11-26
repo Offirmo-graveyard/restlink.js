@@ -71,11 +71,11 @@ function(chai, _, RestlinkServer, Request, BaseObject) {
 				var client = restlink_server.open_direct_connection();
 
 				// send a request
-				var request = Request.make_new()
+				var request = client.make_new_request()
 						.with_uri("/stanford/teapot")
 						.with_method("BREW");
 
-				var promise = client.send_request(request);
+				var promise = client.process_request(request);
 
 				promise.spread(function(request, response) {
 					response.return_code.should.equal(400);
@@ -116,7 +116,7 @@ function(chai, _, RestlinkServer, Request, BaseObject) {
 					.with_uri("/stanford/teapot")
 					.with_method("BREW");
 
-				var promise = client.send_request(request);
+				var promise = client.process_request(request);
 
 				promise.spread(function(request, response) {
 					response.return_code.should.equal(400);

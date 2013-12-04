@@ -37,7 +37,7 @@ function(_, Response) {
 		// https://en.wikipedia.org/wiki/Internet_media_type
 		this.content_type = "application/json"; // default
 		this.content      = undefined;
-		// date of reception. Useful to have it here for replay !
+		// date of reception. Useful for replay ! (may be overriden by something else if needed)
 		this.date = new Date();
 
 		// NOT STANDARD REST IF CHANGED !

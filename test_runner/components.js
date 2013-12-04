@@ -25,10 +25,10 @@ requirejs.config({
 	/////////////////////
 	paths: {
 		// AMD plugins (dirs or direct)
-		"base-objects"        : "bower_components/base-objects.js", // dir
-		"extended-exceptions" : "bower_components/extended-exceptions.js/extended_exceptions", // direct
-		"network-constants"   : "bower_components/network-constants.js", // dir
-		"restlink"            : "../src", // dir
+		"base-objects"        : "../../base-objects.js", // dir
+		"extended-exceptions" : "../../extended-exceptions.js/extended_exceptions", // direct
+		"network-constants"   : "../../network-constants.js", // dir
+		"restlink"            : "..", // dir
 		// shim plugins
 		"backbone"            : "bower_components/backbone/backbone",
 		"chai"                : "bower_components/chai/chai",

@@ -54,12 +54,11 @@ function(chai, _, RestlinkServer, Request, BaseObject) {
 				restlink_server.set_denomination("test01");
 
 				// add handlers
-				var teapot_BREW_callback = function(transaction, request) {
-					var response = request.make_response()
-							.with_status(400)
-							.with_content("I'm a teapot !");
+				var teapot_BREW_callback = function(context, req, res) {
+					res.with_status(400)
+						.with_content("I'm a teapot !");
 
-					transaction.respond(response);
+					res.send();
 				};
 
 				restlink_server.on("/stanford/teapot", "BREW", teapot_BREW_callback);

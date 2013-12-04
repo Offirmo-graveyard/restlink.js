@@ -35,7 +35,7 @@ function(_, NamedObject, StartableObject, ServerCore, CallbackMiddleware, Integr
 		this.core_.use( IntegratedMiddlewares.logger() );
 		this.core_.use( IntegratedMiddlewares.callback() );
 		this.core_.use( IntegratedMiddlewares.not_found() );
-	};
+	}
 	// to be overriden if needed
 	defaults.build_middleware_chain = build_middleware_chain_default_impl_;
 

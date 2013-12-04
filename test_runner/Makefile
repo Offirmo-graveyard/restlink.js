@@ -1,8 +1,7 @@
 test:
 	rm -rf node_modules/restlink
 	mkdir node_modules/restlink
-	cp -r ../package.json node_modules/restlink
-	cp -r ../src node_modules/restlink
+	cp -r .. node_modules/restlink
 	./node_modules/.bin/mocha \
 		--debug \
 		--reporter nyan \

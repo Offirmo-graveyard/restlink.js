@@ -29,6 +29,7 @@ function(_, when, Response, http_constants) {
 
 	////////////////////////////////////
 	defaults.debug_mode = true; // add controls, etc.
+	defaults.connected = true; // to mark disconnected
 
 	methods.init = function() {
 		// init of member objects
@@ -51,7 +52,7 @@ function(_, when, Response, http_constants) {
 
 	// this method is to be overriden
 	methods.resolve_request_ = function(request, result_deferred) {
-		// build a response
+		// default implementation : always fail ! (since has to be overriden)
 		var response = request.make_response()
 			.with_status(http_constants.status_codes.status_501_server_error_not_implemented)
 			.with_meta({ error_msg: 'ClientAdapterBase process_request is to be implemented in a derived class !' });

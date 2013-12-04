@@ -6,7 +6,7 @@
 	<script data-main="components.js" src="bower_components/requirejs/require.js"></script>
 
 	<!-- for scripts that have a syntax error -->
-	<!-- <script src="../src/server/response_enrichment.js"></script> -->
+	<!-- <script src="../server/response_enrichment.js"></script> -->
 </head>
 
 <body>
@@ -24,37 +24,37 @@
 			"mocha",
 			"domReady!",
 
-			"../src/client/spec/base_spec",
-			"../src/client/spec/client_spec",
+			"../client/spec/base_spec",
+			"../client/spec/client_spec",
 
-			"../src/core/spec/response_spec",
-			"../src/core/spec/request_spec",
+			"../core/spec/response_spec",
+			"../core/spec/request_spec",
 
-			"../src/server/adapters/spec/base_spec",
-			"../src/server/adapters/spec/direct_spec",
+			"../server/adapters/spec/base_spec",
+			"../server/adapters/spec/direct_spec",
 
-			"../src/server/middleware/spec/base_spec",
-			"../src/server/middleware/spec/callback_spec",
-			"../src/server/middleware/spec/no_middleware_spec",
-            "../src/server/middleware/spec/not_found_spec",
-			"../src/server/middleware/spec/integrated_spec",
-			"../src/server/middleware/spec/logger_spec",
-			"../src/server/middleware/spec/request_enrichments_spec",
-			"../src/server/middleware/spec/response_enrichments_spec",
+			"../server/middleware/spec/base_spec",
+			"../server/middleware/spec/callback_spec",
+            "../server/middleware/spec/integrated_spec",
+            "../server/middleware/spec/logger_spec",
+			"../server/middleware/spec/no_middleware_spec",
+            "../server/middleware/spec/not_found_spec",
+			"../server/middleware/spec/request_enrichments_spec",
+			"../server/middleware/spec/response_enrichments_spec",
 
-			"../src/server/spec/core_spec",
-			"../src/server/spec/rest_target_indexed_container_spec",
-			"../src/server/spec/restlink_server_spec",
-			"../src/server/spec/session_spec",
-			"../src/server/spec/transaction_spec",
+			"../server/spec/core_spec",
+			"../server/spec/rest_target_indexed_container_spec",
+			"../server/spec/restlink_server_spec",
+			"../server/spec/session_spec",
+			"../server/spec/transaction_spec",
 
-			"../src/spec/restlink_global_spec",
-			//"../src/spec/test_rsrc_handler",
+			"../spec/restlink_global_spec",
+			//"../spec/test_rsrc_handler",
 
-			"../src/utils/spec/fast_timestamp_spec",
-			"../src/utils/spec/string_generics_spec.js",
-			"../src/utils/spec/cache_spec",
-			"../src/utils/spec/route_indexed_container_spec"
+            "../utils/spec/cache_spec",
+			"../utils/spec/fast_timestamp_spec",
+            "../utils/spec/route_indexed_container_spec",
+			"../utils/spec/string_generics_spec.js"
 		],
 		function() {
 			mocha.checkLeaks();

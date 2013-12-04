@@ -39,7 +39,7 @@ function(_, RestlinkMiddlewareBase, RouteIndexedContainer, EE, http_constants) {
 
 
 	////////////////////////////////////
-	// for overriding parent
+	// our custom processing function
 	function processing_function(context, request, response, next, that) {
 
 		var handled = false; // for now

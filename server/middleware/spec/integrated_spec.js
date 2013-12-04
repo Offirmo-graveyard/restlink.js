@@ -49,6 +49,8 @@ function(chai, CUT, Request, http_constants) {
 		});
 
 
+		it("should expose the 'callback' one with proper parameters");
+
 
 		it('should expose the logger one with proper parameters', function(signalAsyncTestFinished) {
 

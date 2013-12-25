@@ -5,14 +5,18 @@ define(
 	'chai',
 	'underscore',
 	'when',
+
 	'restlink/server/core',
+	'restlink/server/spec/debug_core', // same as core with debug functions
+
+	'restlink/server/session',
 	'restlink/core/request',
 	'restlink/core/response',
 	'restlink/server/adapters/base',
-	'restlink/server/middleware/integrated',
+	'restlink/server/middleware/base',
 	'mocha'
 ],
-function(chai, _, when, CUT, Request, Response, ServerAdapterBase, IntegratedMWs) {
+function(chai, _, when, CUT, CUTD, Session, Request, Response, ServerAdapterBase, BaseMiddleware) {
 	"use strict";
 
 	var expect = chai.expect;
@@ -23,7 +27,7 @@ function(chai, _, when, CUT, Request, Response, ServerAdapterBase, IntegratedMWs
 	describe('Restlink server internal core', function() {
 
 
-		describe('instantition', function() {
+		describe('instantiation', function() {
 
 			it('should be possible', function() {
 				var out = CUT.make_new();
@@ -131,19 +135,19 @@ function(chai, _, when, CUT, Request, Response, ServerAdapterBase, IntegratedMWs
 
 
 				it('should allow handling', function(signalAsyncTestFinished) {
-					var out = CUT.make_new();
+					var out = CUTD.make_new();
 
-					var trans = out.startup_create_session_and_create_transaction();
+					var request = Request.make_new_stanford_teapot();
+					out.startup_and_create_session(request);
 
 					// will return something by default even if no handler
-					var request = Request.make_new_stanford_teapot();
-					var promise = out.process_request(trans, request);
-					promise.spread(function on_success(context, request, response){
+					var promise = out.process_request(request);
+					promise.spread(function on_success(request, response){
 						response.return_code.should.equal(501);
 						response.content.should.equal("Server is misconfigured. Please add middlewares to handle requests !");
 						signalAsyncTestFinished();
 					});
-					promise.otherwise(function on_failure(context, request, response){
+					promise.otherwise(function on_failure(request, response){
 						expect(false).to.be.ok;
 					});
 				});
@@ -157,50 +161,77 @@ function(chai, _, when, CUT, Request, Response, ServerAdapterBase, IntegratedMWs
 		describe('middleware management', function() {
 
 			it('should allow insertion', function(signalAsyncTestFinished) {
-				var out = CUT.make_new();
-				out.use(IntegratedMWs.no_middleware());
-
-				var trans = out.startup_create_session_and_create_transaction();
+				var out = CUTD.make_new();
+				out.use(BaseMiddleware.make_new(function process(req, res, next) {
+					res.set_to_not_implemented("Server is misconfigured. Please add middlewares to handle requests !");
+					res.send();
+				}));
 
 				var request = Request.make_new_stanford_teapot();
-				var promise = out.process_request(trans, request);
-				promise.spread(function on_success(context, request, response){
+				out.startup_and_create_session(request);
+
+				var promise = out.process_request(request);
+				promise.spread(function on_success(request, response){
 					response.return_code.should.equal(501);
 					response.content.should.equal("Server is misconfigured. Please add middlewares to handle requests !");
 					signalAsyncTestFinished();
 				});
-				promise.otherwise(function on_failure(context, request, response){
+				promise.otherwise(function on_failure(request, response){
 					expect(false).to.be.ok;
 				});
 			});
 
 			it('should allow insertion of a chain', function(signalAsyncTestFinished) {
-				var out = CUT.make_new();
-				out.use(IntegratedMWs.logger());
-				out.use(IntegratedMWs.base(function process(context, req, res, next) {
+				var out = CUTD.make_new();
+				out.use(BaseMiddleware.make_new(function process(req, res, next) {
+					// pretend to do something
+					next();
+				}));
+				out.use(BaseMiddleware.make_new(function process(req, res, next) {
 					res.meta["tag1"] = "base was here !";
 					next();
 				},
-				function back_process(context, req, res) {
+				function back_process(req, res) {
 					res.meta["tag2"] = "base was back !";
 					res.send();
 				}));
-				out.use(IntegratedMWs.no_middleware());
-
-				var trans = out.startup_create_session_and_create_transaction();
+				out.use(BaseMiddleware.make_new(function process(req, res, next) {
+					res.set_to_not_implemented("Server is misconfigured. Please add middlewares to handle requests !");
+					res.send();
+				}));
 
 				var request = Request.make_new_stanford_teapot();
-				var promise = out.process_request(trans, request);
-				promise.spread(function on_success(context, request, response){
+				out.startup_and_create_session(request);
+
+				var promise = out.process_request(request);
+				promise.spread(function on_success(request, response){
 					response.return_code.should.equal(501);
 					response.content.should.equal("Server is misconfigured. Please add middlewares to handle requests !");
 					expect(response.meta["tag1"]).to.equal("base was here !");
 					expect(response.meta["tag2"]).to.equal("base was back !");
 					signalAsyncTestFinished();
 				});
-				promise.otherwise(function on_failure(context, request, response){
+				promise.otherwise(function on_failure(request, response){
 					expect(false).to.be.ok;
 				});
+			});
+
+			it('should correctly propagate startup/shutdown'); // TODO one day
+
+		}); // describe feature
+
+
+		describe('session management', function() {
+
+			it('should allow creation', function() {
+				var core = CUT.make_new();
+				core.use({}); // fake MW
+				core.startup();
+				var out = core.create_session();
+
+				out.should.exist;
+				expect(out).to.be.an('object');
+				expect(out).to.be.an.instanceof(Session.klass);
 			});
 
 		}); // describe feature

@@ -34,12 +34,11 @@ function(chai, CUT, Request, http_constants) {
 
 		}); // describe feature
 
+
 		describe('request processing', function() {
 
 			it('should (not ;-) work', function(signalAsyncTestFinished) {
-				var request = Request.make_new();
-				request.method = 'BREW';
-				request.uri = '/stanford/teapot';
+				var request = Request.make_new_stanford_teapot();
 
 				var out = CUT.make_new();
 				var promise = out.process_request(request);
@@ -58,10 +57,34 @@ function(chai, CUT, Request, http_constants) {
 
 		}); // describe feature
 
+
 		describe('disconnection', function() {
 
-			it('should be possible');
-			it('should prevent new requests');
+			it('should be possible', function() {
+				var out = CUT.make_new();
+				out.disconnect();
+			});
+
+			it('should prevent new requests', function() {
+				var request = Request.make_new_stanford_teapot();
+
+				var out = CUT.make_new();
+				out.disconnect();
+
+				var tempfn = function() { out.process_request(request); };
+				tempfn.should.throw(Error, "This client is disconnected !");
+			});
+
+		}); // describe feature
+
+
+		describe('utilities', function() {
+
+			it('should allow easy creation of a request', function() {
+				var out = CUT.make_new();
+				var request = out.make_new_request();
+				expect( request ).to.be.an.instanceOf(Request.klass)
+			});
 
 		}); // describe feature
 

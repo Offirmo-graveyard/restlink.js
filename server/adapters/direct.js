@@ -9,10 +9,10 @@ define(
 	'when',
 	'restlink/core/request',
 	'restlink/server/adapters/base',
-	'restlink/client/base',
+	'restlink/client/direct',
 	'extended-exceptions'
 ],
-function(_, when, Request, ServerBaseAdapter, BaseClient, EE) {
+function(_, when, Request, BaseServerAdapter, DirectClient, EE) {
 	"use strict";
 
 
@@ -28,44 +28,6 @@ function(_, when, Request, ServerBaseAdapter, BaseClient, EE) {
 
 
 	////////////////////////////////////
-	// internal class
-	function DirectRestlinkClient(server) {
-		var session = server.create_session();
-		var connected = true; // by default at start
-
-		// REM : this creates a closure
-		this.process_request = function(request) {
-			if(!connected) {
-				throw new EE.IllegalStateError("Can't send request : This client is disconnected !");
-			}
-
-			var client_deferred = when.defer();
-
-			var transaction = session.create_transaction(request);
-			var server_promise = server.process_request(transaction, request);
-
-			server_promise.spread(function(transaction, request, response){
-				client_deferred.resolve([request, response]);
-				transaction.invalidate(); // done with it
-			});
-
-			return client_deferred.promise;
-		};
-
-		this.send_long_living_request = function(request, callback) {
-			// TODO
-		};
-
-		this.disconnect = function() {
-			connected = false;
-			session.invalidate();
-		};
-	}
-	DirectRestlinkClient.prototype.make_new_request = function() {
-		return Request.make_new();
-	} ;
-
-	////////////////////////////////////
 	//defaults. = ;
 
 	methods.init = function() {
@@ -79,19 +41,17 @@ function(_, when, Request, ServerBaseAdapter, BaseClient, EE) {
 
 
 	////////////////////////////////////
-	//methods. = ;
-
 	methods.new_connection = function() {
 		if(! this.is_started()) {
 			// should never happen
-			throw new Error("Can't open connection : server adapter is stopped.");
+			throw new EE.IllegalStateError("Can't open connection : server adapter is stopped.");
 		}
 		if(! this.server_) {
 			// no server ! Can't process !
 			// should also never happen
-			throw new Error("Can't open connection : server adapter is misconfigured (no server).");
+			throw new EE.IllegalStateError("Can't open connection : server adapter is misconfigured (no server).");
 		}
-		return new DirectRestlinkClient(this.server_);
+		return DirectClient.make_new(this.server_);
 	};
 
 	////////////////////////////////////
@@ -104,14 +64,14 @@ function(_, when, Request, ServerBaseAdapter, BaseClient, EE) {
 		_.defaults( this, defaults ); // TODO enhance
 
 		// call parent constructor (by choice)
-		ServerBaseAdapter.klass.prototype.constructor.apply(this, arguments);
+		BaseServerAdapter.klass.prototype.constructor.apply(this, arguments);
 
 		// other inits...
 		methods.init.apply(this, arguments);
 	};
 
 	// class inheritance via prototype chain
-	DefinedClass.prototype = Object.create(ServerBaseAdapter.klass.prototype);
+	DefinedClass.prototype = Object.create(BaseServerAdapter.klass.prototype);
 	DefinedClass.prototype.constructor = DefinedClass;
 
 	DefinedClass.prototype.constants  = constants;

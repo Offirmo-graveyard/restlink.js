@@ -10,10 +10,9 @@ define(
 	'extended-exceptions',
 	'base-objects/offinh/startable_object',
 	'restlink/server/rest_target_indexed_shared_container',
-	'restlink/server/session',
-	'restlink/server/middleware/integrated',
+	'restlink/server/session'
 ],
-function(_, when, EE, StartableObject, RestIndexedContainer, ServerSession, IntegratedMiddlewares) {
+function(_, when, EE, StartableObject, RestIndexedContainer, ServerSession) {
 	"use strict";
 
 
@@ -36,7 +35,7 @@ function(_, when, EE, StartableObject, RestIndexedContainer, ServerSession, Inte
 
 		// the server should know its adapters
 		// to be able to transmit them some events (startup/shutdown for ex.)
-		this.server_adapters_ = [];
+		this.adapters_ = [];
 		// handling is done by chainable middlewares.
 		// We only know the head and don't care about the rest
 		this.head_middleware_ = undefined; // or null ?
@@ -55,7 +54,10 @@ function(_, when, EE, StartableObject, RestIndexedContainer, ServerSession, Inte
 	//methods. = ;
 
 	methods.add_adapter = function(adapter) {
-		this.server_adapters_.push(adapter);
+		if(typeof adapter !== 'object')
+			throw new EE.InvalidArgument("Invalid adapter provided !");
+
+		this.adapters_.push(adapter);
 		if( this.is_started()) {
 			adapter.startup(this);
 		}
@@ -80,26 +82,15 @@ function(_, when, EE, StartableObject, RestIndexedContainer, ServerSession, Inte
 		StartableObject.methods.startup.apply(this);
 
 		var this_ = this; // for the call below
-		_.each(this.server_adapters_, function(adapter) {
+		_.each(this.adapters_, function(adapter) {
 			adapter.startup(this_);
 		});
-	};
-	// for tests
-	methods.startup_with_default_mw_if_needed = function() {
-		if(typeof this.head_middleware_ === 'undefined') {
-			// add a default middleware
-			this.use(IntegratedMiddlewares.no_middleware());
-		}
-
-		// call the original function
-		this.startup();
 	};
 
 	// override of parent
 	methods.shutdown = function() {
-
 		// shutdown adapters so we won't receive new requests
-		_.each(this.server_adapters_, function(adapter) {
+		_.each(this.adapters_, function(adapter) {
 			adapter.shutdown();
 		});
 
@@ -122,14 +113,6 @@ function(_, when, EE, StartableObject, RestIndexedContainer, ServerSession, Inte
 		return session;
 	};
 
-	// utility, very useful for unit tests
-	methods.startup_create_session_and_create_transaction = function() {
-		if(!this.is_started())
-			this.startup_with_default_mw_if_needed();
-		var session = this.create_session();
-		return session.create_transaction();
-	};
-
 	methods.terminate_session = function(session) {
 		session.invalidate();
 
@@ -137,20 +120,19 @@ function(_, when, EE, StartableObject, RestIndexedContainer, ServerSession, Inte
 		this.sessions_ = _.filter(this.sessions_, function(session){ return session.is_valid(); });
 	};
 
-	methods.process_request = function(transaction, request) {
+	methods.process_request = function(request) {
 		if(!this.is_started())
 			throw new EE.IllegalStateError("Can't create new session : server is stopped !");
 
+		if(!request.hasOwnProperty('get_session'))
+			throw new EE.InvalidArgument("Core : request must be registered to a session before processing !");
+
+		if(!request.get_session().is_valid())
+			throw new EE.InvalidArgument("Core : request session is no longer valid !");
+
 		// REM : middleware will correctly create the response if not provided
-		return this.head_middleware_.head_process_request(transaction, request);
+		return this.head_middleware_.initiate_processing(request);
 	};
-
-	/// TOSORT
-	// routes and their associated callbacks
-	// let's use the convenient 'Router' from Backbone
-	// TODO replace with optimized version ?
-	//router: new Backbone.Router()
-
 
 
 	////////////////////////////////////
@@ -172,7 +154,8 @@ function(_, when, EE, StartableObject, RestIndexedContainer, ServerSession, Inte
 		_.defaults( this, defaults ); // also set parent's defaults
 
 		// optional : call parent constructor (after setting our defaults)
-		//StartableObject.prototype.constructor.apply(this, arguments);
+		//StartableObject.prototype.constructor.apply(this);
+
 		// other inits...
 		methods.init.apply(this, arguments);
 	};

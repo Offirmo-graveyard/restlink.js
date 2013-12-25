@@ -3,6 +3,7 @@ if (typeof define !== 'function') { var define = require('amdefine')(module); }
 define(
 [
 	'chai',
+	'when',
 	'restlink/server/restlink_server',
 	'restlink/server/adapters/direct',
 	'restlink/core/request',
@@ -10,7 +11,7 @@ define(
 	'network-constants/http',
 	'mocha'
 ],
-function(chai, CUT, DirectServerAdapter, Request, Response, http_constants) {
+function(chai, when, CUT, DirectServerAdapter, Request, Response, http_constants) {
 	"use strict";
 
 	var expect = chai.expect;
@@ -138,16 +139,11 @@ function(chai, CUT, DirectServerAdapter, Request, Response, http_constants) {
 			it('should be configurable and should work', function() {
 				var out = CUT.make_new();
 
-				var teapot_BREW_callback = function(transaction, request) {
-					var response = Response.make_new_from_request(request);
+				var teapot_BREW_callback = function(request, response) {
 					response.return_code = http_constants.status_codes.status_400_client_error_bad_request;
 					response.content = "I'm a teapot !";
-
-					var deferred = jQuery.Deferred();
-					deferred.resolve(transaction, request, response);
-					return deferred.promise();
+					response.send();
 				};
-
 				out.on("/stanford/teapot", "BREW", teapot_BREW_callback);
 
 				out.startup();
@@ -155,6 +151,7 @@ function(chai, CUT, DirectServerAdapter, Request, Response, http_constants) {
 
 				var request = Request.make_new_stanford_teapot();
 				var promise = client.process_request(request);
+
 				promise.spread(function on_success(request, response){
 					response.method.should.equal("BREW");
 					response.uri.should.equal("/stanford/teapot");

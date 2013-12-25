@@ -6,10 +6,10 @@ define(
 	'underscore',
 	'restlink/server/restlink_server',
 	'restlink/core/request',
-	'base-objects/backbone/base_object',
+	'base-objects/backbone/base_model',
 	'mocha'
 ],
-function(chai, _, RestlinkServer, Request, BaseObject) {
+function(chai, _, RestlinkServer, Request, BaseModel) {
 	"use strict";
 
 	var expect = chai.expect;
@@ -18,7 +18,7 @@ function(chai, _, RestlinkServer, Request, BaseObject) {
 
 
 
-	var TestModel = BaseObject.extend({
+	var TestModel = BaseModel.extend({
 
 		defaults: function(){
 			var this_class_defaults = {

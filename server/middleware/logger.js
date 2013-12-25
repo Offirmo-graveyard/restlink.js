@@ -24,14 +24,14 @@ function(_, RestlinkMiddlewareBase) {
 	defaults.mode_ = "simple";
 
 	////////////////////////////////////
-	function default_log_function(){
+	function default_log_function() {
 		console.log.apply(console, arguments);
 	}
-	defaults.log_function_ = default_log_function;
+	defaults.log_function_ = default_log_function; // to be overriden of course
 
-	function processing_function(context, request, response, next, that) {
+	function processing_function(request, response, next, that) {
 		that.log_function_(
-				request.date
+				request.timestamp
 				+ " > request "
 				+ request.uri
 				+ "." + request.method
@@ -39,9 +39,9 @@ function(_, RestlinkMiddlewareBase) {
 			);
 		next();
 	}
-	function back_processing_function(context, request, response, that) {
+	function back_processing_function(request, response, that) {
 		that.log_function_(
-				response.date
+				response.timestamp
 				+ " < response to "
 				+ request.uri
 				+ "." + request.method

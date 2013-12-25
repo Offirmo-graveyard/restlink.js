@@ -19,9 +19,10 @@ function(_, Backbone, when, EE) {
 		console.log("sync_to_restlink begin('"+method+"',...) called with ", arguments);
 
 		var deferred = when.defer();
+		var restlink = model.restlink_;
 
 		var url = this.compute_url(); // may fail, it's ok
-		var request = model.restlink_client_.make_new_request();
+		var request = model.restlink_.make_new_request();
 
 		////////////
 		if(method === "read") {
@@ -38,7 +39,7 @@ function(_, Backbone, when, EE) {
 			if(options && options.hasOwnProperty('content'))
 				request.content = options.content;
 
-			var promise = this.restlink_client_.process_request(request);
+			var promise = this.restlink_.process_request(request);
 			promise.spread(function(request, response){
 				// Warning : the server round trip succeeded but the answer may be negative !
 				throw new EE.NotImplementedError();
@@ -76,6 +77,11 @@ function(_, Backbone, when, EE) {
 	};
 
 	return {
-		methods: methods
+		// exposing these allows various inheritances
+		//'constants'  : constants,
+		//'exceptions' : exceptions,
+		//'defaults'   : defaults,
+		'methods'    : methods
 	};
+
 }); // requirejs module

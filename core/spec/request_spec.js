@@ -31,7 +31,6 @@ function(chai, CUT, Response) {
 				var out = CUT.make_new();
 				expect(out.meta).to.deep.equal({});
 				expect(out.content_type).to.equal("application/json");
-				expect(out.date).to.not.be.undefined;
 			});
 
 		}); // describe feature

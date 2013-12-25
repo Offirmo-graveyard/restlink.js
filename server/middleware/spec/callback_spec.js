@@ -6,14 +6,13 @@ define(
 	'when',
 	'restlink/server/middleware/callback',
 	'restlink/server/middleware/base',
-	'restlink/server/middleware/integrated',
 	'restlink/server/rest_target_indexed_shared_container',
-	'restlink/server/core',
+	'restlink/server/spec/debug_core',
 	'restlink/core/request',
 	'network-constants/http',
 	'mocha'
 ],
-function(chai, when, CUT, BaseRequestHandler, IntegratedMWs, RestIndexedContainer, ServerCore, Request, http_constants) {
+function(chai, when, CUT, BaseMiddleware, RestIndexedContainer, DebugCore, Request, http_constants) {
 	"use strict";
 
 	var expect = chai.expect;
@@ -34,7 +33,7 @@ function(chai, when, CUT, BaseRequestHandler, IntegratedMWs, RestIndexedContaine
 
 			it("should have correct inheritance", function() {
 				var out = CUT.make_new();
-				out.should.be.an.instanceOf(BaseRequestHandler.klass);
+				out.should.be.an.instanceOf(BaseMiddleware.klass);
 			});
 
 		}); // describe feature
@@ -58,19 +57,19 @@ function(chai, when, CUT, BaseRequestHandler, IntegratedMWs, RestIndexedContaine
 			it("should correctly call the appropriate callback", function(signalAsyncTestFinished) {
 				var out = CUT.make_new();
 
-				var core = ServerCore.make_new();
+				var core = DebugCore.make_new();
 				core.use(out);
-				var transaction = core.startup_create_session_and_create_transaction();
+				var session = core.startup_and_create_session();
 
 
-				var teapot_BREW_callback = function (transaction, request, response) {
+				var teapot_BREW_callback = function ( request, response) {
 					response.set_to_error(
 							http_constants.status_codes.status_400_client_error_bad_request,
 							"I'm a teapot !");
 					response.send();
 				};
 
-				var firm_GET_callback = function(transaction, request, response) {
+				var firm_GET_callback = function( request, response) {
 					response.return_code = http_constants.status_codes.status_200_ok;
 					response.content = "I'm here !";
 					response.send();
@@ -81,8 +80,9 @@ function(chai, when, CUT, BaseRequestHandler, IntegratedMWs, RestIndexedContaine
 
 				var deferred1 = when.defer();
 				var request = Request.make_new_stanford_teapot();
-				var promise1 = core.process_request(transaction, request);
-				promise1.spread(function(transaction, request, response) {
+				session.register_request(request);
+				var promise1 = core.process_request(request);
+				promise1.spread(function(request, response) {
 					response.method.should.equal("BREW");
 					response.uri.should.equal("/stanford/teapot");
 					response.return_code.should.equal(http_constants.status_codes.status_400_client_error_bad_request);
@@ -97,8 +97,9 @@ function(chai, when, CUT, BaseRequestHandler, IntegratedMWs, RestIndexedContaine
 				request2.uri = '/firm/ACME';
 				request2.method = 'GET';
 				var deferred2 = when.defer();
-				var promise2 = core.process_request(transaction, request2);
-				promise2.spread(function(transaction, request, response) {
+				session.register_request(request2);
+				var promise2 = core.process_request(request2);
+				promise2.spread(function(request, response) {
 					response.method.should.equal("GET");
 					response.uri.should.equal("/firm/ACME");
 					response.return_code.should.equal(http_constants.status_codes.status_200_ok);
@@ -124,16 +125,19 @@ function(chai, when, CUT, BaseRequestHandler, IntegratedMWs, RestIndexedContaine
 			it("should forward to delegate when unknown route", function(signalAsyncTestFinished) {
 				var out = CUT.make_new();
 
-				var core = ServerCore.make_new();
+				var core = DebugCore.make_new();
 				core.use(out);
-				core.use(IntegratedMWs.no_middleware()); // no confusion possible if we use this one
+				core.use(BaseMiddleware.make_new(function process(req, res, next) {
+					res.set_to_not_implemented("Server is misconfigured. Please add middlewares to handle requests !");
+					res.send();
+				})); // no confusion possible if we use this one
 
 				// no route added
 
 				var request = Request.make_new_stanford_teapot();
-				var trans = core.startup_create_session_and_create_transaction();
-				var promise = core.process_request(trans, request);
-				promise.spread(function(transaction, request, response) {
+				core.startup_and_create_session(request);
+				var promise = core.process_request(request);
+				promise.spread(function(request, response) {
 					response.return_code.should.equal(http_constants.status_codes.status_501_server_error_not_implemented);
 					response.content.should.equal("Server is misconfigured. Please add middlewares to handle requests !");
 					signalAsyncTestFinished();
@@ -147,16 +151,16 @@ function(chai, when, CUT, BaseRequestHandler, IntegratedMWs, RestIndexedContaine
 			it("should return a 501 not_implemented error when called on an unknown action", function(signalAsyncTestFinished) {
 				var out = CUT.make_new();
 
-				var core = ServerCore.make_new();
+				var core = DebugCore.make_new();
 				core.use(out);
 
 				var callback = function() {};
 				out.add_callback_handler(core.rest_indexed_shared_container, "/stanford/teapot", "GET", callback);
 
 				var request = Request.make_new_stanford_teapot();
-				var trans = core.startup_create_session_and_create_transaction();
-				var promise = core.process_request(trans, request);
-				promise.spread(function(transaction, request, response) {
+				core.startup_and_create_session(request);
+				var promise = core.process_request(request);
+				promise.spread(function(request, response) {
 					response.method.should.equal('BREW');
 					response.uri.should.equal('/stanford/teapot');
 					response.return_code.should.equal(http_constants.status_codes.status_501_server_error_not_implemented);

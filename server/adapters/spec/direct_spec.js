@@ -6,11 +6,11 @@ define(
 	'restlink/server/adapters/direct',
 	'restlink/core/request',
 	'restlink/core/response',
-	'restlink/server/core',
+	'restlink/server/spec/debug_core',
 	'network-constants/http',
 	'mocha'
 ],
-function(chai, CUT, Request, Response, ServerCore, http_constants) {
+function(chai, CUT, Request, Response, DebugCore, http_constants) {
 	"use strict";
 
 	var expect = chai.expect;
@@ -65,10 +65,11 @@ function(chai, CUT, Request, Response, ServerCore, http_constants) {
 
 
 			it('should work when started and configured', function(signalAsyncTestFinished) {
-				var out_ = CUT.make_new();
 
-				// give it a real server
-				var server_core = ServerCore.make_new();
+				// prepare a real server
+				var server_core = DebugCore.make_new();
+
+				var out_ = CUT.make_new(server_core);
 				server_core.add_adapter(out_);
 				server_core.startup_with_default_mw_if_needed();
 
@@ -76,6 +77,7 @@ function(chai, CUT, Request, Response, ServerCore, http_constants) {
 
 				// go for it
 				var request = Request.make_new_stanford_teapot();
+				// REM : out is a client, no need to setup session etc.
 				var promise = out.process_request(request);
 
 				// check result (expected error : we only configured as much)

@@ -57,6 +57,7 @@ function(_, http_constants) {
 			this.content = optional_content;
 		}
 		else {
+			// use the error message as content
 			this.content = http_constants.status_messages[error_code];
 		}
 		return this; // for fluid
@@ -82,9 +83,6 @@ function(_, http_constants) {
 			content_type : request.content_type
 			// REM : status already has a default
 		}, default_response);
-
-		// then auto values
-		temp_response.date = new Date();
 
 		// then overwrite with explicite values (if any)
 		attrs || (attrs = {});

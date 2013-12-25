@@ -13,12 +13,12 @@ define(
 function(_, RestlinkMiddlewareBase, EE, http_constants) {
 	"use strict";
 
-	function processing_function(context, request, response, next) {
+	function processing_function(request, response, next) {
 
 		next();
 	}
 
-	function back_processing_function(context, request, response) {
+	function back_processing_function(request, response) {
 
 		response.send();
 	}

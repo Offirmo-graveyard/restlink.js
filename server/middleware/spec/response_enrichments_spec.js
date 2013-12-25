@@ -25,7 +25,7 @@ function(chai, when, CUT, Response) {
 				var response = Response.make_new();
 				var fake_request = {};
 				var fake_context = {};
-				CUT.process(response, fake_request, fake_context);
+				CUT.process(response, fake_request);
 			});
 
 			it('should set default values', function() {
@@ -35,12 +35,6 @@ function(chai, when, CUT, Response) {
 
 				response.middleware_.should.exist;
 				response.should.respondTo("send");
-			});
-
-			it('should work in nominal case with no context', function() {
-				var response = Response.make_new();
-				var fake_request = {};
-				CUT.process(response, fake_request);
 			});
 
 			it('should not work in mandatory args are missing', function() {
@@ -72,8 +66,7 @@ function(chai, when, CUT, Response) {
 			it('should work in nominal case', function(signalAsyncTestFinished) {
 				var out = Response.make_new();
 				var fake_request = {};
-				var fake_context = {};
-				CUT.process(out, fake_request, fake_context);
+				CUT.process(out, fake_request);
 
 				// insert a root deferred
 				var deferred = when.defer();
@@ -83,8 +76,7 @@ function(chai, when, CUT, Response) {
 				// it is now allowed to send the response
 				out.send();
 
-				promise.spread(function(context, request, response) {
-					context.should.equal(fake_context);
+				promise.spread(function(request, response) {
 					request.should.equal(fake_request);
 					response.should.equal(out);
 					signalAsyncTestFinished();
@@ -98,7 +90,7 @@ function(chai, when, CUT, Response) {
 				var out = Response.make_new();
 				var fake_request = {};
 				var fake_context = {};
-				CUT.process(out, fake_request, fake_context);
+				CUT.process(out, fake_request);
 
 				// simulate a middleware chain
 				var deferred_head = when.defer();
@@ -111,8 +103,7 @@ function(chai, when, CUT, Response) {
 
 				out.send();
 
-				promise_tail.spread(function(context, request, response) {
-					context.should.equal(fake_context);
+				promise_tail.spread(function(request, response) {
 					request.should.equal(fake_request);
 					response.should.equal(out);
 
@@ -126,8 +117,7 @@ function(chai, when, CUT, Response) {
 					expect(false).to.be.ok;
 				});
 
-				promise_head.spread(function(context, request, response) {
-					context.should.equal(fake_context);
+				promise_head.spread(function(request, response) {
 					request.should.equal(fake_request);
 					response.should.equal(out);
 

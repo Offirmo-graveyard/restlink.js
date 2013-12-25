@@ -5,13 +5,12 @@ define(
 	'chai',
 	'restlink/server/middleware/logger',
 	'restlink/server/middleware/base',
-	'restlink/server/middleware/no_middleware',
 	'restlink/server/core',
 	'restlink/core/request',
 	'network-constants/http',
 	'mocha'
 ],
-function(chai, CUT, BaseRequestHandler, DefaultRequestHandler, ServerCore, Request, http_constants) {
+function(chai, CUT, BaseMiddleware, ServerCore, Request, http_constants) {
 	"use strict";
 
 	var expect = chai.expect;
@@ -32,7 +31,7 @@ function(chai, CUT, BaseRequestHandler, DefaultRequestHandler, ServerCore, Reque
 
 			it('should have correct inheritance', function() {
 				var out = CUT.make_new();
-				out.should.be.an.instanceOf(BaseRequestHandler.klass);
+				out.should.be.an.instanceOf(BaseMiddleware.klass);
 			});
 
 		}); // describe feature
@@ -46,20 +45,22 @@ function(chai, CUT, BaseRequestHandler, DefaultRequestHandler, ServerCore, Reque
 				// this test just test that the default logger doesn't hamper request processing
 				// but we can't test what was logged. See next test.
 				var out = CUT.make_new();
-				out.use( DefaultRequestHandler.make_new() ); // we MUST have another handler after us since logger doesn't send the response
+				out.use(BaseMiddleware.make_new(function process(req, res, next) {
+					res.set_to_not_implemented("Server is misconfigured. Please add middlewares to handle requests !");
+					res.send();
+				})); // we MUST have another handler after us since logger doesn't send the response
 
-				var trans = {};
 				var request = Request.make_new_stanford_teapot();
-				var promise = out.head_process_request(trans, request);
+				var promise = out.initiate_processing(request);
 
-				promise.spread(function on_success(context, request, response) {
+				promise.spread(function on_success(request, response) {
 					response.method.should.equal('BREW');
 					response.uri.should.equal('/stanford/teapot');
 					response.return_code.should.equal(http_constants.status_codes.status_501_server_error_not_implemented);
 					response.content.should.equal("Server is misconfigured. Please add middlewares to handle requests !");
 					signalAsyncTestFinished();
 				});
-				promise.otherwise(function on_failure(context, request, response){
+				promise.otherwise(function on_failure(request, response){
 					expect(false).to.be.ok;
 				});
 			});
@@ -76,16 +77,19 @@ function(chai, CUT, BaseRequestHandler, DefaultRequestHandler, ServerCore, Reque
 				};
 
 				var out = CUT.make_new(custom_log_function);
-				out.use( DefaultRequestHandler.make_new() ); // we MUST have another handler after us since logger doesn't send the response
+				// we MUST have another handler after us since logger doesn't send the response
+				out.use(BaseMiddleware.make_new(function process(req, res, next) {
+					res.set_to_not_implemented("Server is misconfigured. Please add middlewares to handle requests !");
+					res.send();
+				}));
 
-				var trans = {};
 				var request = Request.make_new_stanford_teapot();
-				var promise = out.head_process_request(trans, request);
+				var promise = out.initiate_processing(request);
 
-				promise.spread(function on_success(context, request, response) {
-					var exepected_buffer = request.date
+				promise.spread(function on_success(request, response) {
+					var exepected_buffer = request.timestamp
 							+ " > request /stanford/teapot.BREW(undefined)"
-							+ response.date
+							+ response.timestamp
 							+ ' < response to /stanford/teapot.BREW(...) : [501] "Server is misconfigured. Please add middlewares to handle requests !"';
 					//console.log(response);
 					//console.log(exepected_buffer);
@@ -97,7 +101,7 @@ function(chai, CUT, BaseRequestHandler, DefaultRequestHandler, ServerCore, Reque
 					buffer.should.equal(exepected_buffer);
 					signalAsyncTestFinished();
 				});
-				promise.otherwise(function on_failure(context, request, response){
+				promise.otherwise(function on_failure(request, response){
 					expect(false).to.be.ok;
 				});
 			});

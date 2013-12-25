@@ -3,7 +3,7 @@ if (typeof define !== 'function') { var define = require('amdefine')(module); }
 define(
 [
 	'chai',
-	'restlink/server/middleware/no_middleware',
+	'restlink/server/middleware/not_found',
 	'restlink/server/middleware/base',
 	'restlink/server/core',
 	'restlink/core/request',
@@ -18,19 +18,18 @@ function(chai, CUT, BaseRequestHandler, ServerCore, Request, http_constants) {
 	chai.Assertion.includeStack = true; // defaults to false
 
 
-	describe('Restlink default error middleware', function() {
+	describe("Restlink not found middleware", function() {
 
 
+		describe("instantiation", function() {
 
-		describe('instantiation', function() {
-
-			it('should be instantiable', function() {
+			it("should be instantiable", function() {
 				var out = CUT.make_new();
 				out.should.exist;
 				out.should.be.an('object');
 			});
 
-			it('should have correct inheritance', function() {
+			it("should have correct inheritance", function() {
 				var out = CUT.make_new();
 				out.should.be.an.instanceOf(BaseRequestHandler.klass);
 			});
@@ -39,20 +38,20 @@ function(chai, CUT, BaseRequestHandler, ServerCore, Request, http_constants) {
 
 
 
-		describe('request handling', function() {
+		describe("request handling", function() {
 
-			it('should always answer a not implemented + no middleware error', function(signalAsyncTestFinished) {
+			it("should always answer with not found", function(signalAsyncTestFinished) {
 				var out = CUT.make_new();
 
 				var trans = {};
 				var request = Request.make_new_stanford_teapot();
-				var promise = out.head_process_request(trans, request);
+				var promise = out.initiate_processing(trans, request);
 
 				promise.spread(function on_success(context, request, response){
 					response.method.should.equal('BREW');
 					response.uri.should.equal('/stanford/teapot');
-					response.return_code.should.equal(http_constants.status_codes.status_501_server_error_not_implemented);
-					response.content.should.equal("Server is misconfigured. Please add middlewares to handle requests !");
+					response.return_code.should.equal(http_constants.status_codes.status_404_client_error_not_found);
+					response.content.should.equal("Not Found");
 					signalAsyncTestFinished();
 				});
 				promise.otherwise(function on_failure(context, request, response){

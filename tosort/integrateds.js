@@ -7,9 +7,9 @@ define(
 [
 	'restlink/server/middleware/base',
 	'restlink/server/middleware/callback',
-	'restlink/server/middleware/logger',
-	'restlink/server/middleware/no_middleware',
-	'restlink/server/middleware/not_found',
+	'restlink/server/middleware/logger'
+	//'restlink/server/middleware/no_middleware',
+	//'restlink/server/middleware/not_found'
 ],
 function(RestlinkMiddlewareBase, RestlinkCallbackMiddleware, RestlinkLoggerMiddleware, RestlinkDefaultMiddleware, RestlinkNotFoundMiddleware) {
 	"use strict";

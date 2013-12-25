@@ -34,7 +34,7 @@ function(chai, CUT, Request, http_constants) {
 
 			var trans = {};
 			var request = Request.make_new_stanford_teapot();
-			var promise = out.head_process_request(trans, request);
+			var promise = out.initiate_processing(trans, request);
 
 			promise.spread(function on_success(context, request, response){
 				response.method.should.equal('BREW');
@@ -68,7 +68,7 @@ function(chai, CUT, Request, http_constants) {
 
 			var trans = {};
 			var request = Request.make_new_stanford_teapot();
-			var promise = out.head_process_request(trans, request);
+			var promise = out.initiate_processing(trans, request);
 
 			promise.spread(function on_success(context, request, response) {
 				var exepected_buffer = request.date
@@ -99,7 +99,7 @@ function(chai, CUT, Request, http_constants) {
 
 			var trans = {};
 			var request = Request.make_new_stanford_teapot();
-			var promise = out.head_process_request(trans, request);
+			var promise = out.initiate_processing(trans, request);
 
 			promise.spread(function on_success(context, request, response){
 				response.return_code.should.equal(http_constants.status_codes.status_501_server_error_not_implemented);

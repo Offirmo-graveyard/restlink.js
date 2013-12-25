@@ -40,7 +40,7 @@ function(_, RestlinkMiddlewareBase, RouteIndexedContainer, EE, http_constants) {
 
 	////////////////////////////////////
 	// our custom processing function
-	function processing_function(context, request, response, next, that) {
+	function processing_function(request, response, next, that) {
 
 		var handled = false; // for now
 		try {
@@ -69,7 +69,7 @@ function(_, RestlinkMiddlewareBase, RouteIndexedContainer, EE, http_constants) {
 				if( typeof my_data.callback === 'function' ) {
 					// should call send when ready.
 					// May not call next.
-					my_data.callback(context, request, response);
+					my_data.callback(request, response);
 					handled = true; // hopefully, if the callback is well written...
 				}
 			}

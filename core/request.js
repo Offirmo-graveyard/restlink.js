@@ -37,12 +37,10 @@ function(_, Response) {
 		// https://en.wikipedia.org/wiki/Internet_media_type
 		this.content_type = "application/json"; // default
 		this.content      = undefined;
-		// date of reception. Useful for replay ! (may be overriden by something else if needed)
-		this.date = new Date();
 
-		// NOT STANDARD REST IF CHANGED !
-		this.is_long_living = false; //< is this request considered "permanent" ?
-		                             //  if permanent, responses should be sent for each change without asking
+		// Not standard REST if set to true
+		this.is_long_living = false; //< Is this request considered "permanent" ?
+		                             //  If permanent, responses should be "pushed" for each change.
 	};
 
 
@@ -51,7 +49,6 @@ function(_, Response) {
 
 
 	////////////////////////////////////
-	//methods. = ;
 	// easy setting. Note the "return this" for fluid interface
 	methods.with_uri          = function(uri)          { this.uri          = uri;          return this; };
 	methods.with_method       = function(method)       { this.method       = method;       return this; };
@@ -61,9 +58,10 @@ function(_, Response) {
 
 	// utility
 	// attributes are optional
-	methods.make_response = function(attrs) {
-		return Response.make_new_from_request(this, attrs);
+	methods.make_response = function(optional_attrs) {
+		return Response.make_new_from_request(this, optional_attrs);
 	};
+	// for debug ! Build a sample request.
 	function make_new_stanford_teapot() {
 		var request = new DefinedClass();
 		request.method = 'BREW';
@@ -99,7 +97,7 @@ function(_, Response) {
 		'exceptions' : exceptions,
 		'defaults'   : defaults,
 		'methods'    : methods,
-		// useful for tests
+		// "class" methods
 		'make_new_stanford_teapot' : make_new_stanford_teapot
 	};
 }); // requirejs module

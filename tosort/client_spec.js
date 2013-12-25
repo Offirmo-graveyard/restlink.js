@@ -5,13 +5,13 @@ define(
 	'chai',
 	'underscore',
 	'restlink/client/client',
-	'base-objects/backbone/base_object',
+	'base-objects/backbone/base_model',
 	'restlink/core/response',
 	'restlink/client/base',
 	'network-constants/http',
 	'mocha'
 ],
-function(chai, _, CUT, BaseObject, Response, ClientAdapterBase, http_constants) {
+function(chai, _, CUT, BaseModel, Response, ClientAdapterBase, http_constants) {
 	"use strict";
 
 	var expect = chai.expect;
@@ -32,7 +32,7 @@ function(chai, _, CUT, BaseObject, Response, ClientAdapterBase, http_constants) 
 		result_deferred.resolve([request,response]);
 	};
 
-	var TestModel = BaseObject.extend({
+	var TestModel = BaseModel.extend({
 
 		defaults: function(){
 			var this_class_defaults = {

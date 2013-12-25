@@ -10,11 +10,12 @@ define(
 	'base-objects/offinh/named_object',
 	'base-objects/offinh/startable_object',
 	'restlink/server/core',
+	'restlink/server/middleware/base',
+	'restlink/server/middleware/logger',
 	'restlink/server/middleware/callback',
-	'restlink/server/middleware/integrated',
 	'restlink/server/adapters/direct'
 ],
-function(_, NamedObject, StartableObject, ServerCore, CallbackMiddleware, IntegratedMiddlewares, DirectServerAdapter) {
+function(_, NamedObject, StartableObject, ServerCore, BaseMiddleware, LoggerMiddleware, CallbackMiddleware, DirectServerAdapter) {
 	"use strict";
 
 
@@ -28,13 +29,16 @@ function(_, NamedObject, StartableObject, ServerCore, CallbackMiddleware, Integr
 	////////////////////////////////////
 	//constants. = ;
 
+
 	////////////////////////////////////
 	//defaults. = ;
-
 	function build_middleware_chain_default_impl_() {
-		this.core_.use( IntegratedMiddlewares.logger() );
-		this.core_.use( IntegratedMiddlewares.callback() );
-		this.core_.use( IntegratedMiddlewares.not_found() );
+		this.core_.use( LoggerMiddleware.make_new() );
+		this.core_.use( CallbackMiddleware.make_new() );
+		this.core_.use( BaseMiddleware.make_new(function process(req, res, next) {
+			res.set_to_not_found();
+			res.send();
+		}) );
 	}
 	// to be overriden if needed
 	defaults.build_middleware_chain = build_middleware_chain_default_impl_;
@@ -97,13 +101,6 @@ function(_, NamedObject, StartableObject, ServerCore, CallbackMiddleware, Integr
 	};
 
 
-	/*
-	 virtual void addAdapter(const server::IAdapterPtr& adapter);
-
-	 virtual void addRsrcHandler(const server::IResourceHandlerPtr& handler, const std::string& parentRoute = "");
-
-	 virtual void addRsrcHandler(const server::IResourceDeclarationPtr& handler, const std::string& parentRoute = "");
-	 */
 	////////////////////////////////////
 
 	// prototypal inheritance from StartableObject

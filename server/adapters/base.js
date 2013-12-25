@@ -8,9 +8,10 @@ if (typeof define !== 'function') { var define = require('amdefine')(module); }
 define(
 [
 	'underscore',
-	'extended-exceptions'
+	'extended-exceptions',
+	'base-objects/offinh/startable_object'
 ],
-function(_, EE) {
+function(_, EE, StartableObject) {
 	"use strict";
 
 
@@ -27,12 +28,12 @@ function(_, EE) {
 
 	////////////////////////////////////
 	//defaults. = ;
-	defaults.started_ = false;
 
 	methods.init = function() {
 		// init of member objects
 
 		// the adapter knows its server
+		// (only while started)
 		this.server_ = undefined;
 	};
 
@@ -42,24 +43,34 @@ function(_, EE) {
 
 
 	////////////////////////////////////
-	//methods. = ;
 	methods.startup = function(server) {
-		if(typeof server === 'undefined') {
+		if(typeof server !== 'object') {
 			throw new EE.InvalidArgument("Can't start adapter : missing server argument !");
 		}
 		this.server_ = server;
-		this.started_ = true;
+
+		// call parent
+		StartableObject.methods.startup.apply(this);
 	};
 	methods.shutdown = function() {
-		this.started_ = false;
+		// release ref
 		this.server_ = undefined;
-	};
-	methods.is_started = function() {
-		return this.started_;
+
+		// call parent
+		StartableObject.methods.shutdown.apply(this);
 	};
 
 
 	////////////////////////////////////
+
+	// inheritance
+
+	// prototypal inheritance from StartableObject
+	_.defaults(constants, StartableObject.constants);
+	_.defaults(defaults,  StartableObject.defaults);
+	_.defaults(methods,   StartableObject.methods);
+	// exceptions ?
+
 	Object.freeze(constants);
 	Object.freeze(defaults);
 	Object.freeze(exceptions);

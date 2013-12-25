@@ -1,4 +1,4 @@
-/* Base adapter class for a RESTlink client adapter
+/* Base class for a RESTlink client adapter
  * This class is not to be used 'as is' but is to be derived.
  */
 if (typeof define !== 'function') { var define = require('amdefine')(module); }
@@ -7,10 +7,11 @@ define(
 [
 	'underscore',
 	'when',
-	'restlink/core/response',
+	'extended-exceptions',
+	'restlink/core/request',
 	'network-constants/http'
 ],
-function(_, when, Response, http_constants) {
+function(_, when, EE, Request, http_constants) {
 	"use strict";
 
 
@@ -28,12 +29,12 @@ function(_, when, Response, http_constants) {
 
 
 	////////////////////////////////////
-	defaults.debug_mode = true; // add controls, etc.
-	defaults.connected = true; // to mark disconnected
+	//defaults.
 
 	methods.init = function() {
 		// init of member objects
-		//...
+		this.debug_mode_ = true; // add controls, etc.
+		this.connected_ = true; // to mark disconnected
 	};
 
 
@@ -42,12 +43,25 @@ function(_, when, Response, http_constants) {
 
 
 	////////////////////////////////////
+	// utility
+	methods.make_new_request = function() {
+		return Request.make_new();
+	};
+
 	methods.process_request = function(request) {
+		if(!this.connected_)
+			throw new EE.IllegalStateError("This client is disconnected !");
+
 		var result_deferred = when.defer();
 
 		this.resolve_request_(request, result_deferred);
 
 		return result_deferred.promise;
+	};
+
+	// TOREVIEW
+	methods.process_long_living_request = function(request, callback) {
+		throw new EE.NotImplementedError("process_long_living_request");
 	};
 
 	// this method is to be overriden
@@ -61,7 +75,7 @@ function(_, when, Response, http_constants) {
 	};
 
 	methods.disconnect = function() {
-		// TODO
+		this.connected_ = false;
 		// requests should no longer be possible
 	};
 

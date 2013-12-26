@@ -10,26 +10,25 @@ define(
 	'extended-exceptions',
 	'network-constants/http'
 ],
-function(_, RestlinkMiddlewareBase, EE, http_constants) {
+function(_, BaseMiddleware, EE, http_constants) {
 	"use strict";
 
 	function processing_function(request, response, next) {
-
 		next();
 	}
 
+	// optional
 	function back_processing_function(request, response) {
-
 		response.send();
 	}
 
-	var DefinedClass = function RestlinkLoggingMiddleware() {
+	var DefinedClass = function SampleMiddleware() {
 		// call parent constructor
-		RestlinkMiddlewareBase.klass.prototype.constructor.apply(this, [ processing_function, back_processing_function ]);
+		BaseMiddleware.klass.prototype.constructor.apply(this, [ processing_function, back_processing_function ]);
 	};
 
 	// in this case, "class" inheritance via prototype chain
-	DefinedClass.prototype = Object.create(RestlinkMiddlewareBase.klass.prototype);
+	DefinedClass.prototype = Object.create(BaseMiddleware.klass.prototype);
 	DefinedClass.prototype.constructor = DefinedClass;
 
 
@@ -40,9 +39,9 @@ function(_, RestlinkMiddlewareBase, EE, http_constants) {
 		// but we still expose the constructor to allow class inheritance
 		'klass'      : DefinedClass,
 		// exposing these allows convenient syntax and also prototypal inheritance
-		'constants'  : RestlinkMiddlewareBase.constants,
-		'exceptions' : RestlinkMiddlewareBase.exceptions,
-		'defaults'   : RestlinkMiddlewareBase.defaults,
-		'methods'    : RestlinkMiddlewareBase.methods
+		'constants'  : BaseMiddleware.constants,
+		'exceptions' : BaseMiddleware.exceptions,
+		'defaults'   : BaseMiddleware.defaults,
+		'methods'    : BaseMiddleware.methods
 	};
 }); // requirejs module

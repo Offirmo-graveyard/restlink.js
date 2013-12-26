@@ -39,87 +39,67 @@ function(chai, _, CUT, EE) {
 			it('should allow good insertions', function() {
 				var out = CUT.make_new();
 
-				out.insert( "/",                   1);
-				out.insert( "/agent",              20);
-				out.insert( "/agents",             25);
-				out.insert( "/order/:id",          30);
-				out.insert( "/firm/:id",           40);
-				out.insert( "/firm/:id/order/:id", 50);
+				out.ensure( "/" );
+				out.ensure( "/agent" );
+				out.ensure( "/agents" );
+				out.ensure( "/order/:id" );
+				out.ensure( "/firm/:id" );
+				out.ensure( "/firm/:id/order/:id" );
 			});
 
 			it('should reject bad insertions', function() {
 				var out = CUT.make_new();
 
 				// empty route, bad !
-				var tempfn = function() { out.insert( "", -1); };
+				var tempfn = function() { out.ensure( '' ); };
 				tempfn.should.throw(CUT.exceptions.MalformedRouteError, "Route malformed : missing start !");
 
 				// double slash, bad
-				tempfn = function() { out.insert("//", -1); };
+				tempfn = function() { out.ensure("//"); };
 				tempfn.should.throw(CUT.exceptions.MalformedRouteError, "Route malformed : empty segment !");
 
 				// consecutive id in sequence, bad
-				tempfn = function() { out.insert("/foo/:id/:id", -1); };
+				tempfn = function() { out.ensure("/foo/:id/:id"); };
 				tempfn.should.throw(CUT.exceptions.MalformedRouteError, "Route malformed : a route can't have several consecutive ids !");
 
 				// id directly after root, bad
-				tempfn = function() { out.insert("/:id", -1); };
+				tempfn = function() { out.ensure("/:id"); };
 				tempfn.should.throw(CUT.exceptions.MalformedRouteError, "Route malformed : root can't be followed by an id !");
-			});
-
-			it('should avoid insertion conflicts', function() {
-				var out = CUT.make_new();
-
-				out.insert( "/agent",              20);
-
-				var tempfn = function() { out.insert("/agent", 30); };
-				tempfn.should.throw(EE.InvalidArgument, "Conflict : This route already has attached data !");
-				out.at("/agent").should.equal(20);
-
-				out.insert_if_not_present( "/agent", 30);
-				out.at("/agent").should.equal(20); // since already present
-
-				out.replace( "/agent", 30);
-				out.at("/agent").should.equal(30);
 			});
 
 			it('should ignore trailing slash', function() {
 				var out = CUT.make_new();
 
 				// preparation
-				out.insert("/agent", 20);
+				out.ensure("/agent").foo = 20;
 
 				// read back
-				out.at("/agent").should.equal(20);
+				out.at("/agent").foo.should.equal(20);
 				// this is equivalent, so we must get the same number
-				out.at("/agent/").should.equal(20);
-
-				// concurrent case : this is the same !
-				var tempfn = function() { out.insert("/agent/", 21); };
-				tempfn.should.throw(EE.InvalidArgument, "This route already has attached data !");
+				out.at("/agent/").foo.should.equal(20);
 			});
 
 			it('should handle ids', function() {
 				var out = CUT.make_new();
 
 				// preparation
-				out.insert("/order/:id", 30);
+				out.ensure("/order/:id").foo = 30;
 
 				// simple
-				out.at("/order/1").should.equal(30);
+				out.at("/order/1").foo.should.equal(30);
 				// the number we attached to this route
 
 				// anything should work
-				out.at("/order/123soleil").should.equal(30);
+				out.at("/order/123soleil").foo.should.equal(30);
 
 				// limit : huge value should be detected and should not crash
-				out.at("/order/98765432109876543210").should.equal(30);
+				out.at("/order/98765432109876543210").foo.should.equal(30);
 			});
 
 			it('should enforce limits on route size', function() {
 				var out = CUT.make_new();
 
-				var tempfn = function() { out.insert("/abcdefghijklmnopqrstuvwxyzabcdef", 30); };
+				var tempfn = function() { out.ensure("/abcdefghijklmnopqrstuvwxyzabcdef"); };
 				tempfn.should.throw(CUT.exceptions.MalformedRouteError, "Route malformed : segment too long !");
 
 				tempfn = function() { out.at("" +
@@ -127,7 +107,7 @@ function(chai, _, CUT, EE) {
 				"/abcdefghi/abcdefghi/abcdefghi/abcdefghi/abcdefghi" +
 				"/abcdefghi/abcdefghi/abcdefghi/abcdefghi/abcdefghi" +
 				"/abcdefghi/abcdefghi/abcdefghi/abcdefghi/abcdefghi" +
-				"/").should.equal(30); };
+				"/"); };
 				tempfn.should.throw(CUT.exceptions.MalformedRouteError, "Route malformed : route too long !");
 			});
 		}); // describe feature
@@ -138,14 +118,14 @@ function(chai, _, CUT, EE) {
 				var out = CUT.make_new();
 
 				// preparation
-				out.insert("/order/:id", 30);
+				out.ensure("/order/:id").foo = 30;
 
 				//
 				var match_infos = out.detailed_at("/order/378");
 				match_infos.should.exist;
 
 				match_infos.found.should.be.true;
-				match_infos.payload.should.equals(30);
+				match_infos.payload.should.deep.equals({foo:30});
 				match_infos.last_id.should.equals('378');
 				match_infos.ids['order'].should.equals('378');
 
@@ -168,14 +148,14 @@ function(chai, _, CUT, EE) {
 				var out = CUT.make_new();
 
 				// preparation
-				out.insert("/firm/:id/order/:id/part/:id", 50);
+				out.ensure("/firm/:id/order/:id/part/:id").foo = 50;
 
 				//
 				var match_infos = out.detailed_at("/firm/ACME/order/513/part/2b");
 				match_infos.should.exist;
 
 				match_infos.found.should.be.true;
-				match_infos.payload.should.equals(50);
+				match_infos.payload.should.deep.equals({foo:50});
 				match_infos.last_id.should.equals('2b');
 				match_infos.ids['firm'].should.equals('ACME');
 				match_infos.ids['order'].should.equals('513');
@@ -215,133 +195,6 @@ function(chai, _, CUT, EE) {
 			it('should handle ill-formed requests');
 
 		}); // describe feature
-
-/*
-		 TEST(ct_ccf_utils_UrlMatcher, iterator)
-		 {
-		 // simple case 1
-		 {
-		 SimpleUrlMatcher<int> r;
-
-		 // nothing in the tree
-
-		 SimpleUrlMatcher<int>::const_iterator it = r.getIterator();
-
-		 EXPECT_FALSE( it.endReached() ); // since there is always at last the root node
-
-		 EXPECT_EQ( "/", it->getCanonicalRoute() );
-
-		 it.iterateForward();
-		 EXPECT_TRUE( it.endReached() ); // there was only one node
-		 }
-
-		 // slightly more complicated
-		 {
-		 SimpleUrlMatcher<int> r;
-
-		 r.createRouteAndAttachInfos("/toto", 50);
-
-		 SimpleUrlMatcher<int>::const_iterator it = r.getIterator();
-
-		 EXPECT_FALSE( it.endReached() );
-		 EXPECT_EQ( "/", it->getCanonicalRoute() );
-
-		 it.iterateForward();
-		 EXPECT_FALSE( it.endReached() );
-		 EXPECT_EQ( "/toto", it->getCanonicalRoute() );
-
-		 it.iterateForward();;
-		 EXPECT_TRUE( it.endReached() );
-		 }
-
-		 // slightly more complicated
-		 {
-		 SimpleUrlMatcher<int> r;
-
-		 r.createRouteAndAttachInfos("/order/<id>", 50);
-
-		 SimpleUrlMatcher<int>::const_iterator it = r.getIterator();
-
-		 EXPECT_FALSE( it.endReached() );
-		 EXPECT_EQ( "/", it->getCanonicalRoute() );
-
-		 it.iterateForward();
-		 EXPECT_FALSE( it.endReached() );
-		 EXPECT_EQ( "/order", it->getCanonicalRoute() );
-
-		 it.iterateForward();
-		 EXPECT_FALSE( it.endReached() );
-		 EXPECT_EQ( "/order/<id>", it->getCanonicalRoute() );
-
-		 it.iterateForward();
-		 EXPECT_TRUE( it.endReached() );
-		 }
-
-		 {
-		 SimpleUrlMatcher<int> r;
-
-		 // init
-		 r.createRouteAndAttachInfos("/firm/<id>/order/<id>", 50);
-		 r.createRouteAndAttachInfos("/class/<id>", 50);
-
-		 SimpleUrlMatcher<int>::const_iterator it = r.getIterator();
-
-		 EXPECT_FALSE( it.endReached() );
-		 EXPECT_EQ( "/", it->getCanonicalRoute() );
-
-		 it.iterateForward();
-		 EXPECT_FALSE( it.endReached() );
-		 EXPECT_EQ( "/class", it->getCanonicalRoute() );
-
-		 it.iterateForward();
-		 EXPECT_FALSE( it.endReached() );
-		 EXPECT_EQ( "/class/<id>", it->getCanonicalRoute() );
-
-		 it.iterateForward();
-		 EXPECT_FALSE( it.endReached() );
-		 EXPECT_EQ( "/firm", it->getCanonicalRoute() );
-
-		 it.iterateForward();
-		 EXPECT_FALSE( it.endReached() );
-		 EXPECT_EQ( "/firm/<id>", it->getCanonicalRoute() );
-
-		 it.iterateForward();
-		 EXPECT_FALSE( it.endReached() );
-		 EXPECT_EQ( "/firm/<id>/order", it->getCanonicalRoute() );
-
-		 it.iterateForward();
-		 EXPECT_FALSE( it.endReached() );
-		 EXPECT_EQ( "/firm/<id>/order/<id>", it->getCanonicalRoute() );
-
-		 it.iterateForward();
-		 EXPECT_TRUE( it.endReached() );
-		 }
-		 }
-
-
-		 TEST(ct_ccf_utils_UrlMatcher, dataIterator)
-		 {
-		 {
-		 SimpleUrlMatcher<int> r;
-
-		 // init
-		 r.createRouteAndAttachInfos("/firm/<id>/order/<id>", 10);
-		 r.createRouteAndAttachInfos("/class/<id>", 20);
-
-		 UrlMatcherDataConstIterator<CustomRouteData<int> > it( r.getIterator() );
-
-		 EXPECT_FALSE( it.endReached() );
-		 EXPECT_EQ( 20, it->details_ );
-
-		 it.iterateForward();
-		 EXPECT_FALSE( it.endReached() );
-		 EXPECT_EQ( 10, it->details_ );
-
-		 it.iterateForward();
-		 EXPECT_TRUE( it.endReached() );
-		 }
-		 }
-		 */
 
 	}); // describe CUT
 }); // requirejs module

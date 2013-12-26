@@ -47,7 +47,7 @@ function request_enrichment_module_def(_, when, EE) {
 
 		// note : closure
 		request.get_match_infos = function() {
-			return get_match_infos_implementation( request );
+			return get_match_infos_implementation( this );
 		};
 	}
 

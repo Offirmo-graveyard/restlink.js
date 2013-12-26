@@ -134,6 +134,10 @@ function(_, when, EE, StartableObject, RestIndexedContainer, ServerSession) {
 		return this.head_middleware_.initiate_processing(request);
 	};
 
+	methods.get_rest_indexed_container = function() {
+		return this.rest_indexed_shared_container;
+	};
+
 
 	////////////////////////////////////
 

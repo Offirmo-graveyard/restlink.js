@@ -4,14 +4,19 @@ define(
 [
 	'chai',
 	'when',
-	'restlink/server/restlink_server',
+
+	'base-objects/backbone/base_model',
+	'generic_store/generic_store',
+	'base-objects/backbone/sync_to_store_mixin',
+
+	'restlink/server',
 	'restlink/server/adapters/direct',
 	'restlink/core/request',
 	'restlink/core/response',
 	'network-constants/http',
 	'mocha'
 ],
-function(chai, when, CUT, DirectServerAdapter, Request, Response, http_constants) {
+function(chai, when, BaseModel, GenericStore, SymcToStoreMixin, CUT, DirectServerAdapter, Request, Response, http_constants) {
 	"use strict";
 
 	var expect = chai.expect;
@@ -81,7 +86,7 @@ function(chai, when, CUT, DirectServerAdapter, Request, Response, http_constants
 
 			it('should work', function(signalAsyncTestFinished) {
 				var out = CUT.make_new();
-				// let's try the direct adapter (even it already has one)
+				// let's try the direct adapter (even if it already has one)
 				var direct_adapter = DirectServerAdapter.make_new();
 				out.add_adapter(direct_adapter);
 
@@ -136,11 +141,12 @@ function(chai, when, CUT, DirectServerAdapter, Request, Response, http_constants
 
 		describe('request handling', function() {
 
-			it('should be configurable and should work', function() {
+			it('should be configurable and should work', function(signalAsyncTestFinished) {
 				var out = CUT.make_new();
 
 				var teapot_BREW_callback = function(request, response) {
 					response.return_code = http_constants.status_codes.status_400_client_error_bad_request;
+					response.content_type = 'text';
 					response.content = "I'm a teapot !";
 					response.send();
 				};
@@ -157,8 +163,59 @@ function(chai, when, CUT, DirectServerAdapter, Request, Response, http_constants
 					response.uri.should.equal("/stanford/teapot");
 					response.return_code.should.equal(http_constants.status_codes.status_400_client_error_bad_request);
 					expect(response.content).to.equals("I'm a teapot !");
+					signalAsyncTestFinished();
 				});
 				promise.otherwise(function on_failure(){
+					expect(false).to.be.ok;
+				});
+			});
+
+		}); // describe feature
+
+
+
+		describe('REST handling', function() {
+
+			it('should allow easy service of a backbone model', function(signalAsyncTestFinished) {
+				// create a restlink server
+				var out = CUT.make_new();
+
+				// create a new augmented model
+				var OrderModel = BaseModel.extend({urlRoot : '/order'});
+				SymcToStoreMixin.mixin(OrderModel.prototype);
+
+				// set a model-wide store
+				var store = GenericStore.make_new("memory");
+				SymcToStoreMixin.set_model_store(OrderModel.prototype, store);
+
+				// ask restlink to serve it at the given uri
+				out.serve_model_at('/api/v1.0', OrderModel);
+
+				out.startup();
+				var client = out.open_direct_connection();
+
+				// from Jim Webber examples
+				var request1 = Request.make_new()
+						.with_url('/api/v1.0/order')
+						.with_method('POST')
+						.with_content({
+							items: [
+								{
+									drink: 'latte',
+									size: 'large'
+								}
+							],
+							location: 'takeaway'
+						});
+				var promise1 = client.process_request(request1);
+				promise1.spread(function on_success(request, response){
+					response.method.should.equal('POST');
+					response.uri.should.equal('/api/v1.0/order');
+					response.return_code.should.equal(http_constants.status_codes.status_200_ok);
+					expect(response.content).to.have.property('id');
+					signalAsyncTestFinished();
+				});
+				promise1.otherwise(function on_failure(){
 					expect(false).to.be.ok;
 				});
 			});

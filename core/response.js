@@ -46,11 +46,17 @@ function(_, http_constants) {
 	//methods. = ;
 	// easy setting. Note the "return this" for fluid interface
 	methods.with_uri          = function(uri)     { this.uri          = uri;      return this; };
-	methods.with_status       = function(code)    { this.return_code = code;      return this; };
+	methods.with_url          = methods.with_uri; // alias
+	methods.with_status       = function(code)    { this.return_code  = code;     return this; };
 	methods.with_meta         = function(meta)    { this.meta         = meta;     return this; };
 	methods.with_content      = function(content) { this.content      = content;  return this; };
+	methods.with_content_type = function(content_type) { this.content_type = content_type; return this; };
 
 	// utilities
+	methods.set_to_ok      = function() {
+		this.return_code = http_constants.status_codes.status_200_ok;
+		return this; // for fluid
+	};
 	methods.set_to_error      = function(error_code, optional_content) {
 		this.return_code = error_code;
 		if(typeof optional_content !== "undefined") {
@@ -58,6 +64,7 @@ function(_, http_constants) {
 		}
 		else {
 			// use the error message as content
+			this.content_type = 'text';
 			this.content = http_constants.status_messages[error_code];
 		}
 		return this; // for fluid
@@ -71,29 +78,6 @@ function(_, http_constants) {
 	methods.set_to_not_found = function(optional_content) {
 		return this.set_to_error(http_constants.status_codes.status_404_client_error_not_found, optional_content);
 	};
-
-	// utility
-	function make_new_from_request(request, attrs) {
-		var default_response = this.make_new();
-
-		// 1st init with request values
-		var temp_response = _.defaults({
-			method       : request.method,
-			uri          : request.uri,
-			content_type : request.content_type
-			// REM : status already has a default
-		}, default_response);
-
-		// then overwrite with explicite values (if any)
-		attrs || (attrs = {});
-		var response = _.defaults(attrs, temp_response);
-
-		// deep for meta
-		attrs.meta || (attrs.meta = {});
-		response.meta = _.defaults(attrs.meta, temp_response.meta);
-
-		return response;
-	}
 
 	////////////////////////////////////
 	Object.freeze(constants);
@@ -111,6 +95,29 @@ function(_, http_constants) {
 	DefinedClass.prototype.exceptions = exceptions;
 	_.extend(DefinedClass.prototype, methods);
 
+
+	// utility
+	function make_new_from_request(request, attrs) {
+		var response = new DefinedClass();
+
+		// 1st init with request values
+		_.extend(response,
+			{
+				method       : request.method,
+				uri          : request.uri,
+				content_type : request.content_type
+			});
+
+		// then overwrite with explicite values (if any)
+		attrs || (attrs = {});
+		_.extend(response, attrs);
+
+		// deep for meta
+		attrs.meta || (attrs.meta = {});
+		_.extend(response.meta, attrs.meta);
+
+		return response;
+	}
 
 	////////////////////////////////////
 	return {

@@ -29,6 +29,7 @@ function(_, when, EE, Core, BaseMiddleware) {
 			// add a default middleware
 			this.use(BaseMiddleware.make_new(function process(req, res, next) {
 				res.set_to_not_implemented("Server is misconfigured. Please add middlewares to handle requests !");
+				res.content_type = 'text';
 				res.send();
 			}));
 		}

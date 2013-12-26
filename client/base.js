@@ -9,9 +9,10 @@ define(
 	'when',
 	'extended-exceptions',
 	'restlink/core/request',
+	'restlink/utils/serialization_utils',
 	'network-constants/http'
 ],
-function(_, when, EE, Request, http_constants) {
+function(_, when, EE, Request, SerializationUtils, http_constants) {
 	"use strict";
 
 
@@ -52,9 +53,21 @@ function(_, when, EE, Request, http_constants) {
 		if(!this.connected_)
 			throw new EE.IllegalStateError("This client is disconnected !");
 
-		var result_deferred = when.defer();
+		// check the request and correct it if needed
+		SerializationUtils.auto_serialize_content_if_needed(request);
 
-		this.resolve_request_(request, result_deferred);
+		var result_deferred = when.defer();
+		var temp_deferred = when.defer();
+
+		this.resolve_request_(request, temp_deferred);
+		temp_deferred.promise.spread(function(request, response) {
+			SerializationUtils.auto_deserialize_content_if_needed(request);
+			SerializationUtils.auto_deserialize_content_if_needed(response);
+			result_deferred.resolve( [request, response] );
+		});
+		temp_deferred.promise.otherwise(function() {
+			result_deferred.reject( arguments );
+		});
 
 		return result_deferred.promise;
 	};

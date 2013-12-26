@@ -37,74 +37,35 @@ function(_, RouteIndexedContainer, EE) {
 
 
 	////////////////////////////////////
-	// private methods
-	function route_indexed_container_entry() {
-	}
-	function action_container_entry() {
-	}
-
-	////////////////////////////////////
 	//methods. = ;
-
-	methods.get_bound_interface = function(key) {
-		if(!_.isString(key)) throw new EE.InvalidArgument("key arg should be a string !");
-
-		// prepare our closure
-		var this_ = this;
-		var key_ = key; // needed ?
-
-		return {
-			ensure : function(route, action) {
-				return this_.internal_ensure(route, action, key_);
-			},
-
-			at : function(route, action) {
-				return this_.internal_at(route, action, key_);
-			},
-
-			detailed_at : function(route, action) {
-				return this_.internal_detailed_at(route, action, key_);
-			}
-		};
-	};
 
 	// naming notes :
 	// ri = route indexed
 	// rai = route+action indexed
 
-	methods.internal_ensure = function(route, action, key) {
+	methods.internal_ensure = function(route, action) {
 		if(!_.isString(route)) throw new EE.InvalidArgument("route arg should be a string !");
 		if(!_.isString(action)) throw new EE.InvalidArgument("action arg should be a string !");
-		if(!_.isString(key)) throw new EE.InvalidArgument("key arg should be a string !");
 
-		var ri_entry = this.internal_container_.insert_if_not_present(route, new route_indexed_container_entry());
+		var ri_entry = this.internal_container_.ensure(route);
 		if(! ri_entry.hasOwnProperty(action))
-			ri_entry[action] = new action_container_entry();
+			ri_entry[action] = {};
 		var rai_entry = ri_entry[action];
-		if(! rai_entry.hasOwnProperty(key))
-			rai_entry[key] = {};
-		return rai_entry[key];
+		return rai_entry;
 	};
 
-	methods.internal_at = function(route, action, key) {
+	methods.internal_at = function(route, action) {
 		if(!_.isString(route)) throw new EE.InvalidArgument("route arg should be a string !");
 		if(!_.isString(action)) throw new EE.InvalidArgument("action arg should be a string !");
-		if(!_.isString(key)) throw new EE.InvalidArgument("key arg should be a string !");
 
 		var ri_entry = this.internal_container_.at(route);
 
-		return ri_entry ? (ri_entry[action] ? ri_entry[action][key] : undefined) : undefined;
+		return ri_entry ? ri_entry[action] : undefined;
 	};
 
-	/* Note : key is optional
-	 * because we may want to match once for all,
-	 * then share the result with several users.
-	 * So the resulting payload is slightly different according to the case
-	 */
-	methods.internal_detailed_at = function(route, action, key) {
+	methods.internal_detailed_at = function(route, action) {
 		if(!_.isString(route)) throw new EE.InvalidArgument("route arg should be a string !");
 		if(!_.isString(action)) throw new EE.InvalidArgument("action arg should be a string !");
-		if(typeof key !== 'undefined' && !_.isString(key)) throw new EE.InvalidArgument("If it exists, key arg should be a string !");
 
 		var ri_match_infos = this.internal_container_.detailed_at(route);
 
@@ -114,7 +75,8 @@ function(_, RouteIndexedContainer, EE) {
 
 		// alter result
 		if (ri_match_infos.found) {
-
+			if(ri_match_infos.found && !ri_match_infos.hasOwnProperty('payload'))
+				throw new EE.InvariantNotMetError('ri_match_infos payload !');
 			if(!ri_match_infos.payload.hasOwnProperty(action)) {
 				ri_match_infos.found = false;
 			}
@@ -122,7 +84,9 @@ function(_, RouteIndexedContainer, EE) {
 				ri_match_infos.action_found = true;
 				var rai_entry = ri_match_infos.payload[action];
 
-				if(typeof key !== 'undefined') {
+				ri_match_infos.payload = rai_entry;
+
+				/*if(typeof key !== 'undefined') {
 					if(!rai_entry.hasOwnProperty(key)) {
 						ri_match_infos.found = false;
 					}
@@ -147,11 +111,23 @@ function(_, RouteIndexedContainer, EE) {
 						'get_data' : get_data,
 						'get_and_optionally_create_data' : get_and_optionally_create_data
 					};
-				}
+				}*/
 			}
 		}
 
 		return ri_match_infos;
+	};
+
+	methods.ensure = function(route, action) {
+		return this.internal_ensure(route, action);
+	};
+
+	methods.at = function(route, action) {
+		return this.internal_at(route, action);
+	};
+
+	methods.detailed_at = function(route, action) {
+		return this.internal_detailed_at(route, action);
 	};
 
 	methods.shared_detailed_at = function(route, action) {

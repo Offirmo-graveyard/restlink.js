@@ -72,13 +72,29 @@ function(chai, CUT, Request, http_constants) {
 				var out = CUT.make_new_from_request(request)
 						.with_status(400)
 						.with_content("Dude, I'm a teapot !")
+						.with_content_type('smurf/text')
 						.with_meta({ 'traceroute': true });
 
 				out.method.should.equal('BREW');
 				out.uri.should.equal('/stanford/teapot');
 				out.return_code.should.equal(http_constants.status_codes.status_400_client_error_bad_request);
 				out.content.should.equal("Dude, I'm a teapot !");
+				out.content_type.should.equal('smurf/text');
 				out.meta.should.deep.equal({ 'traceroute': true });
+			});
+
+
+			it('should allow easy setting of return code to OK', function() {
+				var request = Request.make_new_stanford_teapot();
+				var out = CUT.make_new_from_request(request);
+
+				out.with_content('toto');
+				out.set_to_ok();
+				out.method.should.equal('BREW');
+				out.uri.should.equal('/stanford/teapot');
+				out.return_code.should.equal(http_constants.status_codes.status_200_ok);
+				out.content.should.equals('toto'); // should not have been altered
+				out.content_type.should.equals('application/json'); // should not have been altered
 			});
 
 
@@ -86,20 +102,21 @@ function(chai, CUT, Request, http_constants) {
 				var request = Request.make_new_stanford_teapot();
 				var out = CUT.make_new_from_request(request);
 
-				out.set_to_error(http_constants.status_codes.status_403_client_forbidden);
-
-				out.method.should.equal('BREW');
-				out.uri.should.equal('/stanford/teapot');
-				out.return_code.should.equal(http_constants.status_codes.status_403_client_forbidden);
-				out.content.should.equals('Forbidden');
-
-				// same but with a content
+				// with an explicit content
 				out.set_to_error(http_constants.status_codes.status_403_client_forbidden, "my error content");
-
 				out.method.should.equal('BREW');
 				out.uri.should.equal('/stanford/teapot');
 				out.return_code.should.equal(http_constants.status_codes.status_403_client_forbidden);
 				out.content.should.equals("my error content");
+				out.content_type.should.equals('application/json'); // default was kept
+
+				// with auto content
+				out.set_to_error(http_constants.status_codes.status_403_client_forbidden);
+				out.method.should.equal('BREW');
+				out.uri.should.equal('/stanford/teapot');
+				out.return_code.should.equal(http_constants.status_codes.status_403_client_forbidden);
+				out.content.should.equals('Forbidden');
+				out.content_type.should.equals('text'); // was automatically updated
 			});
 
 
@@ -107,20 +124,21 @@ function(chai, CUT, Request, http_constants) {
 				var request = Request.make_new_stanford_teapot();
 				var out = CUT.make_new_from_request(request);
 
-				out.set_to_not_implemented();
-
-				out.method.should.equal('BREW');
-				out.uri.should.equal('/stanford/teapot');
-				out.return_code.should.equal(http_constants.status_codes.status_501_server_error_not_implemented);
-				out.content.should.equals('Not Implemented');
-
-				// same but with a content
+				// with an explicit content
 				out.set_to_not_implemented("my NIMP content");
-
 				out.method.should.equal('BREW');
 				out.uri.should.equal('/stanford/teapot');
 				out.return_code.should.equal(http_constants.status_codes.status_501_server_error_not_implemented);
 				out.content.should.equals("my NIMP content");
+				out.content_type.should.equals('application/json'); // default was kept
+
+				// with auto content
+				out.set_to_not_implemented();
+				out.method.should.equal('BREW');
+				out.uri.should.equal('/stanford/teapot');
+				out.return_code.should.equal(http_constants.status_codes.status_501_server_error_not_implemented);
+				out.content.should.equals('Not Implemented');
+				out.content_type.should.equals('text'); // was automatically updated
 			});
 
 
@@ -128,20 +146,21 @@ function(chai, CUT, Request, http_constants) {
 				var request = Request.make_new_stanford_teapot();
 				var out = CUT.make_new_from_request(request);
 
-				out.set_to_internal_error();
-
-				out.method.should.equal('BREW');
-				out.uri.should.equal('/stanford/teapot');
-				out.return_code.should.equal(http_constants.status_codes.status_500_server_error_internal_error);
-				out.content.should.equals('Internal Server Error');
-
-				// same but with a content
+				// with an explicit content
 				out.set_to_internal_error("my IE content");
-
 				out.method.should.equal('BREW');
 				out.uri.should.equal('/stanford/teapot');
 				out.return_code.should.equal(http_constants.status_codes.status_500_server_error_internal_error);
 				out.content.should.equals("my IE content");
+				out.content_type.should.equals('application/json'); // default was kept
+
+				// with auto content
+				out.set_to_internal_error();
+				out.method.should.equal('BREW');
+				out.uri.should.equal('/stanford/teapot');
+				out.return_code.should.equal(http_constants.status_codes.status_500_server_error_internal_error);
+				out.content.should.equals('Internal Server Error');
+				out.content_type.should.equals('text'); // was automatically updated
 			});
 
 
@@ -149,20 +168,21 @@ function(chai, CUT, Request, http_constants) {
 				var request = Request.make_new_stanford_teapot();
 				var out = CUT.make_new_from_request(request);
 
-				out.set_to_not_found();
-
-				out.method.should.equal('BREW');
-				out.uri.should.equal('/stanford/teapot');
-				out.return_code.should.equal(http_constants.status_codes.status_404_client_error_not_found);
-				out.content.should.equals('Not Found');
-
-				// same but with a content
+				// with an explicit content
 				out.set_to_not_found("my 404 content");
-
 				out.method.should.equal('BREW');
 				out.uri.should.equal('/stanford/teapot');
 				out.return_code.should.equal(http_constants.status_codes.status_404_client_error_not_found);
 				out.content.should.equals("my 404 content");
+				out.content_type.should.equals('application/json'); // default was kept
+
+				// with auto content
+				out.set_to_not_found();
+				out.method.should.equal('BREW');
+				out.uri.should.equal('/stanford/teapot');
+				out.return_code.should.equal(http_constants.status_codes.status_404_client_error_not_found);
+				out.content.should.equals('Not Found');
+				out.content_type.should.equals('text'); // was automatically updated
 			});
 
 		}); // describe feature

@@ -62,21 +62,23 @@ function(chai, when, CUT, BaseMiddleware, RestIndexedContainer, DebugCore, Reque
 				var session = core.startup_and_create_session();
 
 
-				var teapot_BREW_callback = function ( request, response) {
+				var teapot_BREW_callback = function (request, response) {
 					response.set_to_error(
 							http_constants.status_codes.status_400_client_error_bad_request,
 							"I'm a teapot !");
 					response.send();
 				};
 
-				var firm_GET_callback = function( request, response) {
+				var firm_GET_callback = function(request, response) {
 					response.return_code = http_constants.status_codes.status_200_ok;
 					response.content = "I'm here !";
 					response.send();
 				};
 
-				out.add_callback_handler(core.rest_indexed_shared_container, "/stanford/teapot", "BREW", teapot_BREW_callback);
-				out.add_callback_handler(core.rest_indexed_shared_container, "/firm/:id",        "GET",  firm_GET_callback);
+				var payload1 = out.add_callback_handler(core.rest_indexed_shared_container, "/stanford/teapot", "BREW", teapot_BREW_callback);
+				expect( payload1).to.be.an.object;
+				var payload2 = out.add_callback_handler(core.rest_indexed_shared_container, "/firm/:id",        "GET",  firm_GET_callback);
+				expect( payload2).to.be.an.object;
 
 				var deferred1 = when.defer();
 				var request = Request.make_new_stanford_teapot();

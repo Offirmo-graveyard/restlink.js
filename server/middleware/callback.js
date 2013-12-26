@@ -23,7 +23,7 @@ function(_, RestlinkMiddlewareBase, RouteIndexedContainer, EE, http_constants) {
 
 
 	////////////////////////////////////
-	constants.shared_container_key = "ActualRequestHandler";
+	//constants. = ;
 
 
 	////////////////////////////////////
@@ -39,6 +39,19 @@ function(_, RestlinkMiddlewareBase, RouteIndexedContainer, EE, http_constants) {
 
 
 	////////////////////////////////////
+	// util
+	function test_callback_object_prop(object) {
+		return object.hasOwnProperty('callback_mw_infos_')
+	}
+	function get_callback_object_prop(object) {
+		return object.callback_mw_infos_;
+	}
+	function ensure_callback_object_prop(object) {
+		if(!test_callback_object_prop(object))
+			object.callback_mw_infos_ = {};
+		return get_callback_object_prop(object);
+	}
+
 	// our custom processing function
 	function processing_function(request, response, next, that) {
 
@@ -64,13 +77,15 @@ function(_, RestlinkMiddlewareBase, RouteIndexedContainer, EE, http_constants) {
 				handled = true;
 			}
 			else {
-				var my_data = match_infos.payload.get_and_optionally_create_data(constants.shared_container_key);
+				if(test_callback_object_prop(match_infos.payload)) {
+					var my_data = get_callback_object_prop( match_infos.payload );
 
-				if( typeof my_data.callback === 'function' ) {
-					// should call send when ready.
-					// May not call next.
-					my_data.callback(request, response);
-					handled = true; // hopefully, if the callback is well written...
+					if( typeof my_data.callback === 'function' ) {
+						// should call send when ready.
+						// May not call next.
+						my_data.callback(request, response);
+						handled = true; // hopefully, if the callback is well written...
+					}
 				}
 			}
 		}
@@ -101,17 +116,20 @@ function(_, RestlinkMiddlewareBase, RouteIndexedContainer, EE, http_constants) {
 		}
 	}
 
+	// register a callback to the designated route+action
+	// returns the shared payload for the route+action, useful for adding data for the callback
 	methods.add_callback_handler = function(rest_indexed_container, route, action, callback, replace_existing) {
 		if (typeof replace_existing === 'undefined') { replace_existing = false; }
 
-		var container = rest_indexed_container.get_bound_interface(constants.shared_container_key);
-
-		var entry = container.ensure(route, action);
+		var payload = rest_indexed_container.ensure(route, action);
+		var entry = ensure_callback_object_prop( payload );
 
 		if(entry.callback && !replace_existing)
 			throw new EE.InvalidArgument("Conflict : a callback is already set for this REST endpoint.");
 
 		entry.callback = callback;
+
+		return payload;
 	};
 
 	////////////////////////////////////

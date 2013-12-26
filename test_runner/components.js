@@ -17,7 +17,9 @@ requirejs.config({
 	map: {
 		'*': {
 			// an extension to be able to wait for the DOM to be ready
-			"domReady": "bower_components/requirejs-domready/domReady"
+			"domReady": "bower_components/requirejs-domready/domReady",
+			// underscore is now replaced by lodash
+			"underscore": "lodash"
 		}
 	},
 
@@ -27,6 +29,7 @@ requirejs.config({
 		// AMD plugins (dirs or direct)
 		"base-objects"        : "../../base-objects.js", // dir
 		"extended-exceptions" : "../../extended-exceptions.js/extended_exceptions", // direct
+		"generic_store"       : "../../generic_store.js", // dir
 		"network-constants"   : "../../network-constants.js", // dir
 		"restlink"            : "..", // dir
 		// shim plugins
@@ -34,7 +37,7 @@ requirejs.config({
 		"chai"                : "bower_components/chai/chai",
 		"json2"               : "bower_components/json2/json2",
 		"mocha"               : "bower_components/mocha/mocha",
-		"underscore"          : "bower_components/underscore/underscore",
+		"lodash"              : "bower_components/lodash/dist/lodash",
 		"store"               : "bower_components/store.js/store",
 		"when"                : "bower_components/when/when"
 	},
@@ -45,6 +48,9 @@ requirejs.config({
 		"backbone": {
 			deps: [ "underscore" ],
 			exports: "Backbone"
+		},
+		"lodash": {
+			exports: "_"
 		},
 		"mocha" : {
 			deps: [ ],
@@ -58,9 +64,6 @@ requirejs.config({
 		"store": {
 			deps: [ "json2" ],
 			exports: "store"
-		},
-		"underscore": {
-			exports: "_"
 		}
 	}
 });

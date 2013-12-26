@@ -51,6 +51,7 @@ function(_, Response) {
 	////////////////////////////////////
 	// easy setting. Note the "return this" for fluid interface
 	methods.with_uri          = function(uri)          { this.uri          = uri;          return this; };
+	methods.with_url          = methods.with_uri; // alias
 	methods.with_method       = function(method)       { this.method       = method;       return this; };
 	methods.with_meta         = function(meta)         { this.meta         = meta;         return this; };
 	methods.with_content_type = function(content_type) { this.content_type = content_type; return this; };

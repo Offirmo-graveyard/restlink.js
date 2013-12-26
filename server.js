@@ -13,9 +13,10 @@ define(
 	'restlink/server/middleware/base',
 	'restlink/server/middleware/logger',
 	'restlink/server/middleware/callback',
-	'restlink/server/adapters/direct'
+	'restlink/server/adapters/direct',
+	'restlink/utils/serve_backbone_model'
 ],
-function(_, NamedObject, StartableObject, ServerCore, BaseMiddleware, LoggerMiddleware, CallbackMiddleware, DirectServerAdapter) {
+function(_, NamedObject, StartableObject, ServerCore, BaseMiddleware, LoggerMiddleware, CallbackMiddleware, DirectServerAdapter, BBModelServiceUtils) {
 	"use strict";
 
 
@@ -96,8 +97,8 @@ function(_, NamedObject, StartableObject, ServerCore, BaseMiddleware, LoggerMidd
 		CallbackMiddleware.add_callback_handler(this.core_.rest_indexed_shared_container, route, method, handler, replace_existing);
 	};
 
-	methods.add_restful_rsrc_handler = function(restful_handler, replace_existing) {
-		//todo !
+	methods.serve_model_at = function(route, model, options) {
+		BBModelServiceUtils.register_rest_routes_for_model(this.core_, route, model, options);
 	};
 
 

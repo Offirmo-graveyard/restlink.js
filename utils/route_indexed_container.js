@@ -62,7 +62,7 @@ function(_, EE) {
 		this.is_id_ = (segment === constants.id_marker);
 		this.parent_ = parent; // beware of circular references
 		this.rank_ = typeof parent === 'undefined' ? 0 : parent.rank_ + 1;
-		this.payload_ = undefined;
+		this.payload_ = {};
 
 		this.is_id = function() { return this.is_id_; };
 		this.has_id_child = function() {
@@ -155,7 +155,8 @@ function(_, EE) {
 			found: true, // for now, by default
 			last_id: undefined,
 			segments: [],
-			ids: {}
+			ids: {},
+			payload: undefined
 		};
 		var index = 0;
 		// fill data for route node which always match
@@ -244,48 +245,34 @@ function(_, EE) {
 			return true; // continue the loop
 		});
 
+		if(!match_result.found)
+			match_result.payload = undefined;
+
 		return match_result;
 	};
 
 	// create if needed
-	methods.create_nodes = function(route) {
+	methods.create_nodes_as_needed = function(route) {
 		var match_infos = this.find_and_optionally_create_node_(route, true, true);
 		return match_infos.segments[match_infos.segments.length-1].internal_node;
 	};
 
-	methods.insert = function(route, data) {
-		var node = this.create_nodes(route);
-
-		if(typeof node.payload_ !== 'undefined')
-			throw new EE.InvalidArgument("Conflict : This route already has attached data !");
-
-		node.payload_ = data;
+	// returns the payload
+	// create if needed
+	methods.ensure = function(route) {
+		var node = this.create_nodes_as_needed(route);
 
 		return node.payload_; // allow immediate modification
 	};
 
-	methods.insert_if_not_present = function(route, data) {
-		var node = this.create_nodes(route);
-
-		if(typeof node.payload_ === 'undefined')
-			node.payload_ = data;
-
-		return node.payload_; // allow immediate modification
-	};
-
-	methods.replace = function(route, data) {
-		var node = this.create_nodes(route);
-
-		node.payload_ = data;
-
-		return node.payload_; // allow immediate modification
-	};
-
+	// returns the payload
+	// do not create if missing
 	methods.at = function(route) {
 		var node = this.get_node_(route);
 		return node ? node.payload_ : undefined;
 	};
 
+	// returns the payload inside an objects along with other match inhos
 	methods.detailed_at = function(route) {
 		return this.find_and_optionally_create_node_(route, false, false);
 	};

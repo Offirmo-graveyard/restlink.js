@@ -151,13 +151,17 @@ function(_, EE) {
 		var segments = check_and_split_route_into_segments_(route);
 		if(segments.length === constants.max_segment_count + 1) // indicate maximum was reached
 			throw new exceptions.MalformedRouteError("Route malformed : route too complex !");
+
+		///////
 		var match_result = {
 			found: true, // for now, by default
+			last_segment_type: undefined,
 			last_id: undefined,
 			segments: [],
 			ids: {},
 			payload: undefined
 		};
+
 		var index = 0;
 		// fill data for route node which always match
 		match_result.segments[index] = {
@@ -241,6 +245,7 @@ function(_, EE) {
 				segment_infos.type    = 'fixed';
 				segment_infos.segment = current_node.segment_;
 			}
+			match_result.last_segment_type = segment_infos.type;
 			index++;
 			return true; // continue the loop
 		});

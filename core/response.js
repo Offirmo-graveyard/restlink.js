@@ -47,7 +47,7 @@ function(_, http_constants) {
 	// easy setting. Note the "return this" for fluid interface
 	methods.with_uri          = function(uri)     { this.uri          = uri;      return this; };
 	methods.with_url          = methods.with_uri; // alias
-	methods.with_status       = function(code)    { this.return_code  = code;     return this; };
+	methods.with_status       = function(code)    { this.return_code  = code;      return this; };
 	methods.with_meta         = function(meta)    { this.meta         = meta;     return this; };
 	methods.with_content      = function(content) { this.content      = content;  return this; };
 	methods.with_content_type = function(content_type) { this.content_type = content_type; return this; };

@@ -10,9 +10,10 @@ define(
 	'extended-exceptions',
 	'base-objects/offinh/startable_object',
 	'restlink/server/rest_target_indexed_shared_container',
-	'restlink/server/session'
+	'restlink/server/session',
+	'restlink/utils/serialization_utils',
 ],
-function(_, when, EE, StartableObject, RestIndexedContainer, ServerSession) {
+function(_, when, EE, StartableObject, RestIndexedContainer, ServerSession, SerializationUtils) {
 	"use strict";
 
 
@@ -129,6 +130,9 @@ function(_, when, EE, StartableObject, RestIndexedContainer, ServerSession) {
 
 		if(!request.get_session().is_valid())
 			throw new EE.InvalidArgument("Core : request session is no longer valid !");
+
+		// automatic deserialization if possible, for convenience
+		SerializationUtils.auto_deserialize_content_if_needed(request);
 
 		// REM : middleware will correctly create the response if not provided
 		return this.head_middleware_.initiate_processing(request);

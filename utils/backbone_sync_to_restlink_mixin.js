@@ -1,5 +1,10 @@
 /* A backbone-compatible sync implementation
- * to be added to an object in whatever fashion.
+ * to be mixed to a Backbone Model.
+ * Used routes :
+ * GET /rsrc/id
+ * POST /rsrc
+ * PUT /rsrc/id
+ * DELETE /rsrc/id
  */
 if (typeof define !== 'function') { var define = require('amdefine')(module); }
 

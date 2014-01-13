@@ -4,6 +4,12 @@ restlink.js
 NOT READY !!! PLEASE WAIT A BIT, DEV ACTIVELY IN PROGRESS !
 
 A powerful REST server for node.js + browser with batteries (local, http and socket.io interfaces, optional middleware including sessions, security...) WORK IN PROGRESS
+Strong points :
+- works in browser
+- transport independent
+- allows full HTTP capabilities (i.e. uncommon verb like BREW or anything)
+- if allowed by transport, provides integrated push support (with GET = subscribe)
+- ...
 
 See also :
 https://github.com/mcavage/node-restify

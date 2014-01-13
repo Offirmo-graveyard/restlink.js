@@ -4,7 +4,7 @@ define(
 [
 	'chai',
 	'underscore',
-	'restlink/server/restlink_server',
+	'restlink/server',
 	'restlink/core/request',
 	'base-objects/backbone/base_model',
 	'mocha'
@@ -100,7 +100,7 @@ function(chai, _, RestlinkServer, Request, BaseModel) {
 				restlink_server.set_denomination("test02");
 
 				// add handlers
-				xxx
+				//xxx
 
 				restlink_server.add_restful_rsrc_handler("/stanford/teapot", "BREW", teapot_BREW_callback);
 

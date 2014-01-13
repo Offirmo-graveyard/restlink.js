@@ -26,7 +26,7 @@ function(_, Backbone, when, EE, SerializationUtils) {
 	};
 
 	methods.sync = function(method, model, options) {
-		console.log("sync_to_restlink begin('"+method+"',...) called with ", arguments);
+		//console.log("sync_to_restlink begin('"+method+"',...) called with ", arguments);
 
 		var deferred = when.defer();
 		var restlink = model.restlink_;
@@ -182,7 +182,7 @@ function(_, Backbone, when, EE, SerializationUtils) {
 			deferred.reject( [ model, e ] );
 		}
 
-		console.log("sync_to_restlink end - Current changes = ", model.changed_attributes());
+		//console.log("sync_to_restlink end - Current changes = ", model.changed_attributes());
 		return deferred.promise;
 	};
 

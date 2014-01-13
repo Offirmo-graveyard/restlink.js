@@ -15,12 +15,12 @@
 		"url": "https://github.com/Offirmo/restlink.js.git"
 	},
 	"dependencies": {
-		"base-objects": "latest",
+		"amdefine":            "latest",
+		"base-objects":        "latest",
 		"extended-exceptions": "latest",
-		"network-constants": "latest",
-		"store.js": "latest",
-		"underscore": "latest",
-		"when": "latest"
+		"network-constants":   "latest",
+		"underscore":          "latest",
+		"when":                "latest"
 	},
 	"engines": {
 		"node": ">=0.10.0"
@@ -32,6 +32,6 @@
 		"doc": "doc"
 	},
 	"scripts": {
-		"test": "cd test_runner && npm install && make"
+		"test": "npm install && cd test_runner && make"
 	}
 }

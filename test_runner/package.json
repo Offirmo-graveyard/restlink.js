@@ -1,22 +1,12 @@
 {
 	"name": "restlink-test-runner",
 	"description": "node test runner for restlink.js",
-	"version": "1.0.0",
+	"version": "99.99.99",
 	"private": true,
 	"dependencies": {
-		"underscore":              "latest",
-		"backbone":                "latest",
-		"base-objects":            "latest",
-		"extended-exceptions":     "latest",
-		"json2":                   "latest",
-		"network-constants":       "latest",
-		"store.js":                "latest",
-		"when":                    "latest",
-		
-		"restlink":                "latest",
-		
 		"amdefine":                "latest",
 		"chai":                    "latest",
+		"generic_store":           "latest",
 		"mocha":                   "latest"
 	}
 }

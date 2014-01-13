@@ -1,6 +1,6 @@
 {
 	"name": "restlink-test-runner",
-	"version": "1.0.0",
+	"version": "99.99.99",
 	"dependencies": {
 		"backbone":                "latest",
 		"base-objects.js":         "latest",

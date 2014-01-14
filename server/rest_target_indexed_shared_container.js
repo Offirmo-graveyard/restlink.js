@@ -69,49 +69,29 @@ function(_, RouteIndexedContainer, EE) {
 
 		var ri_match_infos = this.internal_container_.detailed_at(route);
 
+		// enrich returned ri_match_infos
+
 		// systematic
 		ri_match_infos.route_found = ri_match_infos.found;
 		ri_match_infos.action_found = false; // for now
+		// is there any action at all ?
+		// (useful for generating correct error messages)
+		ri_match_infos.found_no_actions_at_all = true; // for now
 
 		// alter result
 		if (ri_match_infos.found) {
-			if(ri_match_infos.found && !ri_match_infos.hasOwnProperty('payload'))
+			if(ri_match_infos.found && !(ri_match_infos.hasOwnProperty('payload') && ri_match_infos.payload))
 				throw new EE.InvariantNotMetError('ri_match_infos payload !');
 			if(!ri_match_infos.payload.hasOwnProperty(action)) {
 				ri_match_infos.found = false;
+				ri_match_infos.found_no_actions_at_all = (Object.getOwnPropertyNames(ri_match_infos.payload).length === 0);
 			}
 			else {
 				ri_match_infos.action_found = true;
 				var rai_entry = ri_match_infos.payload[action];
 
+				ri_match_infos.found_no_actions_at_all = false; // obviously
 				ri_match_infos.payload = rai_entry;
-
-				/*if(typeof key !== 'undefined') {
-					if(!rai_entry.hasOwnProperty(key)) {
-						ri_match_infos.found = false;
-					}
-					else {
-						ri_match_infos.payload = rai_entry[key];
-					}
-				}
-				else {
-					var get_data = function(key) {
-						// note : rai_entry get scoped
-						return rai_entry.hasOwnProperty(key) ? rai_entry[key] : undefined;
-					};
-
-					var get_and_optionally_create_data = function(key) {
-						// note : rai_entry get scoped
-						if(!rai_entry.hasOwnProperty(key))
-							rai_entry[key] = {};
-						return rai_entry[key];
-					};
-
-					ri_match_infos.payload = {
-						'get_data' : get_data,
-						'get_and_optionally_create_data' : get_and_optionally_create_data
-					};
-				}*/
 			}
 		}
 

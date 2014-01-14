@@ -8,9 +8,10 @@ define(
 	'backbone',
 	'when',
 	'extended-exceptions',
-	'restlink/server/middleware/callback'
+	'restlink/server/middleware/callback',
+	'network-constants/http'
 ],
-function(_, Backbone, when, EE, CallbackMiddleware) {
+function(_, Backbone, when, EE, CallbackMiddleware, http_constants) {
 	"use strict";
 
 	function pluralize(word) {
@@ -43,8 +44,9 @@ function(_, Backbone, when, EE, CallbackMiddleware) {
 			var new_instance = new Model(request.content);
 			var promise = new_instance.save();
 			promise.spread(function(instance) {
-				response.set_to_ok();
-				response.content = { id: instance.id };
+				response.return_code = http_constants.status_codes.status_201_created;
+				response.content = { id: instance.id }; // is this standard ?
+				response.content_type = 'application/json'; // obviously
 				response.send();
 			});
 			promise.otherwise(function(args) {
@@ -85,7 +87,7 @@ function(_, Backbone, when, EE, CallbackMiddleware) {
 			new_instance.id = id;
 			var promise = new_instance.destroy();
 			promise.spread(function(instance) {
-				response.set_to_ok();
+				response.return_code = http_constants.status_codes.status_204_ok_no_content;
 				response.send();
 			});
 			promise.otherwise(function(args) {
@@ -170,12 +172,15 @@ function(_, Backbone, when, EE, CallbackMiddleware) {
 		id = match_infos.last_id;
 
 		// check content type
-		if(!request.content_type.endsWith('json')) {
-			// don't know such content type...
-			response.set_to_not_implemented();
-			response.content = "Content type not suppported.";
-			response.send();
-			return;
+		if(request.content) {
+			if(!request.content_type.endsWith('json')) {
+				// don't know such content type...
+				response.set_to_not_implemented(); // REM : set content type to text/plain
+				response.content = "Content type not suppported.";
+				response.send();
+				return;
+			}
+			throw new EE.NotImplementedError("GET with content");
 		}
 
 		var payload = get_bbmodel_object_prop(match_infos.payload);
@@ -186,12 +191,16 @@ function(_, Backbone, when, EE, CallbackMiddleware) {
 			var promise_fetch = new_instance.fetch();
 			promise_fetch.spread(function(instance) {
 				response.set_to_ok();
-				response.with_content(new_instance.attributes);
+				response.content = new_instance.attributes;
+				response.content_type = 'application/json'; // obviously
 				response.send();
 			});
 			promise_fetch.otherwise(function(args) {
+				// most likely not found
+				// (or internal error ?)
+				// TODO differentiate, handle both cases
 				var err = args[1];
-				response.set_to_internal_error(err);
+				response.set_to_not_found();
 				response.send();
 			});
 		}
@@ -232,6 +241,7 @@ function(_, Backbone, when, EE, CallbackMiddleware) {
 			promise_find.spread(function(instance, result) {
 				response.set_to_ok();
 				response.with_content(new_instance.attributes);
+				response.content_type = 'application/json'; // obviously
 				response.send();
 			});
 			promise_find.otherwise(function(args) {

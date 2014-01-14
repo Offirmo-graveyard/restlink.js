@@ -114,6 +114,27 @@ function(chai, _, CUT, EE) {
 
 		describe('matching', function() {
 
+			it('should work on root /', function() {
+				var out = CUT.make_new();
+
+				// preparation
+				out.ensure('/').foo = 30;
+
+				//
+				var match_infos = out.detailed_at('/'); // root
+				match_infos.should.exist;
+
+				match_infos.found.should.be.true;
+				match_infos.payload.should.deep.equals({foo:30});
+				match_infos.last_segment_type.should.equals('fixed');
+
+				match_infos.segments.length.should.equals(1);
+
+				match_infos.segments[0].should.have.property('segment', '/');
+				match_infos.segments[0].should.have.property('type',    'fixed');
+				match_infos.segments[0].should.have.property('value',   '/');
+			});
+
 			it('should work with a simple numeric id', function() {
 				var out = CUT.make_new();
 

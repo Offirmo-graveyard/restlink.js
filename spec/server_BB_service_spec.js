@@ -331,6 +331,8 @@ function(chai, when, BaseModel, GenericStore, SyncToStoreMixin, CUT, Request, ht
 					promiseGETall.otherwise(function on_failure(){
 						expect(false).to.be.ok;
 					});
+				},function on_failure() {
+					expect(false).to.be.ok;
 				});
 			});
 

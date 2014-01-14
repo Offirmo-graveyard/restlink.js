@@ -46,12 +46,12 @@ function(_, when, Request, BaseServerAdapter, DirectClient, EE) {
 			// should never happen
 			throw new EE.IllegalStateError("Can't open connection : server adapter is stopped.");
 		}
-		if(! this.server_) {
+		if(! this.get_server_core() ) {
 			// no server ! Can't process !
 			// should also never happen
 			throw new EE.IllegalStateError("Can't open connection : server adapter is misconfigured (no server).");
 		}
-		return DirectClient.make_new(this.server_);
+		return DirectClient.make_new(this.get_server_core());
 	};
 
 	////////////////////////////////////

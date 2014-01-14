@@ -34,7 +34,7 @@ function(_, EE, StartableObject) {
 
 		// the adapter knows its server
 		// (only while started)
-		this.server_ = undefined;
+		this.restlink_core = undefined;
 	};
 
 
@@ -43,21 +43,24 @@ function(_, EE, StartableObject) {
 
 
 	////////////////////////////////////
-	methods.startup = function(server) {
-		if(typeof server !== 'object') {
-			throw new EE.InvalidArgument("Can't start adapter : missing server argument !");
+	methods.startup = function(core) {
+		if(typeof core !== 'object') {
+			throw new EE.InvalidArgument("Can't start adapter : missing server core !");
 		}
-		this.server_ = server;
+		this.restlink_core = core;
 
 		// call parent
 		StartableObject.methods.startup.apply(this);
 	};
 	methods.shutdown = function() {
 		// release ref
-		this.server_ = undefined;
+		this.restlink_core = undefined;
 
 		// call parent
 		StartableObject.methods.shutdown.apply(this);
+	};
+	methods.get_server_core = function() {
+		return this.restlink_core;
 	};
 
 

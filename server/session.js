@@ -48,7 +48,7 @@ function(_, EE, FastTimestamp) {
 	methods.set_server = function(server) {
 		this.server_ = server;
 	};
-	methods.get_server = function() {
+	methods.get_server_core = function() {
 		return this.server_;
 	};
 

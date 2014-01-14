@@ -82,6 +82,7 @@ function(chai, _, CUT, EE) {
 					match_infos.found.should.be.false;
 					match_infos.route_found.should.be.false;
 					match_infos.action_found.should.be.false;
+					match_infos.found_no_actions_at_all.should.be.true;
 
 					out.internal_ensure("/firm/:id/order/:id/part/:id", "PUT", "test key").toto = 1
 
@@ -90,6 +91,19 @@ function(chai, _, CUT, EE) {
 					match_infos.found.should.be.false;
 					match_infos.route_found.should.be.true;
 					match_infos.action_found.should.be.false;
+					match_infos.found_no_actions_at_all.should.be.false;
+				});
+
+				it('should correctly handle simple root /', function() {
+					var out = CUT.make_new();
+
+					var match_infos = out.shared_detailed_at("/", "GET");
+
+					match_infos.should.exist;
+					match_infos.found.should.be.false;
+					match_infos.route_found.should.be.true;
+					match_infos.action_found.should.be.false;
+					match_infos.found_no_actions_at_all.should.be.true;
 				});
 
 				it('should work with several numeric+alpha ids', function() {

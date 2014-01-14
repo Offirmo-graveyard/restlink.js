@@ -64,7 +64,7 @@ function(_, http_constants) {
 		}
 		else {
 			// use the error message as content
-			this.content_type = 'text';
+			this.content_type = 'text/plain';
 			this.content = http_constants.status_messages[error_code];
 		}
 		return this; // for fluid

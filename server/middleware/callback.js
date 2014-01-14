@@ -61,12 +61,32 @@ function(_, RestlinkMiddlewareBase, RouteIndexedContainer, EE, http_constants) {
 			if(!match_infos.route_found) {
 				// will forward to next handler.
 				// not handled.
-				/*response.set_to_not_found();
-				response.send();
-				handled = true;*/
 			}
 			else if(!match_infos.action_found) {
-				response.set_to_not_implemented();
+				// url found but not with this action
+				// what should we return ?
+				// 501 Not Implemented ?
+				// 405 Method Not Allowed ?
+				// or 404 Not Found ? (if GET is not here...)
+				if(match_infos.found_no_actions_at_all) {
+					// there is no actions at all
+					// must be an auto-generated intermediate segment,
+					// not a real resource
+					response.set_to_not_found();
+				}
+				else if(request.method.toLowerCase() in http_constants.methods) {
+					// this is a known method so we're kinda expected to provide it
+					// if its not here, this must mean it's not allowed
+					response.set_to_error(
+							http_constants.status_codes.status_405_client_error_method_not_allowed,
+							http_constants.status_messages[405]);
+					response.content_type = "text/plain";
+				}
+				else {
+					// this is a non-standard method
+					// most likely an error
+					response.set_to_not_implemented();
+				}
 				response.send();
 				handled = true;
 			}
@@ -89,19 +109,20 @@ function(_, RestlinkMiddlewareBase, RouteIndexedContainer, EE, http_constants) {
 				}
 			}
 		}
-		catch(err) {
-			if (err instanceof RouteIndexedContainer.exceptions.RouteTooLongError) {
+		catch(e) {
+			if (e instanceof RouteIndexedContainer.exceptions.RouteTooLongError) {
 				response.set_to_error(http_constants.status_codes.status_414_client_error_request_uri_too_long);
 				response.send();
 				handled = true;
 			}
-			else if (err instanceof RouteIndexedContainer.exceptions.MalformedRouteError) {
+			else if (e instanceof RouteIndexedContainer.exceptions.MalformedRouteError) {
 				response.set_to_error(http_constants.status_codes.status_400_client_error_bad_request);
 				response.send();
 				handled = true;
 			}
 			else {// unknown other error
-				response.set_to_internal_error(err.message + "/n" + err.stack);
+				response.content_type = 'text/plain';
+				response.set_to_internal_error(e.name + "\n" + e.message + "\n" + e.stack);
 				response.send();
 				handled = true;
 			}

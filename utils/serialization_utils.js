@@ -57,8 +57,11 @@ function(_, EE) {
 				// auto deserialization for convenience
 				if(obj.content.length == 0)
 					obj.content = undefined;
-				else
+				else {
+					// no try/catch : will throw if wrong
+					// to be caught by caller
 					obj.content = JSON.parse(obj.content);
+				}
 			}
 		}
 	}

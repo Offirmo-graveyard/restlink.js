@@ -79,7 +79,7 @@ function(_, when, EE, StartableObject, RestIndexedContainer, ServerSession, Seri
 		if(typeof this.head_middleware_ === 'undefined') {
 			throw new EE.InvalidArgument("No middleware provided !");
 		}
-		// call parent
+		// call ~parent ~mixin
 		StartableObject.methods.startup.apply(this);
 
 		var this_ = this; // for the call below
@@ -132,6 +132,7 @@ function(_, when, EE, StartableObject, RestIndexedContainer, ServerSession, Seri
 			throw new EE.InvalidArgument("Core : request session is no longer valid !");
 
 		// automatic deserialization if possible, for convenience
+		// TODO try/catch !
 		SerializationUtils.auto_deserialize_content_if_needed(request);
 
 		// REM : middleware will correctly create the response if not provided

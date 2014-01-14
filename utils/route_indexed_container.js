@@ -155,20 +155,21 @@ function(_, EE) {
 		///////
 		var match_result = {
 			found: true, // for now, by default
-			last_segment_type: undefined,
+			last_segment_type: 'fixed', // root segment for now, will be overwritten
 			last_id: undefined,
 			segments: [],
 			ids: {},
-			payload: undefined
+			payload: current_node.payload_ // root segment for now, will be overwritten
 		};
 
 		var index = 0;
-		// fill data for route node which always match
+
+		// fill data for root node which always match but has no "segment"
 		match_result.segments[index] = {
 			segment : current_node.segment_,
 			type    : 'fixed',
 			value   : current_node.segment_,
-			payload : undefined,
+			payload : current_node.payload_,
 			internal_node : current_node
 		};
 		index++;

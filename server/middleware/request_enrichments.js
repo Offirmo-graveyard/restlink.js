@@ -26,7 +26,7 @@ function request_enrichment_module_def(_, when, EE) {
 				throw new EE.InvalidArgument("Can't compute match infos : parent session is unknown !");
 			}
 			else {
-				var server = session.get_server();
+				var server = session.get_server_core();
 				if(!server || !server.rest_indexed_shared_container) {
 					throw new EE.InvalidArgument("Can't compute match infos : session parents are not fully initialized !");
 				}

@@ -116,7 +116,7 @@ function(chai, CUT, Request, http_constants) {
 				out.uri.should.equal('/stanford/teapot');
 				out.return_code.should.equal(http_constants.status_codes.status_403_client_forbidden);
 				out.content.should.equals('Forbidden');
-				out.content_type.should.equals('text'); // was automatically updated
+				out.content_type.should.equals('text/plain'); // was automatically updated
 			});
 
 
@@ -138,7 +138,7 @@ function(chai, CUT, Request, http_constants) {
 				out.uri.should.equal('/stanford/teapot');
 				out.return_code.should.equal(http_constants.status_codes.status_501_server_error_not_implemented);
 				out.content.should.equals('Not Implemented');
-				out.content_type.should.equals('text'); // was automatically updated
+				out.content_type.should.equals('text/plain'); // was automatically updated
 			});
 
 
@@ -160,7 +160,7 @@ function(chai, CUT, Request, http_constants) {
 				out.uri.should.equal('/stanford/teapot');
 				out.return_code.should.equal(http_constants.status_codes.status_500_server_error_internal_error);
 				out.content.should.equals('Internal Server Error');
-				out.content_type.should.equals('text'); // was automatically updated
+				out.content_type.should.equals('text/plain'); // was automatically updated
 			});
 
 
@@ -182,7 +182,7 @@ function(chai, CUT, Request, http_constants) {
 				out.uri.should.equal('/stanford/teapot');
 				out.return_code.should.equal(http_constants.status_codes.status_404_client_error_not_found);
 				out.content.should.equals('Not Found');
-				out.content_type.should.equals('text'); // was automatically updated
+				out.content_type.should.equals('text/plain'); // was automatically updated
 			});
 
 		}); // describe feature

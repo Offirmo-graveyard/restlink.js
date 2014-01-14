@@ -61,6 +61,7 @@ function(_, when, EE, Request, SerializationUtils, http_constants) {
 
 		this.resolve_request_(request, temp_deferred);
 		temp_deferred.promise.spread(function(request, response) {
+			// TODO try/catch !
 			SerializationUtils.auto_deserialize_content_if_needed(request);
 			SerializationUtils.auto_deserialize_content_if_needed(response);
 			result_deferred.resolve( [request, response] );

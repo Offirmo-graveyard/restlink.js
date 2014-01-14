@@ -52,7 +52,7 @@ function(chai, CUT) {
 
 				// go for it
 				var tempfn = function() { out.startup(undefined); };
-				tempfn.should.throw(Error, "Can't start adapter : missing server argument !");
+				tempfn.should.throw(Error, "Can't start adapter : missing server core !");
 			});
 
 		}); // describe feature

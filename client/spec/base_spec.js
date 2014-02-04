@@ -3,16 +3,16 @@ if (typeof define !== 'function') { var define = require('amdefine')(module); }
 define(
 [
 	'chai',
+	'restlink/utils/chai-you-promised',
 	'restlink/client/base',
 	'restlink/core/request',
 	'network-constants/http',
 	'mocha'
 ],
-function(chai, CUT, Request, http_constants) {
+function(chai, Cyp, CUT, Request, http_constants) {
 	"use strict";
 
 	var expect = chai.expect;
-	chai.should();
 	chai.Assertion.includeStack = true; // defaults to false
 
 
@@ -23,8 +23,8 @@ function(chai, CUT, Request, http_constants) {
 
 			it('should work', function() {
 				var out = CUT.make_new();
-				out.should.exist;
-				out.should.be.an('object');
+				expect( out ).to.exist;
+				expect( out ).to.be.an('object');
 			});
 
 			it('should set default values', function() {
@@ -37,21 +37,20 @@ function(chai, CUT, Request, http_constants) {
 
 		describe('request processing', function() {
 
-			it('should (not ;-) work', function(signalAsyncTestFinished) {
+			it('should (not ;-) work until properly derived', function(signalAsyncTestFinished) {
 				var request = Request.make_new_stanford_teapot();
 
 				var out = CUT.make_new();
 				var promise = out.process_request(request);
-				promise.spread(function(request, response){
-					response.method.should.equal('BREW');
-					response.uri.should.equal('/stanford/teapot');
-					response.return_code.should.equal(http_constants.status_codes.status_501_server_error_not_implemented);
-					response.meta.should.deep.equal({ error_msg: 'ClientAdapterBase process_request is to be implemented in a derived class !' });
-					expect(response.content).to.be.empty;
-					signalAsyncTestFinished();
-				});
-				promise.otherwise(function(){
-					expect(false).to.be.ok;
+
+				Cyp.finish_test_expecting_promise_to_be_fulfilled_with_conditions(promise, signalAsyncTestFinished, function(response) {
+					expect( response.method      ).to.be.equal('BREW');
+					expect( response.uri         ).to.be.equal('/stanford/teapot');
+					expect( response.return_code ).to.be.equal(http_constants.status_codes.status_501_server_error_not_implemented);
+					expect( response.meta        ).to.deep.equal({
+						error_msg: 'ClientAdapterBase process_request is to be implemented in a derived class !'
+					});
+					expect( response.content     ).to.be.empty;
 				});
 			});
 
@@ -65,14 +64,15 @@ function(chai, CUT, Request, http_constants) {
 				out.disconnect();
 			});
 
-			it('should prevent new requests', function() {
+			it('should prevent new requests', function(signalAsyncTestFinished) {
 				var request = Request.make_new_stanford_teapot();
 
 				var out = CUT.make_new();
-				out.disconnect();
+				out.disconnect(); // since direct client is connected by default
+				var promise = out.process_request(request);
 
-				var tempfn = function() { out.process_request(request); };
-				tempfn.should.throw(Error, "This client is disconnected !");
+				Cyp.finish_test_expecting_promise_to_be_rejected_with_error(promise, signalAsyncTestFinished,
+					Error, "This client is disconnected !");
 			});
 
 		}); // describe feature

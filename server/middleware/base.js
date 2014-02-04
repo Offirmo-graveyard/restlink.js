@@ -36,7 +36,7 @@ function(_, when, EE, RequestEnricher, ResponseEnricher) {
 	// @param response : a response object that will be passed along. Can be anything, will have been "enriched" with the middleware special methods.
 	// @param next : a function to call to transfer to next middleware. Will throw if none.
 	defaults.processing_function_ = function base_middleware_default_processing_function(request, response, next) {
-		if(typeof this.next_middleware_ !== "undefined") {
+		if(this.next_middleware_) {
 			// pass to next
 			next();
 		}
@@ -67,31 +67,44 @@ function(_, when, EE, RequestEnricher, ResponseEnricher) {
 		}
 	};
 
-	function register_back_function(response, back_function, this_) {
-		var deferred = when.defer();
-		response.middleware_.deferred_chain_.push(deferred);
-		deferred.promise.spread(function(request, response) {
-			back_function(request, response, this_);
+	methods.register_back_function_ = function(request, back_function) {
+		request.middleware_.back_processing_chain_.push({
+			'func' : back_function,
+			'this_': this
 		});
-	}
+	};
 
 	// implementation of method "next" which is provided as a param
 	// if a back function is given, it'll have to call send() again to continue the processing.
-	function next_implementation(this_, request, response, optional_back_function) {
-		if(!this_.next_middleware_) {
+	function next_implementation(request, response, optional_back_function) {
+		if(!this.next_middleware_) {
 			// no middleware after us !
 			// we should NOT have called next, then !
-			throw new EE.IllegalStateError("Can't forward to next middleware, having none !");
-		}
-		else {
-			// should optional replace the integrated or add to it ?
-			// addition for now.
-			if(typeof optional_back_function !== "undefined") {
-				register_back_function(response, optional_back_function, this_);
-			}
+			// Note : for now, we take it as the user's responsibility to provide a final,
+			// always sending middleware.
+			throw new EE.IllegalState("Can't forward to next middleware, having none !");
 		}
 
-		this_.next_middleware_.process_request_(request, response);
+		// invariant check : next should no longer be used if the response has been sent (using send())
+		// we can check that
+		if(response.middleware_.back_processing_chain_index_ >= 0) {
+			// wrong !
+			// Either means a bug,
+			// or some user code :
+			// - incorrectly called next() after send
+			// - incorrectly called next() in a back processing function
+			throw new EE.InvariantNotMet("Middleware next() was called in a wrong context !");
+		}
+
+		// Note : current mw default back function, if any, was already added.
+		// This arg is for adding an "extra".
+		if(typeof optional_back_function !== "undefined") {
+			if(typeof optional_back_function !== "function")
+				throw new EE.InvalidArgument("Back function arg should be a function !");
+			this.register_back_function_(request, optional_back_function);
+		}
+
+		this.next_middleware_.process_request_(request, response);
 	}
 
 
@@ -103,65 +116,44 @@ function(_, when, EE, RequestEnricher, ResponseEnricher) {
 		var current_mw = this; // closure
 		var next = function(optional_back_function) {
 			// see above
-			next_implementation(current_mw, request, response, optional_back_function);
+			next_implementation.call(current_mw, request, response, optional_back_function);
 		};
 
 		// register the default back function if any
 		if(typeof this.back_processing_function_ !== "undefined") {
-			register_back_function(response, this.back_processing_function_, current_mw);
+			this.register_back_function_(request, this.back_processing_function_);
 		}
 
 		// call the (hopefully) user-defined processing function
-		this.processing_function_(request, response, next, this);
+		this.processing_function_(request, response, next);
 	};
 
 
 	// Launch the middleware processing chain.
 	// should only be called on the head middleware !
 	// Not mandatory if you want to initialize the middleware manually
-	methods.initiate_processing = function(request, response) {
+	methods.initiate_processing = function(request) {
 
-		// add some utility methods to the request
+		// add some utility methods and private data to the request
 		RequestEnricher.process(request);
 
-		// create the response if not created yet
-		if(typeof response === "undefined") {
-			response = this.prepare_response_for_processing_(request);
-		}
+		// create a response
+		// AND also add some utility methods and private data to the response
+		var response = this.prepare_blank_response_for_this_request_(request);
 
-		// initiate the middleware chain
-		// and get the corresponding promise
-		var promise = this.init_middleware_chain_on_this_response(response);
-
-		// now use the usual function
+		// now use the usual function.
 		this.process_request_(request, response);
 
-		return promise;
+		return response.middleware_.final_deferred_.promise; // REM was added by prepare_blank_response_for_this_request_()
 	};
 
-	methods.prepare_response_for_processing_ = function(request) {
+	methods.prepare_blank_response_for_this_request_ = function(request) {
 		var response = request.make_response(); // REM this response is set to "internal error" by default
 
-		// we add some utility methods to the response
+		// we add our own special methods and data to the response
 		ResponseEnricher.process(response, request);
 
 		return response;
-	};
-	// initiate the middleware chain
-	// by inserting a first deferred
-	methods.init_middleware_chain_on_this_response = function(response) {
-		// check params
-		if(response.middleware_.deferred_chain_.length !== 0) {
-			// WAT ? what is the use of calling this function
-			// if everything is already done ??
-			throw new EE.InvalidArgument("Offirmo Middleware : Middleware chain already initialized !");
-		}
-
-		// insert first deferred
-		var deferred = when.defer();
-		response.middleware_.deferred_chain_.push(deferred);
-
-		return deferred.promise;
 	};
 
 
@@ -177,7 +169,7 @@ function(_, when, EE, RequestEnricher, ResponseEnricher) {
 
 		// other inits...
 		if(typeof process_func !== "undefined") {
-			this.processing_function_ = process_func; // replace
+			this.processing_function_ = process_func; // replace default
 		}
 		if(typeof process_back_func !== "undefined") {
 			this.back_processing_function_ = process_back_func;

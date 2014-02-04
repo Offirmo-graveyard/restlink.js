@@ -3,6 +3,7 @@ if (typeof define !== 'function') { var define = require('amdefine')(module); }
 define(
 [
 	'chai',
+	'restlink/utils/chai-you-promised',
 	'when',
 
 	'base-objects/backbone/base_model',
@@ -13,9 +14,10 @@ define(
 	'restlink/core/request',
 	'network-constants/http',
 
+	'restlink/utils/string_generics_shim',
 	'mocha'
 ],
-function(chai, when, BaseModel, GenericStore, SyncToStoreMixin, CUT, Request, http_constants) {
+function(chai, Cyp, when, BaseModel, GenericStore, SyncToStoreMixin, CUT, Request, http_constants) {
 	"use strict";
 
 	var expect = chai.expect;
@@ -44,8 +46,8 @@ function(chai, when, BaseModel, GenericStore, SyncToStoreMixin, CUT, Request, ht
 		return client;
 	}
 
+	// shared test function
 	function insert_sample_resource(client, optional_content) {
-		var POSTcreate_success = when.defer();
 		var content = optional_content || {
 			items: [
 				{
@@ -61,18 +63,16 @@ function(chai, when, BaseModel, GenericStore, SyncToStoreMixin, CUT, Request, ht
 				.with_method('POST')
 				.with_content(content);
 		var promisePOSTcreate = client.process_request(requestPOSTcreate);
-		promisePOSTcreate.spread(function on_success(request, response){
-			response.method.should.equal('POST');
-			response.uri.should.equal('/api/v1.0/order');
-			response.return_code.should.equal(http_constants.status_codes.status_200_ok);
-			expect(response.content).to.have.property('id');
-			POSTcreate_success.resolve(response.content.id);
+		return Cyp.filter_promise_ensuring_fulfilled_with_conditions(promisePOSTcreate, function(response) {
+			expect(response.method     ).to.equal('POST');
+			expect(response.uri        ).to.equal('/api/v1.0/order');
+			expect(response.return_code).to.equal(http_constants.status_codes.status_201_created);
+			expect(response.meta.Location).to.exist;
+			expect(response.meta.Location.startsWith('/api/v1.0/order')).to.be.true;
+			expect(response.content.id).to.exist;
+			// for convenience, resolve with the id
+			return response.content.id;
 		});
-		promisePOSTcreate.otherwise(function on_failure(){
-			expect(false).to.be.ok;
-		});
-
-		return POSTcreate_success.promise;
 	}
 
 
@@ -87,10 +87,21 @@ function(chai, when, BaseModel, GenericStore, SyncToStoreMixin, CUT, Request, ht
 			it('[Create] should allow creation of a resource with POST', function(signalAsyncTestFinished) {
 				var client = prepare_test();
 
-				var promise_POST_create = insert_sample_resource(client);
+				var promise = insert_sample_resource(client);
 
-				promise_POST_create.then(function() {
-					signalAsyncTestFinished();
+				Cyp.finish_test_expecting_promise_to_be_fulfilled(promise, signalAsyncTestFinished);
+			});
+
+			it('[Read] should correctly fail the read of an inexisting resource with GET', function(signalAsyncTestFinished) {
+				var client = prepare_test();
+
+				var requestGETOne = Request.make_new()
+						.with_url('/api/v1.0/order/titi')
+						.with_method('GET');
+				var promiseGETone = client.process_request(requestGETOne);
+				Cyp.finish_test_expecting_promise_to_be_fulfilled_with_conditions(promiseGETone, signalAsyncTestFinished, function(response) {
+					response.method.should.equal('GET');
+					response.return_code.should.equal(http_constants.status_codes.status_404_client_error_not_found);
 				});
 			});
 
@@ -100,12 +111,13 @@ function(chai, when, BaseModel, GenericStore, SyncToStoreMixin, CUT, Request, ht
 
 				var test_rsrc_insertion = insert_sample_resource(client);
 
-				test_rsrc_insertion.then(function(id) {
+				var promise = test_rsrc_insertion.then(function(id) {
 					var requestGETOne = Request.make_new()
 							.with_url('/api/v1.0/order/' + id)
 							.with_method('GET');
 					var promiseGETone = client.process_request(requestGETOne);
-					promiseGETone.spread(function on_success(request, response){
+					// NOTE we return a new promise, thus filtering the parent promise
+					return Cyp.filter_promise_ensuring_fulfilled_with_conditions(promiseGETone, function(response) {
 						response.method.should.equal('GET');
 						response.uri.should.equal('/api/v1.0/order/' + id);
 						response.return_code.should.equal(http_constants.status_codes.status_200_ok);
@@ -118,12 +130,9 @@ function(chai, when, BaseModel, GenericStore, SyncToStoreMixin, CUT, Request, ht
 							],
 							location: 'takeaway'
 						});
-						signalAsyncTestFinished();
-					});
-					promiseGETone.otherwise(function on_failure(){
-						expect(false).to.be.ok;
 					});
 				});
+				Cyp.finish_test_expecting_promise_to_be_fulfilled(promise, signalAsyncTestFinished);
 			});
 
 			// POST /order/123 = create/update
@@ -144,14 +153,11 @@ function(chai, when, BaseModel, GenericStore, SyncToStoreMixin, CUT, Request, ht
 							location: 'takeaway'
 						});
 				var promisePOSTcreate_with_id = client.process_request(requestPOSTcreate_with_id);
-				promisePOSTcreate_with_id.spread(function on_success(request, response){
+
+				Cyp.finish_test_expecting_promise_to_be_fulfilled_with_conditions(promisePOSTcreate_with_id, signalAsyncTestFinished, function(response) {
 					response.method.should.equal('POST');
 					response.uri.should.equal('/api/v1.0/order/123');
 					response.return_code.should.equal(http_constants.status_codes.status_501_server_error_not_implemented);
-					signalAsyncTestFinished();
-				});
-				promisePOSTcreate_with_id.otherwise(function on_failure(){
-					expect(false).to.be.ok;
 				});
 			});
 
@@ -175,18 +181,17 @@ function(chai, when, BaseModel, GenericStore, SyncToStoreMixin, CUT, Request, ht
 							.with_url('/api/v1.0/order/' + id)
 							.with_method('DELETE');
 					var promiseDELETEone = client.process_request(requestDeleteOne);
-					promiseDELETEone.spread(function on_success(request, response){
+
+					Cyp.finish_test_expecting_promise_to_be_fulfilled_with_conditions(promiseDELETEone, signalAsyncTestFinished, function(response) {
 						response.method.should.equal('DELETE');
 						response.uri.should.equal('/api/v1.0/order/' + id);
-						response.return_code.should.equal(http_constants.status_codes.status_200_ok);
+						response.return_code.should.equal(http_constants.status_codes.status_204_ok_no_content);
 						expect(response.content).to.be.empty;
-						signalAsyncTestFinished();
-					});
-					promiseDELETEone.otherwise(function on_failure(){
-						expect(false).to.be.ok;
 					});
 				});
 			});
+
+
 			it('[Delete] should correctly handle deletion of an inexisting resource with DELETE', function(signalAsyncTestFinished) {
 				var client = prepare_test();
 
@@ -194,14 +199,12 @@ function(chai, when, BaseModel, GenericStore, SyncToStoreMixin, CUT, Request, ht
 						.with_url('/api/v1.0/order/123') // non existing
 						.with_method('DELETE');
 				var promiseDELETEone = client.process_request(requestDeleteOne);
-				promiseDELETEone.spread(function on_success(request, response) {
+
+				Cyp.finish_test_expecting_promise_to_be_fulfilled_with_conditions(promiseDELETEone, signalAsyncTestFinished, function(response) {
 					response.method.should.equal('DELETE');
 					response.uri.should.equal('/api/v1.0/order/123');
-					response.return_code.should.equal(http_constants.status_codes.status_200_ok);
-					signalAsyncTestFinished();
-				});
-				promiseDELETEone.otherwise(function on_failure(){
-					expect(false).to.be.ok;
+					// according to http://stackoverflow.com/a/16632048/587407
+					response.return_code.should.equal(http_constants.status_codes.status_204_ok_no_content);
 				});
 			});
 
@@ -216,41 +219,40 @@ function(chai, when, BaseModel, GenericStore, SyncToStoreMixin, CUT, Request, ht
 
 				var test_rsrc_insertion = insert_sample_resource(client);
 
-				var PUTUpdate_success = when.defer();
-				test_rsrc_insertion.then(function(id) {
+				var PUTUpdate_success = test_rsrc_insertion.then(function(id) {
 					var requestPUTupdate = Request.make_new()
-							.with_url('/api/v1.0/order/' + id)
-							.with_method('PUT')
-							.with_content({
-								items: [
-									{
-										drink: 'tea',
-										size: 'medium'
-									},
-									{
-										drink: 'expresso'
-									}
-								]
-							});
+						.with_url('/api/v1.0/order/' + id)
+						.with_method('PUT')
+						.with_content({
+							items: [
+								{
+									drink: 'tea',
+									size: 'medium'
+								},
+								{
+									drink: 'expresso'
+								}
+							]
+						});
 					var promisePUTupdate = client.process_request(requestPUTupdate);
-					promisePUTupdate.spread(function on_success(request, response){
+					// NOTE we return a promise, thus filtering/replacing the main promise
+					return Cyp.filter_promise_ensuring_fulfilled_with_conditions(promisePUTupdate, function(response) {
 						response.method.should.equal('PUT');
 						response.uri.should.equal('/api/v1.0/order/' + id);
 						response.return_code.should.equal(http_constants.status_codes.status_200_ok);
-						PUTUpdate_success.resolve(id);
-					});
-					promisePUTupdate.otherwise(function on_failure(){
-						expect(false).to.be.ok;
+						// NOTE : we return id, thus replacing the result value in the promise chain
+						return id;
 					});
 				});
 
 				// now read back to ensure correct update
-				PUTUpdate_success.promise.then(function(id) {
+				var final_promise = PUTUpdate_success.then(function(id) {
 					var requestGET = Request.make_new()
 							.with_url('/api/v1.0/order/' + id)
 							.with_method('GET');
 					var promiseGET = client.process_request(requestGET);
-					promiseGET.spread(function on_success(request, response){
+					// NOTE we return a promise, thus filtering/replacing the main promise
+					return Cyp.filter_promise_ensuring_fulfilled_with_conditions(promiseGET, function(response) {
 						response.method.should.equal('GET');
 						response.uri.should.equal('/api/v1.0/order/' + id);
 						response.return_code.should.equal(http_constants.status_codes.status_200_ok);
@@ -266,12 +268,10 @@ function(chai, when, BaseModel, GenericStore, SyncToStoreMixin, CUT, Request, ht
 							],
 							location: 'takeaway'
 						});
-						signalAsyncTestFinished();
-					});
-					promisePUTupdate.otherwise(function on_failure(){
-						expect(false).to.be.ok;
 					});
 				});
+
+				Cyp.finish_test_expecting_promise_to_be_fulfilled(final_promise, signalAsyncTestFinished);
 			});
 
 			// GET /orders          read all
@@ -293,12 +293,13 @@ function(chai, when, BaseModel, GenericStore, SyncToStoreMixin, CUT, Request, ht
 				});
 
 				var test_rsrc_insertion = when.join(test_rsrc_1_insertion, test_rsrc_2_insertion);
-				test_rsrc_insertion.then(function(id) {
+				var final_promise = test_rsrc_insertion.then(function(ids) {
 					var requestGETall = Request.make_new()
 							.with_url('/api/v1.0/order')
 							.with_method('GET');
 					var promiseGETall = client.process_request(requestGETall);
-					promiseGETall.spread(function on_success(request, response){
+					// NOTE we return a promise, thus filtering/replacing the main promise
+					return Cyp.filter_promise_ensuring_fulfilled_with_conditions(promiseGETall, function(response) {
 						response.method.should.equal('GET');
 						response.uri.should.equal('/api/v1.0/order');
 						response.return_code.should.equal(http_constants.status_codes.status_200_ok);
@@ -326,14 +327,10 @@ function(chai, when, BaseModel, GenericStore, SyncToStoreMixin, CUT, Request, ht
 									location: 'takeaway'
 								}
 							]);
-						signalAsyncTestFinished();
 					});
-					promiseGETall.otherwise(function on_failure(){
-						expect(false).to.be.ok;
-					});
-				},function on_failure() {
-					expect(false).to.be.ok;
 				});
+
+				Cyp.finish_test_expecting_promise_to_be_fulfilled(final_promise, signalAsyncTestFinished);
 			});
 
 			// *GET /order           read all

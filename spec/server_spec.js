@@ -99,14 +99,14 @@ function(chai, when, BaseModel, GenericStore, SymcToStoreMixin, CUT, DirectServe
 				var promise = client.process_request(request);
 
 				// check result : should 404 but not 500
-				promise.spread(function on_success(request, response){
+				promise.then(function on_success(response){
 					response.method.should.equal('BREW');
 					response.uri.should.equal('/stanford/teapot');
 					response.return_code.should.equal(http_constants.status_codes.status_404_client_error_not_found);
 					response.content.should.equal("Not Found");
 					signalAsyncTestFinished();
-				});
-				promise.otherwise(function on_failure(){
+				},
+				function on_failure(e) {
 					expect(false).to.be.ok;
 				});
 			});
@@ -122,14 +122,14 @@ function(chai, when, BaseModel, GenericStore, SymcToStoreMixin, CUT, DirectServe
 				var promise = client.process_request(request);
 
 				// check result : should 404 but not 500
-				promise.spread(function on_success(request, response){
+				promise.then(function on_success(response){
 					response.method.should.equal('BREW');
 					response.uri.should.equal('/stanford/teapot');
 					response.return_code.should.equal(http_constants.status_codes.status_404_client_error_not_found);
 					response.content.should.equal("Not Found");
 					signalAsyncTestFinished();
-				});
-				promise.otherwise(function on_failure(){
+				},
+				function on_failure(e) {
 					expect(false).to.be.ok;
 				});
 
@@ -158,14 +158,14 @@ function(chai, when, BaseModel, GenericStore, SymcToStoreMixin, CUT, DirectServe
 				var request = Request.make_new_stanford_teapot();
 				var promise = client.process_request(request);
 
-				promise.spread(function on_success(request, response){
+				promise.then(function on_success(response){
 					response.method.should.equal("BREW");
 					response.uri.should.equal("/stanford/teapot");
 					response.return_code.should.equal(http_constants.status_codes.status_400_client_error_bad_request);
 					expect(response.content).to.equals("I'm a teapot !");
 					signalAsyncTestFinished();
-				});
-				promise.otherwise(function on_failure(){
+				},
+				function on_failure(e) {
 					expect(false).to.be.ok;
 				});
 			});

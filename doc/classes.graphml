@@ -15,11 +15,52 @@
   <graph edgedefault="directed" id="G">
     <data key="d7"/>
     <node id="n0">
-      <data key="d4"/>
       <data key="d5"/>
       <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="817.8333333333333" width="670.0" x="620.5833333333336" y="-35.66666666666663"/>
+          <y:Fill hasColor="false" transparent="false"/>
+          <y:BorderStyle color="#000000" type="dashed" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="custom" textColor="#000000" visible="true" width="4.0" x="333.0" y="406.91666666666663">
+            <y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:Shape type="rectangle"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n1">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="52.16666666666657" width="157.5" x="448.5000000000002" y="404.83333333333326"/>
+          <y:Fill color="#FFCC00" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="internal" modelPosition="tl" textColor="#000000" visible="true" width="58.017578125" x="4.0" y="4.0">(startable)</y:NodeLabel>
+          <y:Shape type="rectangle"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n2">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="52.16666666666657" width="157.5" x="80.50000000000034" y="404.83333333333326"/>
+          <y:Fill color="#FFCC00" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="33.40234375" modelName="internal" modelPosition="tl" textColor="#000000" visible="true" width="147.40234375" x="4.0" y="4.0">process_request( request )
+disconnect()</y:NodeLabel>
+          <y:Shape type="rectangle"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n3">
+      <data key="d4"/>
+      <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="28.0" width="100.0" x="279.83333333333326" y="141.16666666666666"/>
+          <y:Geometry height="28.0" width="100.0" x="32.16666666666697" y="267.4999999999998"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" modelName="custom" textColor="#000000" visible="true" width="55.2890625" x="22.35546875" y="3.0">Request<y:LabelModel>
@@ -36,12 +77,11 @@
         </y:UMLClassNode>
       </data>
     </node>
-    <node id="n1">
+    <node id="n4">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="28.0" width="100.0" x="407.66666666666663" y="141.16666666666666"/>
+          <y:Geometry height="28.0" width="100.0" x="138.00000000000034" y="267.4999999999998"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" modelName="custom" textColor="#000000" visible="true" width="66.130859375" x="16.9345703125" y="3.0">Response<y:LabelModel>
@@ -58,12 +98,11 @@
         </y:UMLClassNode>
       </data>
     </node>
-    <node id="n2">
+    <node id="n5">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="28.0" width="112.5" x="229.33333333333343" y="376.83333333333326"/>
+          <y:Geometry height="28.0" width="112.5" x="80.50000000000034" y="376.83333333333326"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" modelName="custom" textColor="#000000" visible="true" width="71.18994140625" x="20.655029296875" y="3.0">BaseClient<y:LabelModel>
@@ -80,12 +119,11 @@
         </y:UMLClassNode>
       </data>
     </node>
-    <node id="n3">
+    <node id="n6">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="28.0" width="100.0" x="328.50000000000017" y="651.25"/>
+          <y:Geometry height="28.0" width="100.0" x="521.5" y="-35.66666666666663"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" modelName="custom" textColor="#000000" visible="true" width="95.05078125" x="2.474609375" y="3.0">RestlinkServer<y:LabelModel>
@@ -102,9 +140,8 @@
         </y:UMLClassNode>
       </data>
     </node>
-    <node id="n4">
+    <node id="n7">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
           <y:Geometry height="28.0" width="126.66666666666674" x="448.5000000000001" y="376.83333333333326"/>
@@ -124,9 +161,8 @@
         </y:UMLClassNode>
       </data>
     </node>
-    <node id="n5">
+    <node id="n8">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
           <y:Geometry height="28.0" width="100.0" x="643.5000000000001" y="376.83333333333326"/>
@@ -146,12 +182,11 @@
         </y:UMLClassNode>
       </data>
     </node>
-    <node id="n6">
+    <node id="n9">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="28.0" width="126.66666666666674" x="448.5000000000001" y="466.33333333333326"/>
+          <y:Geometry height="28.0" width="126.66666666666674" x="453.91666666666686" y="450.33333333333326"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" modelName="custom" textColor="#000000" visible="true" width="89.96630859375" x="18.35017903645837" y="3.0">DirectAdapter<y:LabelModel>
@@ -168,12 +203,11 @@
         </y:UMLClassNode>
       </data>
     </node>
-    <node id="n7">
+    <node id="n10">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="28.0" width="126.66666666666674" x="448.5000000000001" y="504.08333333333326"/>
+          <y:Geometry height="28.0" width="126.66666666666674" x="463.91666666666686" y="471.7499999999999"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" modelName="custom" textColor="#000000" visible="true" width="109.47265625" x="8.597005208333371" y="3.0">SocketIOAdapter<y:LabelModel>
@@ -190,12 +224,11 @@
         </y:UMLClassNode>
       </data>
     </node>
-    <node id="n8">
+    <node id="n11">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="28.0" width="126.66666666666674" x="448.5000000000001" y="541.8333333333333"/>
+          <y:Geometry height="28.0" width="126.66666666666674" x="476.91666666666686" y="493.83333333333326"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" modelName="custom" textColor="#000000" visible="true" width="95.72998046875" x="15.468343098958371" y="3.0">HTTPSAdapter<y:LabelModel>
@@ -212,12 +245,11 @@
         </y:UMLClassNode>
       </data>
     </node>
-    <node id="n9">
+    <node id="n12">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="28.0" width="112.5" x="229.33333333333343" y="466.33333333333326"/>
+          <y:Geometry height="28.0" width="112.5" x="85.50000000000034" y="451.0833333333333"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" modelName="custom" textColor="#000000" visible="true" width="76.9599609375" x="17.77001953125" y="3.0">DirectClient<y:LabelModel>
@@ -234,12 +266,11 @@
         </y:UMLClassNode>
       </data>
     </node>
-    <node id="n10">
+    <node id="n13">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="28.0" width="112.5" x="229.33333333333343" y="504.08333333333326"/>
+          <y:Geometry height="28.0" width="112.5" x="96.50000000000034" y="471.7499999999999"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" modelName="custom" textColor="#000000" visible="true" width="96.46630859375" x="8.016845703125" y="3.0">SocketIOClient<y:LabelModel>
@@ -256,12 +287,11 @@
         </y:UMLClassNode>
       </data>
     </node>
-    <node id="n11">
+    <node id="n14">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="28.0" width="112.5" x="229.33333333333343" y="541.8333333333333"/>
+          <y:Geometry height="28.0" width="112.5" x="110.50000000000034" y="494.5833333333333"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" modelName="custom" textColor="#000000" visible="true" width="82.7236328125" x="14.88818359375" y="3.0">HTTPSClient<y:LabelModel>
@@ -278,15 +308,14 @@
         </y:UMLClassNode>
       </data>
     </node>
-    <node id="n12">
+    <node id="n15">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="28.0" width="170.83333333333337" x="608.0833333333335" y="628.6666666666665"/>
+          <y:Geometry height="28.0" width="157.5" x="643.5000000000001" y="621.6666666666665"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" modelName="custom" textColor="#000000" visible="true" width="141.97265625" x="14.430338541666686" y="3.0">RestIndexedContainer<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" modelName="custom" textColor="#000000" visible="true" width="141.97265625" x="7.763671875" y="3.0">RestIndexedContainer<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -300,14 +329,13 @@
         </y:UMLClassNode>
       </data>
     </node>
-    <node id="n13">
-      <data key="d5"/>
+    <node id="n16">
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="193.83333333333326" width="157.5" x="643.5000000000001" y="404.83333333333326"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="165.712890625" modelName="internal" modelPosition="tl" textColor="#000000" visible="true" width="157.3984375" x="4.0" y="4.0">(startable)
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="136.310546875" modelName="internal" modelPosition="tl" textColor="#000000" visible="true" width="141.40234375" x="4.0" y="4.0">(startable)
 - REST indexed container
 - adapters
     add_adapter()
@@ -315,16 +343,13 @@
     use()
 - sessions
     create_session()
-
-promise([request, response])
-   process_request()</y:NodeLabel>
+- process_request()</y:NodeLabel>
           <y:Shape type="rectangle"/>
         </y:ShapeNode>
       </data>
     </node>
-    <node id="n14">
+    <node id="n17">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
           <y:Geometry height="28.0" width="157.5" x="865.1666666666666" y="376.83333333333326"/>
@@ -344,9 +369,8 @@ promise([request, response])
         </y:UMLClassNode>
       </data>
     </node>
-    <node id="n15">
+    <node id="n18">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
           <y:Geometry height="28.0" width="100.0" x="643.5000000000001" y="300.4999999999999"/>
@@ -366,12 +390,11 @@ promise([request, response])
         </y:UMLClassNode>
       </data>
     </node>
-    <node id="n16">
+    <node id="n19">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="28.0" width="100.0" x="761.4166666666667" y="53.583333333333286"/>
+          <y:Geometry height="28.0" width="100.0" x="761.4166666666667" y="-14.500000000000085"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" modelName="custom" textColor="#000000" visible="true" width="55.2890625" x="22.35546875" y="3.0">Request<y:LabelModel>
@@ -388,44 +411,23 @@ promise([request, response])
         </y:UMLClassNode>
       </data>
     </node>
-    <node id="n17">
-      <data key="d5"/>
+    <node id="n20">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="172.99999999999994" width="157.5" x="761.4166666666667" y="81.58333333333329"/>
+          <y:Geometry height="99.66666666666674" width="157.5" x="761.4166666666667" y="13.499999999999915"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="165.712890625" modelName="internal" modelPosition="tl" textColor="#000000" visible="true" width="107.0546875" x="4.0" y="4.0">- uri
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="92.20703125" modelName="internal" modelPosition="tl" textColor="#000000" visible="true" width="83.376953125" x="4.0" y="4.0">- uri
 - method
 - meta
 - content_type
 - content
-- is_long_living
-
-- timestamp
-done() is_done()
-
-+get_match_infos()</y:NodeLabel>
+- is_long_living</y:NodeLabel>
           <y:Shape type="rectangle"/>
         </y:ShapeNode>
       </data>
     </node>
-    <node id="n18">
-      <data key="d5"/>
-      <data key="d6">
-        <y:ShapeNode>
-          <y:Geometry height="52.16666666666657" width="165.83333333333337" x="229.33333333333343" y="404.83333333333326"/>
-          <y:Fill color="#FFCC00" transparent="false"/>
-          <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="48.103515625" modelName="internal" modelPosition="tl" textColor="#000000" visible="true" width="157.404296875" x="4.0" y="4.0">promise([request, response])
-   process_request( request )
-disconnect()</y:NodeLabel>
-          <y:Shape type="rectangle"/>
-        </y:ShapeNode>
-      </data>
-    </node>
-    <node id="n19">
-      <data key="d5"/>
+    <node id="n21">
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="62.999999999999886" width="157.5" x="865.1666666666666" y="404.83333333333326"/>
@@ -438,14 +440,13 @@ initiate_processing()</y:NodeLabel>
         </y:ShapeNode>
       </data>
     </node>
-    <node id="n20">
-      <data key="d5"/>
+    <node id="n22">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="183.83333333333326" width="157.5" x="944.3333333333335" y="81.58333333333331"/>
+          <y:Geometry height="212.83333333333331" width="157.5" x="944.3333333333335" y="13.499999999999915"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="180.4140625" modelName="internal" modelPosition="tl" textColor="#000000" visible="true" width="147.396484375" x="4.0" y="4.0">- uri
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="151.01171875" modelName="internal" modelPosition="tl" textColor="#000000" visible="true" width="147.396484375" x="4.0" y="4.0">- uri
 - method
 - meta
 - content_type
@@ -454,19 +455,16 @@ initiate_processing()</y:NodeLabel>
 
 make_new_from_request()
 set_to_error()
-set_to_internal_error() etc
-
-+send()</y:NodeLabel>
+set_to_internal_error() etc</y:NodeLabel>
           <y:Shape type="rectangle"/>
         </y:ShapeNode>
       </data>
     </node>
-    <node id="n21">
+    <node id="n23">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="28.0" width="100.0" x="944.3333333333335" y="53.583333333333286"/>
+          <y:Geometry height="28.0" width="100.0" x="944.3333333333335" y="-14.500000000000114"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" modelName="custom" textColor="#000000" visible="true" width="66.130859375" x="16.9345703125" y="3.0">Response<y:LabelModel>
@@ -483,48 +481,79 @@ set_to_internal_error() etc
         </y:UMLClassNode>
       </data>
     </node>
-    <node id="n22">
-      <data key="d5"/>
+    <node id="n24">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="42.999999999999886" width="157.5" x="448.50000000000017" y="404.83333333333326"/>
+          <y:Geometry height="193.83333333333326" width="245.5" x="375.99999999999994" y="-7.666666666666629"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="internal" modelPosition="tl" textColor="#000000" visible="true" width="58.017578125" x="4.0" y="4.0">(startable)</y:NodeLabel>
-          <y:Shape type="rectangle"/>
-        </y:ShapeNode>
-      </data>
-    </node>
-    <node id="n23">
-      <data key="d5"/>
-      <data key="d6">
-        <y:ShapeNode>
-          <y:Geometry height="193.83333333333326" width="157.5" x="328.50000000000017" y="679.25"/>
-          <y:Fill color="#FFCC00" transparent="false"/>
-          <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="62.8046875" modelName="internal" modelPosition="tl" textColor="#000000" visible="true" width="139.421875" x="4.0" y="4.0">(startable, named)
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="77.505859375" modelName="internal" modelPosition="tl" textColor="#000000" visible="true" width="239.470703125" x="4.0" y="4.0">(startable, named)
 add_adapter(…)
-on(…)
-open_direct_connection()</y:NodeLabel>
+open_direct_connection()
+on(route, method, handler, replace_existing)
+serve_model_at(route, model, options)</y:NodeLabel>
           <y:Shape type="rectangle"/>
         </y:ShapeNode>
       </data>
     </node>
-    <edge id="e0" source="n13" target="n12">
+    <node id="n25">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="69.16666666666657" width="157.58333333333326" x="761.4166666666667" y="226.33333333333323"/>
+          <y:Fill color="#FFCC00" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="62.8046875" modelName="internal" modelPosition="tl" textColor="#000000" visible="true" width="142.755859375" x="4.0" y="4.000000000000028">+get_match_infos()
++middleware_
+  match_infos_
+  back_processing_chain_</y:NodeLabel>
+          <y:Shape type="rectangle"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n26">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="69.16666666666652" width="157.5" x="944.3333333333335" y="226.33333333333326"/>
+          <y:Fill color="#FFCC00" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="62.8046875" modelName="internal" modelPosition="tl" textColor="#000000" visible="true" width="181.451171875" x="4.0" y="4.0">+middleware_
+   back_processing_chain_index_
+  final_deferred_
++send()</y:NodeLabel>
+          <y:Shape type="rectangle"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n27">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="113.16666666666657" width="157.58333333333326" x="761.4166666666667" y="113.16666666666666"/>
+          <y:Fill color="#FFCC00" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="106.908203125" modelName="internal" modelPosition="tl" textColor="#000000" visible="true" width="92.0546875" x="4.0" y="4.0">+session_infos_
+  parent_session
+  timestamp
+  is_done
++get_session()
++is_done()
++done()</y:NodeLabel>
+          <y:Shape type="rectangle"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <edge id="e0" source="n16" target="n15">
       <data key="d8"/>
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="-28.749999999999886" sy="75.11666666666656" tx="0.0" ty="0.0"/>
+          <y:Path sx="0.0" sy="78.25000000000011" tx="0.0" ty="0.0"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="diamond" target="none"/>
           <y:BendStyle smoothed="false"/>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e1" source="n5" target="n14">
+    <edge id="e1" source="n8" target="n17">
       <data key="d8"/>
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="14.20000000000016" sy="1.8666666666665037" tx="0.0" ty="0.0"/>
@@ -542,9 +571,8 @@ open_direct_connection()</y:NodeLabel>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e2" source="n5" target="n4">
+    <edge id="e2" source="n8" target="n7">
       <data key="d8"/>
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -554,9 +582,8 @@ open_direct_connection()</y:NodeLabel>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e3" source="n5" target="n15">
+    <edge id="e3" source="n8" target="n18">
       <data key="d8"/>
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -574,22 +601,45 @@ open_direct_connection()</y:NodeLabel>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e4" source="n15" target="n17">
+    <edge id="e4" source="n18" target="n20">
       <data key="d8"/>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
+            <y:Point x="693.5000000000001" y="63.333333333333286"/>
+          </y:Path>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="diamond" target="none"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="90.712890625" x="-22.72250796965932" y="-213.39422414609123">(0…n) managed<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="6.283185307179586" distance="33.11140126080987" distanceToCenter="true" position="right" ratio="0.6665208542676977" segment="-1"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e5" source="n3" target="n5">
       <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="diamond" target="none"/>
-          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="90.712890625" x="26.59428939501629" y="-31.306879832860147">(0…n) managed<y:LabelModel>
-              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartEdgeLabelModelParameter angle="6.283185307179586" distance="35.29475413929856" distanceToCenter="true" position="right" ratio="0.7445579165003997" segment="-1"/>
-            </y:ModelParameter>
-            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
-          </y:EdgeLabel>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e6" source="n4" target="n5">
+      <data key="d9"/>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
           <y:BendStyle smoothed="false"/>
         </y:PolyLineEdge>
       </data>

@@ -47,22 +47,18 @@ function(_, when, EE, BaseClient, http_constants) {
 
 	////////////////////////////////////
 	// override of parent
-	methods.resolve_request_ = function(request, result_deferred) {
+	methods.resolve_request_ = function(request) {
 
 		this.session_.register_request(request);
+
 		var server_promise = this.server_core_.process_request(request);
 
-		// convert server promise to client promise
-		// (ok very similar for now)
-		server_promise.spread(function(request, response) {
-			result_deferred.resolve([request, response]);
+		// filter a bit
+		return server_promise.then(function(response) {
 			if(!request.is_long_living)
 				request.done(); // done with it
+			return response;
 		});
-		server_promise.otherwise(function(){
-			// should never happen !
-			result_deferred.reject(); // TOREVIEW
-		})
 	};
 
 	// override of parent

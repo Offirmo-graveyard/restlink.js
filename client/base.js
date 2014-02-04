@@ -44,48 +44,65 @@ function(_, when, EE, Request, SerializationUtils, http_constants) {
 
 
 	////////////////////////////////////
-	// utility
+	// utility : create a blank request
+	// this avoid having to explicit load the Request module
 	methods.make_new_request = function() {
 		return Request.make_new();
 	};
 
+	// called by user
+	// returns a promise :
+	// ✓ response
+	//    -> NOTE that response may be an error response (ex. 404 etc.)
+	// ✕ Error
+	//    -> means that the request could not be processed
+	//       only for exceptional reasons :
+	//       - invalid state (connection lost)
+	//       - bug from user = incorrect call, ex. bad arguments
+	//       - internal bug
 	methods.process_request = function(request) {
-		if(!this.connected_)
-			throw new EE.IllegalStateError("This client is disconnected !");
+		try {
+			if(!this.connected_)
+				throw new EE.IllegalState("This client is disconnected !");
 
-		// check the request and correct it if needed
-		SerializationUtils.auto_serialize_content_if_needed(request);
+			// check the request and correct it if needed :
+			// - serialize content if needed (may throw if failure)
+			SerializationUtils.auto_serialize_content_if_needed(request);
 
-		var result_deferred = when.defer();
-		var temp_deferred = when.defer();
+			// call internal function
+			var temp_promise = when.resolve( this.resolve_request_(request) );
 
-		this.resolve_request_(request, temp_deferred);
-		temp_deferred.promise.spread(function(request, response) {
-			// TODO try/catch !
-			SerializationUtils.auto_deserialize_content_if_needed(request);
-			SerializationUtils.auto_deserialize_content_if_needed(response);
-			result_deferred.resolve( [request, response] );
-		});
-		temp_deferred.promise.otherwise(function() {
-			result_deferred.reject( arguments );
-		});
-
-		return result_deferred.promise;
+			// filter the result
+			var result_promise = temp_promise.then( function(response) {
+					// may throw in which case result_promise will be rejected
+					SerializationUtils.auto_deserialize_content_if_needed(request);
+					SerializationUtils.auto_deserialize_content_if_needed(response);
+					// return : so this value will be used to resolve result_promise
+					return response;
+				}
+				// no need for an error function : will be automatically transferred to result_promise
+			);
+			return result_promise;
+		}
+		catch(e) {
+			return when.reject( e );
+		}
 	};
 
 	// TOREVIEW
 	methods.process_long_living_request = function(request, callback) {
-		throw new EE.NotImplementedError("process_long_living_request");
+		throw new EE.NotImplemented("process_long_living_request");
 	};
 
 	// this method is to be overriden
-	methods.resolve_request_ = function(request, result_deferred) {
+	// must return a response or a promise(response), either way works
+	methods.resolve_request_ = function(request) {
 		// default implementation : always fail ! (since has to be overriden)
 		var response = request.make_response()
 			.with_status(http_constants.status_codes.status_501_server_error_not_implemented)
 			.with_meta({ error_msg: 'ClientAdapterBase process_request is to be implemented in a derived class !' });
 
-		result_deferred.resolve([request, response]);
+		return response;
 	};
 
 	methods.disconnect = function() {

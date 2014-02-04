@@ -12,7 +12,9 @@
 		"when":                    "latest",
 
 		"chai":                    "latest",
+		"chai-as-promised":        "latest",
 		"mocha":                   "latest",
+		"mocha-as-promised":       "latest",
 		"requirejs":               "latest",
 		"requirejs-domready":      "latest"
 	},

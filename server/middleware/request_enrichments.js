@@ -45,6 +45,20 @@ function request_enrichment_module_def(_, when, EE) {
 			throw new EE.InvalidArgument("Offirmo Middleware : No request to enrich !");
 		}
 
+		// root of all our additions
+		// in order to keep the response object clean
+		request.middleware_ = {
+			match_infos_ : undefined, // lazy-computed : undef at start
+			                          // will contain matching infos (fully decoded url and co)
+			// chain of back processing functions
+			// through which a response will have to go through (LIFO)
+			// important to store it in the request since it may be reused by several responses
+			// (in the specific where we wander off from strict REST)
+			// NOTE : this list will be frozen once the first send() is called
+			// to detect unwanted modifications.
+			back_processing_chain_ : []
+		};
+
 		// note : closure
 		request.get_match_infos = function() {
 			return get_match_infos_implementation( this );

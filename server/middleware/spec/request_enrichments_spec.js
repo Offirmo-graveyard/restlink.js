@@ -3,6 +3,7 @@ if (typeof define !== 'function') { var define = require('amdefine')(module); }
 define(
 [
 	'chai',
+	'restlink/utils/chai-you-promised',
 	'when',
 	'restlink/server/middleware/request_enrichments',
 	'restlink/core/request',
@@ -11,7 +12,7 @@ define(
 	'restlink/server/middleware/base',
 	'mocha'
 ],
-function(chai, when, CUT, Request, DebugCore, Session, BaseMiddleware) {
+function(chai, Cyp, when, CUT, Request, DebugCore, Session, BaseMiddleware) {
 	"use strict";
 
 	var expect = chai.expect;
@@ -37,7 +38,8 @@ function(chai, when, CUT, Request, DebugCore, Session, BaseMiddleware) {
 				CUT.process(request, fake_context);
 
 				// check augmentations
-				request.should.respondTo("get_match_infos");
+				expect( request ).to.respondTo("get_match_infos");
+				expect( request.middleware_ ).to.exist;
 			});
 
 			it('should not work if mandatory args are missing', function() {
@@ -87,7 +89,7 @@ function(chai, when, CUT, Request, DebugCore, Session, BaseMiddleware) {
 				core.startup_and_create_session(request);
 				var promise = core.process_request(request);
 
-				promise.then(function() { signalAsyncTestFinished(); });
+				Cyp.finish_test_expecting_promise_to_be_fulfilled(promise, signalAsyncTestFinished);
 			});
 
 		}); // describe feature

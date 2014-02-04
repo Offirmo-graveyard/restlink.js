@@ -3,12 +3,14 @@ if (typeof define !== 'function') { var define = require('amdefine')(module); }
 define(
 [
 	'chai',
+	'restlink/utils/chai-you-promised',
 	'when',
 	'restlink/server/middleware/response_enrichments',
 	'restlink/core/response',
+	'extended-exceptions',
 	'mocha'
 ],
-function(chai, when, CUT, Response) {
+function(chai, Cyp, when, CUT, Response, EE) {
 	"use strict";
 
 	var expect = chai.expect;
@@ -33,8 +35,8 @@ function(chai, when, CUT, Response) {
 				var fake_request = {};
 				CUT.process(response, fake_request);
 
-				response.middleware_.should.exist;
-				response.should.respondTo("send");
+				expect( response.middleware_ ).to.exist;
+				expect( response ).to.respondTo("send");
 			});
 
 			it('should not work in mandatory args are missing', function() {
@@ -53,83 +55,29 @@ function(chai, when, CUT, Response) {
 
 		describe('response sending', function() {
 
-			it('should detect problems', function() {
-				var response = Response.make_new();
-				var fake_request = {};
-				CUT.process(response, fake_request);
+			it('should correctly handle failure case', function(signalAsyncTestFinished) {
 
-				// should throw since no promises set
-				var tempfn = function() { response.send(); };
-				tempfn.should.throw(Error, "Empty deferred chain : middleware error during processing ?");
-			});
-
-			it('should work in nominal case', function(signalAsyncTestFinished) {
+				var fake_request = { is_long_living:true }; // bad, empty !
 				var out = Response.make_new();
-				var fake_request = {};
 				CUT.process(out, fake_request);
 
-				// insert a root deferred
-				var deferred = when.defer();
-				var promise = deferred.promise;
-				out.middleware_.deferred_chain_.push(deferred);
+				// will fail since we expect infos inside the request
+				// but should fail in a clean, async-safe manner.
+				var tempfn = function() { out.send(); };
+				tempfn.should.throw(EE.RuntimeError, "Cannot read property 'back_processing_chain_' of undefined");
 
-				// it is now allowed to send the response
-				out.send();
-
-				promise.spread(function(request, response) {
-					request.should.equal(fake_request);
-					response.should.equal(out);
-					signalAsyncTestFinished();
-				});
-				promise.otherwise(function(){
-					expect(false).to.be.ok;
-				});
+				Cyp.finish_test_expecting_promise_to_be_rejected_with_error(
+						out.middleware_.final_deferred_.promise,
+						signalAsyncTestFinished,
+						EE.RuntimeError,
+						"Cannot read property 'back_processing_chain_' of undefined"
+				);
 			});
 
-			it('should correctly handle a middleware chain', function(signalAsyncTestFinished) {
-				var out = Response.make_new();
-				var fake_request = {};
-				var fake_context = {};
-				CUT.process(out, fake_request);
-
-				// simulate a middleware chain
-				var deferred_head = when.defer();
-				var promise_head = deferred_head.promise;
-				out.middleware_.deferred_chain_.push(deferred_head);
-
-				var deferred_tail = when.defer();
-				var promise_tail = deferred_tail.promise;
-				out.middleware_.deferred_chain_.push(deferred_tail);
-
-				out.send();
-
-				promise_tail.spread(function(request, response) {
-					request.should.equal(fake_request);
-					response.should.equal(out);
-
-					// inspect and modify (example)
-					response.should.not.have.ownProperty('foo');
-					response.foo = "bar";
-
-					response.send();
-				});
-				promise_tail.otherwise(function(){
-					expect(false).to.be.ok;
-				});
-
-				promise_head.spread(function(request, response) {
-					request.should.equal(fake_request);
-					response.should.equal(out);
-
-					response.should.have.ownProperty('foo');
-					response.foo.should.equals( "bar" );
-
-					signalAsyncTestFinished();
-				});
-				promise_head.otherwise(function(){
-					expect(false).to.be.ok;
-				});
-			});
+			// It's not convenient to test that here,
+			// it will get covered in base middleware test.
+			it('[not tested here] should work in nominal case and handle a middleware chain');
+			it('[not tested here] should correctly andle and report errors');
 
 		}); // describe feature
 

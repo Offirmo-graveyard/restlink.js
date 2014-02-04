@@ -82,7 +82,7 @@ function(_, when, EE, StartableObject, RestIndexedContainer, ServerSession, Seri
 		// call ~parent ~mixin
 		StartableObject.methods.startup.apply(this);
 
-		var this_ = this; // for the call below
+		var this_ = this; // closure
 		_.each(this.adapters_, function(adapter) {
 			adapter.startup(this_);
 		});
@@ -107,7 +107,7 @@ function(_, when, EE, StartableObject, RestIndexedContainer, ServerSession, Seri
 
 	methods.create_session = function() {
 		if(!this.is_started())
-			throw new EE.IllegalStateError("Can't create new session : server is stopped !");
+			throw new EE.IllegalState("Can't create new session : server is stopped !");
 		var session = ServerSession.make_new();
 		session.set_server(this);
 		this.sessions_.push(session);
@@ -122,8 +122,9 @@ function(_, when, EE, StartableObject, RestIndexedContainer, ServerSession, Seri
 	};
 
 	methods.process_request = function(request) {
+		// TODO try/catch !
 		if(!this.is_started())
-			throw new EE.IllegalStateError("Can't create new session : server is stopped !");
+			throw new EE.IllegalState("Can't process request : server is stopped !");
 
 		if(!request.hasOwnProperty('get_session'))
 			throw new EE.InvalidArgument("Core : request must be registered to a session before processing !");
@@ -141,6 +142,21 @@ function(_, when, EE, StartableObject, RestIndexedContainer, ServerSession, Seri
 
 	methods.get_rest_indexed_container = function() {
 		return this.rest_indexed_shared_container;
+	};
+
+	// A function to signal error happening in critical cases
+	// where we can't use the normal request/response chain.
+	// It should only happens due to a bug.
+	methods.signal_out_of_chain_error = function(error, maybe_request, maybe_response) {
+		// TODO send an e-mail or anything
+		console.group("Out-of-chain error signaled");
+		console.error(error.message);
+		console.error(error);
+		console.error(maybe_request);
+		console.error(maybe_response);
+		console.error(error.stack);
+		console.groupEnd();
+
 	};
 
 

@@ -20,7 +20,7 @@ function(_, Backbone, when, EE, CallbackMiddleware, http_constants) {
 
 	// util
 	function test_bbmodel_object_prop(object) {
-		return object.hasOwnProperty('bb_model_service_infos_')
+		return object.hasOwnProperty('bb_model_service_infos_');
 	}
 	function get_bbmodel_object_prop(object) {
 		return object.bb_model_service_infos_;
@@ -30,39 +30,69 @@ function(_, Backbone, when, EE, CallbackMiddleware, http_constants) {
 			object.bb_model_service_infos_ = {};
 		return get_bbmodel_object_prop(object);
 	}
+	function compute_full_uri(segments, model_uri) {
+		// simple version for now
+		var url = '';
+		// skip the 1st and last one
+		for(var i = 1; i < segments.length - 1; ++i) {
+			url += '/' + segments[i].value;
+		}
+		url += model_uri;
+		return url;
+	}
+	function set_response_for_backbone_error(response, bbe) {
+		// Our BB sync implementations *may* hint us about the status code.
+		// Useful especially for the 404
+		if(bbe.http_status_hint) {
+			response.set_to_error(bbe.http_status_hint, bbe);
+		}
+		else {
+			response.set_to_internal_error(bbe);
+		}
+	}
 
 	function callback_create_one(request, response) {
 		var match_infos = request.get_match_infos();
 		if(!match_infos.found || !test_bbmodel_object_prop(match_infos.payload)) {
 			// Uh ?
-			throw EE.InvariantNotMetError('REST BB model service is missing its internal data !');
+			throw EE.InvariantNotMet('REST BB model service is missing its internal data !');
 		}
 
 		var payload = get_bbmodel_object_prop(match_infos.payload);
 		var Model = payload.model;
 		try {
+			// content is supposed to contains the attributes
+			// TODO SEC filter attributes with whitelist !
 			var new_instance = new Model(request.content);
 			var promise = new_instance.save();
-			promise.spread(function(instance) {
+			var safety_promise = promise.then(function(attributes) {
 				response.return_code = http_constants.status_codes.status_201_created;
-				response.content = { id: instance.id }; // is this standard ?
+				response.meta['Location'] = compute_full_uri(match_infos.segments, new_instance.url());
+				// content
+				response.content = { id: new_instance.id }; // XXX is this standard ?
 				response.content_type = 'application/json'; // obviously
 				response.send();
+			},
+			function(bbe) {
+				// BB errors *may* have extra infos to help generate a good response
+				set_response_for_backbone_error(response, bbe);
+				response.send();
+				return true; // no need to forward error
 			});
-			promise.otherwise(function(args) {
-				var err = args[1];
-				response.set_to_internal_error(err);
+			safety_promise.otherwise(function(e) {
+				// final catch-all
+				response.set_to_internal_error(e);
 				response.send();
 			});
 		}
-		catch(err) {
+		catch(e) {
 			/*if (err instanceof RouteIndexedContainer.exceptions.MalformedRouteError) {
 				response.set_to_error(http_constants.status_codes.status_400_client_error_bad_request);
 				response.send();
 				handled = true;
 			}
 			else {// unknown other error*/
-			response.set_to_internal_error(err);
+			response.set_to_internal_error(e);
 			response.send();
 		}
 	}
@@ -71,28 +101,33 @@ function(_, Backbone, when, EE, CallbackMiddleware, http_constants) {
 		var match_infos = request.get_match_infos();
 		if(!match_infos.found || !test_bbmodel_object_prop(match_infos.payload)) {
 			// Uh ?
-			throw EE.InvariantNotMetError('REST BB model service is missing its internal data !');
+			throw EE.InvariantNotMet('REST BB model service is missing its internal data !');
 		}
 
 		// get the id
-		var id = undefined;
 		if(match_infos.last_segment_type !== 'id')
-			throw EE.InvariantNotMetError("REST BB model service delete one route can't find the id !");
-		id = match_infos.last_id;
+			throw EE.InvariantNotMet("REST BB model service delete one route can't find the id !");
+		var id = match_infos.last_id;
 
 		var payload = get_bbmodel_object_prop(match_infos.payload);
 		var Model = payload.model;
 		try {
-			var new_instance = new Model(request.content);
-			new_instance.id = id;
-			var promise = new_instance.destroy();
-			promise.spread(function(instance) {
+			var instance = new Model(request.content);
+			instance.id = id;
+			var promise = instance.destroy();
+			var safety_promise = promise.then(function(model) {
 				response.return_code = http_constants.status_codes.status_204_ok_no_content;
 				response.send();
+			},
+			function(bbe) {
+				// BB errors *may* have extra infos to help generate a good response
+				set_response_for_backbone_error(response, bbe);
+				response.send();
+				return true; // no need to forward error
 			});
-			promise.otherwise(function(args) {
-				var err = args[1];
-				response.set_to_internal_error(err);
+			safety_promise.otherwise(function(e) {
+				// final catch-all
+				response.set_to_internal_error(e);
 				response.send();
 			});
 		}
@@ -112,37 +147,41 @@ function(_, Backbone, when, EE, CallbackMiddleware, http_constants) {
 		var match_infos = request.get_match_infos();
 		if(!match_infos.found || !test_bbmodel_object_prop(match_infos.payload)) {
 			// Uh ?
-			throw EE.InvariantNotMetError('REST BB model service is missing its internal data !');
+			throw EE.InvariantNotMet('REST BB model service is missing its internal data !');
 		}
 
 		// get the id
-		var id = undefined;
 		if(match_infos.last_segment_type !== 'id')
-			throw EE.InvariantNotMetError("REST BB model service delete one route can't find the id !");
-		id = match_infos.last_id;
+			throw EE.InvariantNotMet("REST BB model service delete one route can't find the id !");
+		var id = match_infos.last_id;
 
 		var payload = get_bbmodel_object_prop(match_infos.payload);
 		var Model = payload.model;
 		try {
-			var new_instance = new Model();
-			new_instance.id = id;
-			var promise_fetch = new_instance.fetch();
-			promise_fetch.spread(function(instance) {
-				instance.set(request.content);
-				var promise_save = instance.save();
-				promise_save.spread(function(instance) {
+			var existing_instance = new Model();
+			existing_instance.id = id;
+			var promise_fetch = existing_instance.fetch();
+			var safety_promise = promise_fetch.then(function(attributes) {
+				// we fetched the existing one
+				// patch it
+				// TODO SEC filter attributes with whitelist
+				existing_instance.set(request.content);
+				var promise_save = existing_instance.save();
+				// filter parent promise
+				return promise_save.then(function(attributes) {
 					response.set_to_ok();
 					response.send();
 				});
-				promise_save.otherwise(function(args) {
-					var err = args[1];
-					response.set_to_internal_error(err);
-					response.send();
-				});
+			},
+			function(bbe) {
+				// BB errors *may* have extra infos to help generate a good response
+				set_response_for_backbone_error(response, bbe);
+				response.send();
+				return true; // no need to forward error
 			});
-			promise_fetch.otherwise(function(args) {
-				var err = args[1];
-				response.set_to_internal_error(err);
+			safety_promise.otherwise(function(e) {
+				// final catch-all
+				response.set_to_internal_error(e);
 				response.send();
 			});
 		}
@@ -162,14 +201,13 @@ function(_, Backbone, when, EE, CallbackMiddleware, http_constants) {
 		var match_infos = request.get_match_infos();
 		if(!match_infos.found || !test_bbmodel_object_prop(match_infos.payload)) {
 			// Uh ?
-			throw EE.InvariantNotMetError('REST BB model service is missing its internal data !');
+			throw EE.InvariantNotMet('REST BB model service is missing its internal data !');
 		}
 
 		// get the id
-		var id = undefined;
 		if(match_infos.last_segment_type !== 'id')
-			throw EE.InvariantNotMetError("REST BB model service delete one route can't find the id !");
-		id = match_infos.last_id;
+			throw EE.InvariantNotMet("REST BB model service delete one route can't find the id !");
+		var id = match_infos.last_id;
 
 		// check content type
 		if(request.content) {
@@ -180,27 +218,30 @@ function(_, Backbone, when, EE, CallbackMiddleware, http_constants) {
 				response.send();
 				return;
 			}
-			throw new EE.NotImplementedError("GET with content");
+			throw new EE.NotImplemented("GET with content");
 		}
 
 		var payload = get_bbmodel_object_prop(match_infos.payload);
 		var Model = payload.model;
 		try {
-			var new_instance = new Model();
-			new_instance.id = id;
-			var promise_fetch = new_instance.fetch();
-			promise_fetch.spread(function(instance) {
+			var existing_instance = new Model();
+			existing_instance.id = id;
+			var promise_fetch = existing_instance.fetch();
+			var safety_promise = promise_fetch.then(function(attributes) {
 				response.set_to_ok();
-				response.content = new_instance.attributes;
+				response.content = existing_instance.attributes;
 				response.content_type = 'application/json'; // obviously
 				response.send();
+			},
+			function(bbe) {
+				// BB errors *may* have extra infos to help generate a good response
+				set_response_for_backbone_error(response, bbe);
+				response.send();
+				return true; // no need to forward error
 			});
-			promise_fetch.otherwise(function(args) {
-				// most likely not found
-				// (or internal error ?)
-				// TODO differentiate, handle both cases
-				var err = args[1];
-				response.set_to_not_found();
+			safety_promise.otherwise(function(e) {
+				// final catch-all
+				response.set_to_internal_error(e);
 				response.send();
 			});
 		}
@@ -236,17 +277,33 @@ function(_, Backbone, when, EE, CallbackMiddleware, http_constants) {
 		var Model = payload.model;
 
 		try {
-			var new_instance = new Model();
-			var promise_find = new_instance.find();
-			promise_find.spread(function(instance, result) {
+			var temp_instance = new Model();
+			// find() is not standard BackBone, so let's handle the case it's not present
+			var promise_find;
+			if(! temp_instance.find) {
+				var err = new EE.NotImplemented("BB find() !");
+				err.http_status_hint = http_constants.status_codes.status_501_server_error_not_implemented;
+				promise_find = when.reject(err);
+			}
+			else {
+				promise_find = temp_instance.find();
+			}
+			var safety_promise = promise_find.then(function(tbd) {
+				// XXX should not work for now
 				response.set_to_ok();
-				response.with_content(new_instance.attributes);
+				response.with_content(temp_instance.attributes);
 				response.content_type = 'application/json'; // obviously
 				response.send();
+			},
+			function(bbe) {
+				// BB errors *may* have extra infos to help generate a good response
+				set_response_for_backbone_error(response, bbe);
+				response.send();
+				return true; // no need to forward error
 			});
-			promise_find.otherwise(function(args) {
-				var err = args[1];
-				response.set_to_internal_error(err);
+			safety_promise.otherwise(function(e) {
+				// final catch-all
+				response.set_to_internal_error(e);
 				response.send();
 			});
 		}

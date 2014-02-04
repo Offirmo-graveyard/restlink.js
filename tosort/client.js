@@ -88,12 +88,12 @@ function(_, when, cache, Request, Response) {
 		model.trigger("request", model, server_request_promise, options); // try to respect Backbone API
 
 		(function(model, options) {
-			server_request_promise.spread(function(request, response) {
+			server_request_promise.then(function(response) {
 				// call successful
 				model.set(response.content);
 				model.trigger('sync', model, response.content, options); // try to respect Backbone API
-			});
-			server_request_promise.otherwise(function() {
+			},
+			function(e) {
 				// TODO
 				throw 'server request nok : not implemented';
 			});

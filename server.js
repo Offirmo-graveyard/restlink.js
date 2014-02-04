@@ -50,14 +50,15 @@ function(_, NamedObject, StartableObject, ServerCore, BaseMiddleware, LoggerMidd
 
 
 	////////////////////////////////////
-	methods.init = function() {
+	methods.init_ = function() {
 		// init of member objects
 		this.core_ = ServerCore.make_new();
 
 		// always add the direct adapter, for convenience
 		var direct_adapter = DirectServerAdapter.make_new();
 		this.add_adapter( direct_adapter );
-		// we also keep a ref to it for later use
+		// and also keep a ref to it for later use
+		// @see open_direct_connection
 		this.direct_adapter_ = direct_adapter;
 	};
 
@@ -77,7 +78,9 @@ function(_, NamedObject, StartableObject, ServerCore, BaseMiddleware, LoggerMidd
 		this.core_.startup();
 	};
 	methods.shutdown = function() {
-		// stop members (reverse order)
+		// (reverse order of start)
+
+		// stop members
 		this.core_.shutdown();
 
 		// call parent
@@ -90,6 +93,7 @@ function(_, NamedObject, StartableObject, ServerCore, BaseMiddleware, LoggerMidd
 
 	// convenience
 	methods.open_direct_connection = function(adapter) {
+		// that's why it was useful to keep a ref to this one
 		return this.direct_adapter_.new_connection();
 	};
 
@@ -97,6 +101,7 @@ function(_, NamedObject, StartableObject, ServerCore, BaseMiddleware, LoggerMidd
 		CallbackMiddleware.add_callback_handler(this.core_.rest_indexed_shared_container, route, method, handler, replace_existing);
 	};
 
+	// serve Backbone models
 	methods.serve_model_at = function(route, model, options) {
 		BBModelServiceUtils.register_rest_routes_for_model(this.core_, route, model, options);
 	};
@@ -124,7 +129,7 @@ function(_, NamedObject, StartableObject, ServerCore, BaseMiddleware, LoggerMidd
 	var DefinedClass = function RestlinkServer() {
 		_.defaults( this, defaults );
 		// other inits...
-		methods.init.apply(this, arguments);
+		methods.init_.apply(this, arguments);
 	};
 
 	DefinedClass.prototype.constants  = constants;

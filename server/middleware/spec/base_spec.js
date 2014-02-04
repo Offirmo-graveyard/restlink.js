@@ -3,13 +3,14 @@ if (typeof define !== 'function') { var define = require('amdefine')(module); }
 define(
 [
 	'chai',
+	'restlink/utils/chai-you-promised',
 	'restlink/server/middleware/base',
 	'restlink/core/request',
 	'restlink/core/response',
 	'network-constants/http',
 	'mocha'
 ],
-function(chai, CUT, Request, Response, http_constants) {
+function(chai, Cyp, CUT, Request, Response, http_constants) {
 	"use strict";
 
 	var expect = chai.expect;
@@ -24,8 +25,8 @@ function(chai, CUT, Request, Response, http_constants) {
 
 			it('should be instantiable', function() {
 				var out = CUT.make_new();
-				out.should.exist;
-				out.should.be.an('object');
+				expect( out ).to.exist;
+				expect( out ).to.be.an('object');
 			});
 
 			it('should set default values', function() {
@@ -62,15 +63,11 @@ function(chai, CUT, Request, Response, http_constants) {
 				var request = Request.make_new_stanford_teapot();
 				var promise = out.initiate_processing(request);
 
-				promise.spread(function on_success(request, response){
+				Cyp.finish_test_expecting_promise_to_be_fulfilled_with_conditions(promise, signalAsyncTestFinished, function(response) {
 					response.method.should.equal('BREW');
 					response.uri.should.equal('/stanford/teapot');
 					response.return_code.should.equal(http_constants.status_codes.status_400_client_error_bad_request);
 					response.content.should.equal("I'm a teapot !");
-					signalAsyncTestFinished();
-				});
-				promise.otherwise(function on_failure(request, response){
-					expect(false).to.be.ok;
 				});
 			});
 
@@ -89,15 +86,11 @@ function(chai, CUT, Request, Response, http_constants) {
 				var request = Request.make_new_stanford_teapot();
 				var promise = out.initiate_processing(request);
 
-				promise.spread(function on_success(request, response){
+				Cyp.finish_test_expecting_promise_to_be_fulfilled_with_conditions(promise, signalAsyncTestFinished, function(response) {
 					response.method.should.equal('BREW');
 					response.uri.should.equal('/stanford/teapot');
 					response.return_code.should.equal(http_constants.status_codes.status_400_client_error_bad_request);
 					response.content.should.equal("I'm a teapot ! Really, dude.");
-					signalAsyncTestFinished();
-				});
-				promise.otherwise(function on_failure(request, response){
-					expect(false).to.be.ok;
 				});
 			});
 
@@ -107,14 +100,10 @@ function(chai, CUT, Request, Response, http_constants) {
 				var request = Request.make_new_stanford_teapot();
 				var promise = out.initiate_processing(request);
 
-				promise.spread(function on_success(request, response){
+				Cyp.finish_test_expecting_promise_to_be_fulfilled_with_conditions(promise, signalAsyncTestFinished, function(response) {
 					response.method.should.equal('BREW');
 					response.uri.should.equal('/stanford/teapot');
 					response.return_code.should.equal(http_constants.status_codes.status_500_server_error_internal_error);
-					signalAsyncTestFinished();
-				});
-				promise.otherwise(function on_failure(request, response){
-					expect(false).to.be.ok;
 				});
 			});
 
@@ -134,16 +123,12 @@ function(chai, CUT, Request, Response, http_constants) {
 
 				var request = Request.make_new_stanford_teapot();
 				var promise = out_head.initiate_processing(request);
-				promise.spread(function on_success(request, response){
+				Cyp.finish_test_expecting_promise_to_be_fulfilled_with_conditions(promise, signalAsyncTestFinished, function(response) {
 					response.method.should.equal('BREW');
 					response.uri.should.equal('/stanford/teapot');
 					response.return_code.should.equal(http_constants.status_codes.status_400_client_error_bad_request);
 					response.content.should.equal("I'm a teapot !");
 					expect(response.meta["tag"]).to.equal("out_head was here !");
-					signalAsyncTestFinished();
-				});
-				promise.otherwise(function on_failure(request, response){
-					expect(false).to.be.ok;
 				});
 			});
 
@@ -177,16 +162,12 @@ function(chai, CUT, Request, Response, http_constants) {
 
 				var request = Request.make_new_stanford_teapot();
 				var promise = out_head.initiate_processing(request);
-				promise.spread(function on_success(request, response){
+				Cyp.finish_test_expecting_promise_to_be_fulfilled_with_conditions(promise, signalAsyncTestFinished, function(response) {
 					console.log(response);
 					response.method.should.equal('BREW');
 					response.uri.should.equal('/stanford/teapot');
 					response.return_code.should.equal(http_constants.status_codes.status_400_client_error_bad_request);
 					response.content.should.equal("H1>H2><H2<H1<H1b");
-					signalAsyncTestFinished();
-				});
-				promise.otherwise(function on_failure(request, response){
-					expect(false).to.be.ok;
 				});
 			});
 

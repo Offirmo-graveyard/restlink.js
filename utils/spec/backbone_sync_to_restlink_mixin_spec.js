@@ -37,7 +37,8 @@ function(chai, _, Backbone, when, BaseModel, GenericStore, SyncToStoreMixin, sho
 		var out = RestlinkServer.make_new();
 
 		// since we need to set persistence Model-wide
-		// we need to derive a copy for server and client
+		// we need to derive a copy for server and another for client
+		// here : Server Side
 		var OrderModelSS = OrderModel.extend();
 		SyncToStoreMixin.mixin(OrderModelSS.prototype);
 
@@ -54,7 +55,8 @@ function(chai, _, Backbone, when, BaseModel, GenericStore, SyncToStoreMixin, sho
 		/////// client side ///////
 
 		// since we need to set persistence Model-wide
-		// we need to derive a copy for server and client
+		// we need to derive a copy for server and another for client
+		// here : Client Side
 		var OrderModelCS = OrderModel.extend({urlRoot : '/api/v1.0/order'});
 		CUT.mixin(OrderModelCS.prototype);
 

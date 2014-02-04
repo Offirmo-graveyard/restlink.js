@@ -29,7 +29,6 @@ function(_, when, Request, BaseServerAdapter, DirectClient, EE) {
 
 	////////////////////////////////////
 	//defaults. = ;
-
 	methods.init = function() {
 		// init of member objects
 		//...
@@ -44,12 +43,12 @@ function(_, when, Request, BaseServerAdapter, DirectClient, EE) {
 	methods.new_connection = function() {
 		if(! this.is_started()) {
 			// should never happen
-			throw new EE.IllegalStateError("Can't open connection : server adapter is stopped.");
+			throw new EE.IllegalState("Can't open connection : server adapter is stopped.");
 		}
 		if(! this.get_server_core() ) {
 			// no server ! Can't process !
 			// should also never happen
-			throw new EE.IllegalStateError("Can't open connection : server adapter is misconfigured (no server).");
+			throw new EE.IllegalState("Can't open connection : server adapter is misconfigured (no server).");
 		}
 		return DirectClient.make_new(this.get_server_core());
 	};
@@ -90,5 +89,7 @@ function(_, when, Request, BaseServerAdapter, DirectClient, EE) {
 		'exceptions' : exceptions,
 		'defaults'   : defaults,
 		'methods'    : methods
+		// "class methods"
+		// ...
 	};
 }); // requirejs module

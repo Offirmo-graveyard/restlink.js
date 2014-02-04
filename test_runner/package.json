@@ -6,7 +6,9 @@
 	"dependencies": {
 		"amdefine":                "latest",
 		"chai":                    "latest",
+		"chai-as-promised":        "latest",
 		"generic_store":           "latest",
-		"mocha":                   "latest"
+		"mocha":                   "latest",
+		"mocha-as-promised":       "latest"
 	}
 }

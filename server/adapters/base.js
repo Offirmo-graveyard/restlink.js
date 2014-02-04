@@ -101,5 +101,7 @@ function(_, EE, StartableObject) {
 		'exceptions' : exceptions,
 		'defaults'   : defaults,
 		'methods'    : methods
+		// "class methods"
+		// ...
 	};
 }); // requirejs module

@@ -14,9 +14,10 @@ define(
 	'backbone',
 	'when',
 	'extended-exceptions',
+	'network-constants/http',
 	'restlink/utils/serialization_utils'
 ],
-function(_, Backbone, when, EE, SerializationUtils) {
+function(_, Backbone, when, EE, http, SerializationUtils) {
 	"use strict";
 
 	var methods = {};
@@ -28,8 +29,7 @@ function(_, Backbone, when, EE, SerializationUtils) {
 	methods.sync = function(method, model, options) {
 		//console.log("sync_to_restlink begin('"+method+"',...) called with ", arguments);
 
-		var deferred = when.defer();
-		var restlink = model.restlink_;
+		var restlink_client = model.restlink_; // shortcut
 
 		options = options || {};
 
@@ -37,26 +37,30 @@ function(_, Backbone, when, EE, SerializationUtils) {
 		try {
 			var target_url = model.url(); // we use the unique url as an id
 
-			var request = restlink.make_new_request();
+			var request = restlink_client.make_new_request();
 			// common
 			if(options.hasOwnProperty('meta'))
 				_.extend(request.meta, options.meta);
 
 			////////////
+			var restlink_promise;
 			if(method === "read") {
 				if(typeof target_url === 'undefined')
-					throw new Error("can't fetch without id !");
+					throw new EE.InvalidArgument("can't fetch without id !");
 
 				// fill the request
 				request.uri = target_url;
 				request.method = "GET";
 
-				var promise = this.restlink_.process_request(request);
-				promise.spread(function(request, response){
+				restlink_promise = restlink_client.process_request(request);
+				// filter the restlink client promise into a backbone sync one
+				return restlink_promise.then(function(response) {
 					// REM : the server round trip succeeded but the answer may be negative !
-					if(response.return_code != 200) {
+					if(response.return_code !== http.status_codes.status_200_ok) {
 						// failure !
-						deferred.reject( [model, new Error('' + response.return_code + ' - ' + response.content), options] );
+						var err = new EE.RuntimeError('' + response.return_code + ' - ' + response.content);
+						err.http_status_hint = response.return_code;
+						throw err;
 					}
 					else {
 						// it worked.
@@ -66,17 +70,14 @@ function(_, Backbone, when, EE, SerializationUtils) {
 						model.set(response.content);
 						// all in sync
 						model.declare_in_sync();
-						deferred.resolve( [model, undefined, options] );
+						return model.attributes; // change resolution value
 					}
-				});
-				promise.otherwise(function(args){
-					deferred.reject(args);
 				});
 			}
 			////////////
 			else if(method === "create") {
 				if(typeof target_url === 'undefined')
-					throw new Error("can't create without an url !");
+					throw new EE.InvalidArgument("can't create without an url !");
 
 				// fill the request
 				request.uri = target_url;
@@ -85,12 +86,15 @@ function(_, Backbone, when, EE, SerializationUtils) {
 				// immediately serialize to avoid sharing internal structures
 				SerializationUtils.auto_serialize_content_if_needed(request);
 
-				var promise = this.restlink_.process_request(request);
-				promise.spread(function(request, response){
+				restlink_promise = restlink_client.process_request(request);
+				// filter the restlink client promise into a backbone sync one
+				return restlink_promise.then(function(response) {
 					// REM : the server round trip succeeded but the answer may be negative !
-					if(response.return_code != 200) {
+					if(response.return_code !== http.status_codes.status_201_created) {
 						// failure !
-						deferred.reject( [model, new Error('' + response.return_code + ' - ' + response.content), options] );
+						var err = new EE.RuntimeError('' + response.return_code + ' - ' + response.content);
+						err.http_status_hint = response.return_code;
+						throw err;
 					}
 					else {
 						// it worked.
@@ -101,17 +105,14 @@ function(_, Backbone, when, EE, SerializationUtils) {
 							// still same data, ok
 							model.declare_in_sync();
 						}
-						deferred.resolve( [model, undefined, options] );
+						return model.attributes; // change resolution value
 					}
-				});
-				promise.otherwise(function(args){
-					deferred.reject(args);
 				});
 			}
 			////////////
 			else if(method === "update") {
 				if(typeof target_url === 'undefined')
-					throw new Error("can't update without an url !");
+					throw new EE.InvalidArgument("can't update without an url !");
 
 				// fill the request
 				request.uri = target_url;
@@ -121,12 +122,15 @@ function(_, Backbone, when, EE, SerializationUtils) {
 				// immediately serialize to avoid sharing internal structures
 				SerializationUtils.auto_serialize_content_if_needed(request);
 
-				var promise = this.restlink_.process_request(request);
-				promise.spread(function(request, response){
+				restlink_promise = restlink_client.process_request(request);
+				// filter the restlink client promise into a backbone sync one
+				return restlink_promise.then(function(response) {
 					// REM : the server round trip succeeded but the answer may be negative !
-					if(response.return_code != 200) {
+					if(response.return_code !== http.status_codes.status_200_ok) {
 						// failure !
-						deferred.reject( [model, new Error('' + response.return_code + ' - ' + response.content), options] );
+						var err = new EE.RuntimeError('' + response.return_code + ' - ' + response.content);
+						err.http_status_hint = response.return_code;
+						throw err;
 					}
 					else {
 						// it worked.
@@ -136,28 +140,28 @@ function(_, Backbone, when, EE, SerializationUtils) {
 							// still same data, ok
 							model.declare_in_sync();
 						}
-						deferred.resolve( [model, undefined, options] );
+						return model.attributes; // change resolution value
 					}
-				});
-				promise.otherwise(function(args){
-					deferred.reject(args);
 				});
 			}
 			////////////
 			else if(method === "delete") {
 				if(typeof target_url === 'undefined')
-					throw new Error("can't delete without an url !");
+					throw new EE.InvalidArgument("can't delete without an url !");
 
 				// fill the request
 				request.uri = target_url;
 				request.method = "DELETE";
 
-				var promise = this.restlink_.process_request(request);
-				promise.spread(function(request, response){
+				restlink_promise = restlink_client.process_request(request);
+				// filter the restlink client promise into a backbone sync one
+				return restlink_promise.then(function(response) {
 					// REM : the server round trip succeeded but the answer may be negative !
-					if(response.return_code != 200) {
+					if(response.return_code !== http.status_codes.status_204_ok_no_content) {
 						// failure !
-						deferred.reject( [model, new Error('' + response.return_code + ' - ' + response.content), options] );
+						var err = new EE.RuntimeError('' + response.return_code + ' - ' + response.content);
+						err.http_status_hint = response.return_code;
+						throw err;
 					}
 					else {
 						// it worked.
@@ -165,33 +169,27 @@ function(_, Backbone, when, EE, SerializationUtils) {
 						model.id = undefined; // since was deleted on server
 						// are we in sync ? Not at all since no longer on server.
 						model.declare_fully_out_of_sync();
-						deferred.resolve( [model, undefined, options] );
+						// filter
+						return model;
 					}
-				});
-				promise.otherwise(function(args){
-					deferred.reject(args);
 				});
 			}
 			////////////
 			else {
 				// WAT ?
-				throw new Error("Unrecognized sync method !");
+				throw new EE.LogicError("Unrecognized sync method !");
 			}
 		}
 		catch(e) {
-			deferred.reject( [ model, e ] );
+			return when.reject( e );
 		}
 
-		//console.log("sync_to_restlink end - Current changes = ", model.changed_attributes());
-		return deferred.promise;
+		// should never arrive here
+		return when.reject( new EE.LogicError("Should never arrive here !") );
 	};
 
 	methods.find = function(criteria) {
-		var deferred = when.defer();
-
-		deferred.reject( [this, new Error("not implemented !")] ) ;
-
-		return deferred.promise;
+		return when.reject( new Error("not implemented !") );
 	};
 
 

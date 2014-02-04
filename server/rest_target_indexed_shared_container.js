@@ -81,7 +81,7 @@ function(_, RouteIndexedContainer, EE) {
 		// alter result
 		if (ri_match_infos.found) {
 			if(ri_match_infos.found && !(ri_match_infos.hasOwnProperty('payload') && ri_match_infos.payload))
-				throw new EE.InvariantNotMetError('ri_match_infos payload !');
+				throw new EE.InvariantNotMet('ri_match_infos payload !');
 			if(!ri_match_infos.payload.hasOwnProperty(action)) {
 				ri_match_infos.found = false;
 				ri_match_infos.found_no_actions_at_all = (Object.getOwnPropertyNames(ri_match_infos.payload).length === 0);

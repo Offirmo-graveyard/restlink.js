@@ -71,14 +71,14 @@ function(_, EE, FastTimestamp) {
 		if(!this.is_valid())
 		{
 			// this session is invalid. No new requests are possible.
-			throw new EE.IllegalStateError("Closed session may not accept new requests !");
+			throw new EE.IllegalState("Closed session may not accept new requests !");
 		}
 
 		// augment the request object
 		if(request.hasOwnProperty('session_infos_'))
 		{
 			// WAT ? already augmented ?
-			throw new EE.IllegalStateError("Session : this request is already managed !");
+			throw new EE.IllegalState("Session : this request is already managed !");
 		}
 
 		// pack our additions under a common prop

@@ -3,6 +3,7 @@ if (typeof define !== 'function') { var define = require('amdefine')(module); }
 define(
 [
 	'chai',
+	'restlink/utils/chai-you-promised',
 	'when',
 	'restlink/server/middleware/callback',
 	'restlink/server/middleware/base',
@@ -12,7 +13,7 @@ define(
 	'network-constants/http',
 	'mocha'
 ],
-function(chai, when, CUT, BaseMiddleware, RestIndexedContainer, DebugCore, Request, http_constants) {
+function(chai, Cyp, when, CUT, BaseMiddleware, RestIndexedContainer, DebugCore, Request, http_constants) {
 	"use strict";
 
 	var expect = chai.expect;
@@ -27,8 +28,8 @@ function(chai, when, CUT, BaseMiddleware, RestIndexedContainer, DebugCore, Reque
 
 			it("should be instantiable", function() {
 				var out = CUT.make_new();
-				out.should.exist;
-				out.should.be.an('object');
+				expect( out ).to.exist;
+				expect( out ).to.be.an('object');
 			});
 
 			it("should have correct inheritance", function() {
@@ -49,6 +50,7 @@ function(chai, when, CUT, BaseMiddleware, RestIndexedContainer, DebugCore, Reque
 
 				var test_callback = function() {}; // fake function, no need for more for now
 
+				// should not cause errors (actual handling tested later)
 				out.add_callback_handler(ric, "/stanford/teapot", "BREW", test_callback);
 				out.add_callback_handler(ric, "/firm/:id",        "GET",  test_callback);
 			});
@@ -80,43 +82,29 @@ function(chai, when, CUT, BaseMiddleware, RestIndexedContainer, DebugCore, Reque
 				var payload2 = out.add_callback_handler(core.rest_indexed_shared_container, "/firm/:id",        "GET",  firm_GET_callback);
 				expect( payload2).to.be.an.object;
 
-				var deferred1 = when.defer();
 				var request = Request.make_new_stanford_teapot();
 				session.register_request(request);
-				var promise1 = core.process_request(request);
-				promise1.spread(function(request, response) {
+				var promise1x = core.process_request(request);
+				var promise1 = Cyp.filter_promise_ensuring_fulfilled_with_conditions(promise1x, function(response) {
 					response.method.should.equal("BREW");
 					response.uri.should.equal("/stanford/teapot");
 					response.return_code.should.equal(http_constants.status_codes.status_400_client_error_bad_request);
 					expect(response.content).to.equals("I'm a teapot !");
-					deferred1.resolve();
-				});
-				promise1.otherwise(function() {
-					expect(false).to.be.ok;
 				});
 
 				var request2 = Request.make_new();
 				request2.uri = '/firm/ACME';
 				request2.method = 'GET';
-				var deferred2 = when.defer();
 				session.register_request(request2);
-				var promise2 = core.process_request(request2);
-				promise2.spread(function(request, response) {
+				var promise2x = core.process_request(request2);
+				var promise2 = Cyp.filter_promise_ensuring_fulfilled_with_conditions(promise2x, function(response) {
 					response.method.should.equal("GET");
 					response.uri.should.equal("/firm/ACME");
 					response.return_code.should.equal(http_constants.status_codes.status_200_ok);
 					expect(response.content).to.equals("I'm here !");
-					deferred2.resolve();
-				});
-				promise2.otherwise(function(){
-					expect(false).to.be.ok;
 				});
 
-				deferred1.promise.then(function(){
-					deferred2.promise.then(function(){
-						signalAsyncTestFinished();
-					});
-				});
+				Cyp.finish_test_expecting_all_those_promises_to_be_fulfilled( [promise1, promise2], signalAsyncTestFinished );
 			});
 
 
@@ -139,13 +127,9 @@ function(chai, when, CUT, BaseMiddleware, RestIndexedContainer, DebugCore, Reque
 				var request = Request.make_new_stanford_teapot();
 				core.startup_and_create_session(request);
 				var promise = core.process_request(request);
-				promise.spread(function(request, response) {
+				Cyp.finish_test_expecting_promise_to_be_fulfilled_with_conditions(promise, signalAsyncTestFinished, function(response) {
 					response.return_code.should.equal(http_constants.status_codes.status_501_server_error_not_implemented);
 					response.content.should.equal("Server is misconfigured. Please add middlewares to handle requests !");
-					signalAsyncTestFinished();
-				});
-				promise.otherwise(function(){
-					expect(false).to.be.ok;
 				});
 			});
 
@@ -162,15 +146,11 @@ function(chai, when, CUT, BaseMiddleware, RestIndexedContainer, DebugCore, Reque
 				var request = Request.make_new_stanford_teapot();
 				core.startup_and_create_session(request);
 				var promise = core.process_request(request);
-				promise.spread(function(request, response) {
+				Cyp.finish_test_expecting_promise_to_be_fulfilled_with_conditions(promise, signalAsyncTestFinished, function(response) {
 					response.method.should.equal('BREW');
 					response.uri.should.equal('/stanford/teapot');
 					response.return_code.should.equal(http_constants.status_codes.status_501_server_error_not_implemented);
 					response.content.should.equals('Not Implemented');
-					signalAsyncTestFinished();
-				});
-				promise.otherwise(function(){
-					expect(false).to.be.ok;
 				});
 			});
 

@@ -6,7 +6,7 @@
 	<script data-main="components.js" src="bower_components/requirejs/require.js"></script>
 
 	<!-- for scripts that have a syntax error -->
-	<!-- <script src="../server/response_enrichment.js"></script> -->
+	<!-- <script src="../utils/chai-you-promised.js"></script> -->
 </head>
 
 <body>
@@ -27,6 +27,7 @@
 			// utils
 //			"../utils/spec/cache_spec",
 			"../utils/spec/backbone_sync_to_restlink_mixin_spec.js",
+			"../utils/spec/chai-you-promised_spec.js",
 			"../utils/spec/fast_timestamp_spec",
 			"../utils/spec/route_indexed_container_spec",
 			"../utils/spec/string_generics_spec.js",
@@ -46,12 +47,12 @@
 			"../server/middleware/spec/base_spec",
 			"../server/middleware/spec/callback_spec",
 			"../server/middleware/spec/logger_spec",
-//			"../server/middleware/spec/auto_crud_spec",
+			//"../server/middleware/spec/auto_crud_spec",
 
 			// server/adapters
 			"../server/adapters/spec/base_spec",
 			"../server/adapters/spec/direct_spec",
-//			"../server/adapters/spec/http_spec",
+//			"../server/adapters/spec/http_spec", node only ! Not testable in browser (and not relevant)
 
 			"../client/spec/base_spec",
 //			"../client/spec/direct_spec",

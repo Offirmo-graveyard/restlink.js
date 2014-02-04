@@ -1,5 +1,8 @@
 /* HTTP adapter class for a RESTlink client adapter
  * node.js only.
+ * TODO
+ * - handle JSONP
+ * - handle POST with custom method
  */
 
 if (typeof define !== 'function') { var define = require('amdefine')(module); }
@@ -8,16 +11,16 @@ define(
 [
 	'underscore',
 	'when',
+	'http', // node only
+	'url', // node only
 	'restlink/core/request',
 	'restlink/server/adapters/base',
 	'extended-exceptions',
 	'restlink/utils/serialization_utils'
 ],
-function(_, when, Request, BaseServerAdapter, EE, SerializationUtils) {
+function(_, when, http, url, Request, BaseServerAdapter, EE, SerializationUtils) {
 	"use strict";
 
-	var http = require('http');
-	var url = require("url");
 	var Parent = BaseServerAdapter;
 
 	////////////////////////////////////
@@ -57,7 +60,8 @@ function(_, when, Request, BaseServerAdapter, EE, SerializationUtils) {
 		http_res.writeHead(500, {"Content-Type": "text/plain"});
 
 		if(e instanceof Error) {
-			// give details
+			// known object, give details
+			// TOREVIEW confidentiality ???
 			http_res.end(''
 					+ 'Internal Server Error\n'
 					+ 'Exception caught\n'
@@ -67,13 +71,15 @@ function(_, when, Request, BaseServerAdapter, EE, SerializationUtils) {
 			);
 		}
 		else {
-			// we can't give more details
+			// not a js Error, we can't give more details
+			// we rely on default stringification
 			http_res.end(''
 					+ 'Internal Server Error\n'
 					+ 'Caught : ' + e);
 		}
 	}
 
+	// convert restlink response to HTTP response
 	function format_and_send_http_response(http_res, restlink_res) {
 		// generate the HTTP response
 		// try/catch in case restlink_response is not what we expect
@@ -99,68 +105,73 @@ function(_, when, Request, BaseServerAdapter, EE, SerializationUtils) {
 		}
 	}
 
-	function server_callback(http_req, http_res) {
+
+	function server_callback(http_request, http_response) {
 		// exception safety is important
 		// we want to be sure to generate an error message and not crash the server
 		// all non-trivial code must be enclosed by try/catch
 		try {
 			// url can't be taken "as is"
 			// it may contain options
-			var parsed_url = url.parse(http_req.url, true);
+			var parsed_url = url.parse(http_request.url, true);
 
 			// create a restlink request object
 			var restlink_request = Request.make_new()
 					.with_url( parsed_url.pathname )
-					.with_method( http_req.method );
-			restlink_request.meta = http_req.headers;
-			//		restlink_request.is_long_living = ??;
+					.with_method( http_request.method );
+			restlink_request.meta = http_request.headers;
+			//		restlink_request.is_long_living => not possible in HTTP for now.
 
 			// HTTP is not connected and not safe
 			// we have no session unless using cookie
 			// for now create a session each time
+			// TODO handle session with cookies but assuming reduced security
 			var restlink_session = this.restlink_core.create_session();
 			restlink_session.register_request( restlink_request );
 
 			// now deal with content (non trivial)
-			if(http_req.headers.hasOwnProperty('Content-Type')) {
-				restlink_request.content_type = http_req.headers['Content-Type'];
+			if(http_request.headers.hasOwnProperty('Content-Type')) {
+				restlink_request.content_type = http_request.headers['Content-Type'];
 			}
 			else {
-				// keep the default (for now, more about that below)
+				// keep the default content-type (for now, more about that below)
 			}
 
 			// how to read the content of the request...
-			//cf. http://nodejs.org/api/stream.html#stream_api_for_stream_consumers
+			// This is not trivial in asynchronous code,
+			// cf. http://nodejs.org/api/stream.html#stream_api_for_stream_consumers
 
+			// REM :
 			// req is an http.IncomingMessage, which is a Readable Stream
 			// res is an http.ServerResponse, which is a Writable Stream
 
 			// we want to get the data as utf8 strings
 			// If you don't set an encoding, then you'll get Buffer objects
-			http_req.setEncoding('utf8');
+			http_request.setEncoding('utf8');
 
 			// Readable streams emit 'data' events once a listener is added
-			http_req.on('data', function (chunk) {
+			http_request.on('data', function (chunk) {
 				if(typeof restlink_request.content === 'undefined')
 					restlink_request.content = chunk; // init
 				else
-					restlink_request.content += chunk;
+					restlink_request.content += chunk; // addition
 			});
 
-			// the end event tells you that you have entire body
+			// the 'end' event tells you that you have entire body
 			var restlink_core = this.restlink_core; // closure
-			http_req.on('end', function () {
+			http_request.on('end', function () {
+				// try/catch of course, exception safety
 				try {
 					// finish dealing with content
 					// 1) attempt content-type guess if needed
-					if(! http_req.headers.hasOwnProperty('Content-Type')) {
+					if(! http_request.headers.hasOwnProperty('Content-Type')) {
 						// try to guess the content by attempting a JSON deserialisation
 						try {
 							restlink_request.content = JSON.parse(restlink_request.content);
 							restlink_request.content_type = "application/json";
 						}
 						catch(e) {
-							// this is no JSON even
+							// JSON parsing failed : this is no (valid) JSON
 							// treat it as default
 							restlink_request.content_type = "application/octet-stream"; // the default, unknown
 						}
@@ -170,29 +181,31 @@ function(_, when, Request, BaseServerAdapter, EE, SerializationUtils) {
 						// there are params in the url
 						// merge them with content (if any)
 						// +decode the special "method" used to override servers that forbid non-standard HTTP methods
-						throw new EE.NotImplementedError("url params");
+						// TODO
+						throw new EE.NotImplemented("url params");
 					}
 					// REM : may throw if error
 					var promise = restlink_core.process_request( restlink_request );
 					// should no longer throw ...in this context at last. (callbacks are another story)
-					promise.spread(function(restlink_req, restlink_res) {
-						format_and_send_http_response(http_res, restlink_res);
-					});
-					promise.otherwise(function(){
+					promise.then( function(restlink_response) {
+						format_and_send_http_response(http_response, restlink_response);
+					},
+					function(e){
 						// this should never happen, error must generate an error response !
-						http_res.writeHead(500, {"Content-Type": "text/plain"});
-						http_res.end(''
+						http_response.writeHead(500, {"Content-Type": "text/plain"});
+						http_response.end(''
 								+ 'Internal Server Error\n'
 								+ 'No response generated ! (This should never happen)'
+								+ 'Error thrown :' + e
 						);
 					});}
 				catch (e) {
-					send_http_response_on_throw(http_res, e);
+					send_http_response_on_throw(http_response, e);
 				}
 			});
 		}
 		catch (e) {
-			send_http_response_on_throw(http_res, e);
+			send_http_response_on_throw(http_response, e);
 		}
 	}
 
@@ -206,10 +219,11 @@ function(_, when, Request, BaseServerAdapter, EE, SerializationUtils) {
 		this.http_server.listen(this.listening_port);
 		console.log("* Listening to HTTP port " + this.listening_port + "...");
 	};
+	// TOREVIEW this method is async, allow a callback ?
 	methods.shutdown = function() {
-		var this_ = this;
 
-		// REM : close() is async
+		// REM : http.close() is async
+		var this_ = this; // closure
 		this.http_server.close(function() {
 			// release ref
 			this_.http_server = undefined;
@@ -234,7 +248,7 @@ function(_, when, Request, BaseServerAdapter, EE, SerializationUtils) {
 		// other inits...
 		methods.init.apply(this, arguments);
 
-		var this_ = this; // for closure
+		var this_ = this; // closure
 		var server_callback_closure = function(http_req, http_res) {
 			return server_callback.apply(this_, arguments);
 		};

@@ -1,5 +1,6 @@
 // Thank you Mozilla
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String
+// see also http://stackoverflow.com/questions/646628/javascript-startswith
 
 if (typeof define !== 'function') { var define = require('amdefine')(module); }
 

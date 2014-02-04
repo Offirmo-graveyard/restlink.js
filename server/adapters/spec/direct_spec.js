@@ -3,6 +3,7 @@ if (typeof define !== 'function') { var define = require('amdefine')(module); }
 define(
 [
 	'chai',
+	'restlink/utils/chai-you-promised',
 	'restlink/server/adapters/direct',
 	'restlink/core/request',
 	'restlink/core/response',
@@ -10,7 +11,7 @@ define(
 	'network-constants/http',
 	'mocha'
 ],
-function(chai, CUT, Request, Response, DebugCore, http_constants) {
+function(chai, Cyp, CUT, Request, Response, DebugCore, http_constants) {
 	"use strict";
 
 	var expect = chai.expect;
@@ -81,16 +82,11 @@ function(chai, CUT, Request, Response, DebugCore, http_constants) {
 				var promise = out.process_request(request);
 
 				// check result (expected error : we only configured as much)
-
-				promise.spread(function on_success(request, response){
+				Cyp.finish_test_expecting_promise_to_be_fulfilled_with_conditions(promise, signalAsyncTestFinished, function on_success(response) {
 					response.method.should.equal('BREW');
 					response.uri.should.equal('/stanford/teapot');
 					response.return_code.should.equal(http_constants.status_codes.status_501_server_error_not_implemented);
 					response.content.should.equal("Server is misconfigured. Please add middlewares to handle requests !");
-					signalAsyncTestFinished();
-				});
-				promise.otherwise(function on_failure(){
-					expect(false).to.be.ok;
 				});
 			});
 

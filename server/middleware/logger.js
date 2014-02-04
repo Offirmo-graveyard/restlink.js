@@ -29,8 +29,8 @@ function(_, RestlinkMiddlewareBase) {
 	}
 	defaults.log_function_ = default_log_function; // to be overriden of course
 
-	function processing_function(request, response, next, that) {
-		that.log_function_(
+	function processing_function(request, response, next) {
+		this.log_function_(
 				request.timestamp
 				+ " > request "
 				+ request.uri
@@ -39,8 +39,8 @@ function(_, RestlinkMiddlewareBase) {
 			);
 		next();
 	}
-	function back_processing_function(request, response, that) {
-		that.log_function_(
+	function back_processing_function(request, response) {
+		this.log_function_(
 				response.timestamp
 				+ " < response to "
 				+ request.uri

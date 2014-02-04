@@ -35,6 +35,7 @@ requirejs.config({
 		// shim plugins
 		"backbone"            : "bower_components/backbone/backbone",
 		"chai"                : "bower_components/chai/chai",
+		"chai-as-promised"    : "bower_components/chai-as-promised/lib/chai-as-promised",
 		"json2"               : "bower_components/json2/json2",
 		"mocha"               : "bower_components/mocha/mocha",
 		"lodash"              : "bower_components/lodash/dist/lodash",

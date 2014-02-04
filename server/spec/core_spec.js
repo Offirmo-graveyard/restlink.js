@@ -3,6 +3,7 @@ if (typeof define !== 'function') { var define = require('amdefine')(module); }
 define(
 [
 	'chai',
+	'restlink/utils/chai-you-promised',
 	'underscore',
 	'when',
 
@@ -16,7 +17,7 @@ define(
 	'restlink/server/middleware/base',
 	'mocha'
 ],
-function(chai, _, when, CUT, CUTD, Session, Request, Response, ServerAdapterBase, BaseMiddleware) {
+function(chai, Cyp, _, when, CUT, CUTD, Session, Request, Response, ServerAdapterBase, BaseMiddleware) {
 	"use strict";
 
 	var expect = chai.expect;
@@ -142,13 +143,9 @@ function(chai, _, when, CUT, CUTD, Session, Request, Response, ServerAdapterBase
 
 					// will return something by default even if no handler
 					var promise = out.process_request(request);
-					promise.spread(function on_success(request, response){
+					Cyp.finish_test_expecting_promise_to_be_fulfilled_with_conditions(promise, signalAsyncTestFinished, function(response) {
 						response.return_code.should.equal(501);
 						response.content.should.equal("Server is misconfigured. Please add middlewares to handle requests !");
-						signalAsyncTestFinished();
-					});
-					promise.otherwise(function on_failure(request, response){
-						expect(false).to.be.ok;
 					});
 				});
 
@@ -171,13 +168,9 @@ function(chai, _, when, CUT, CUTD, Session, Request, Response, ServerAdapterBase
 				out.startup_and_create_session(request);
 
 				var promise = out.process_request(request);
-				promise.spread(function on_success(request, response){
+				Cyp.finish_test_expecting_promise_to_be_fulfilled_with_conditions(promise, signalAsyncTestFinished, function(response) {
 					response.return_code.should.equal(501);
 					response.content.should.equal("Server is misconfigured. Please add middlewares to handle requests !");
-					signalAsyncTestFinished();
-				});
-				promise.otherwise(function on_failure(request, response){
-					expect(false).to.be.ok;
 				});
 			});
 
@@ -204,15 +197,11 @@ function(chai, _, when, CUT, CUTD, Session, Request, Response, ServerAdapterBase
 				out.startup_and_create_session(request);
 
 				var promise = out.process_request(request);
-				promise.spread(function on_success(request, response){
+				Cyp.finish_test_expecting_promise_to_be_fulfilled_with_conditions(promise, signalAsyncTestFinished, function(response) {
 					response.return_code.should.equal(501);
 					response.content.should.equal("Server is misconfigured. Please add middlewares to handle requests !");
 					expect(response.meta["tag1"]).to.equal("base was here !");
 					expect(response.meta["tag2"]).to.equal("base was back !");
-					signalAsyncTestFinished();
-				});
-				promise.otherwise(function on_failure(request, response){
-					expect(false).to.be.ok;
 				});
 			});
 

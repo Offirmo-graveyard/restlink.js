@@ -19,7 +19,7 @@ function(chai, _, CUT, BaseModel, Response, ClientAdapterBase, http_constants) {
 	chai.Assertion.includeStack = true; // defaults to false
 
 	var test_adapter = ClientAdapterBase.make_new();
-	test_adapter.resolve_request = function(request, result_deferred) {
+	test_adapter.resolve_request = function(request) {
 		// build the response
 		var response = Response.make_new_from_request(request, {
 			return_code: http_constants.status_codes.status_200_ok,
@@ -29,7 +29,7 @@ function(chai, _, CUT, BaseModel, Response, ClientAdapterBase, http_constants) {
 				attr3: { code: 222 }
 			}
 		});
-		result_deferred.resolve([request,response]);
+		return response;
 	};
 
 	var TestModel = BaseModel.extend({

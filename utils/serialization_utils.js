@@ -11,6 +11,11 @@ define(
 function(_, EE) {
 	"use strict";
 
+	// create a custom exception for JSON problems
+	// to make things clearer
+	var JsonSerializationError = EE.create_custom_error("JsonSerializationError", EE.RuntimeError);
+
+
 	// Turn whatever JSON-like value
 	// into a proper stringified JSON string.
 	// The goal is to avoid pain for the user.
@@ -55,12 +60,16 @@ function(_, EE) {
 		if(obj.content_type.endsWith('json')) {
 			if(typeof obj.content === 'string') {
 				// auto deserialization for convenience
-				if(obj.content.length == 0)
+				if(obj.content.length === 0)
 					obj.content = undefined;
 				else {
-					// no try/catch : will throw if wrong
-					// to be caught by caller
-					obj.content = JSON.parse(obj.content);
+					// enclosing try/catch to make things clearer
+					try {
+						obj.content = JSON.parse(obj.content);
+					}
+					catch(e) {
+						throw new JsonSerializationError(e); // cast
+					}
 				}
 			}
 		}

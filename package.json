@@ -1,6 +1,6 @@
 {
 	"name": "restlink",
-	"version": "0.1.0",
+	"version": "0.2.0-alpha.1",
 	"description": "A powerful REST server for node.js + browser with batteries (optional middlewares including sessions, security, local, http and socket.io interfaces...) WORK IN PROGRESS",
 	"keywords": "REST, middleware, browser, server",
 	"license": "public domain",

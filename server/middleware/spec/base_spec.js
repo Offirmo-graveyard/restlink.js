@@ -31,6 +31,7 @@ function(chai, Cyp, CUT, Request, Response, http_constants) {
 
 			it('should set default values', function() {
 				var out = CUT.make_new();
+				expect(out.get_denomination()).to.eq("UnknownMW");
 				//out.is_started().should.be.false;
 			});
 
@@ -50,10 +51,24 @@ function(chai, Cyp, CUT, Request, Response, http_constants) {
 
 		}); // describe feature*/
 
+
+		describe('name manipulation', function() {
+
+			it('should work', function() {
+				var out = CUT.make_new();
+
+				out.set_denomination("toto");
+				out.get_denomination().should.equals("toto");
+			});
+
+		}); // describe feature
+
+
 		describe('request handling', function() {
 
 			it('should allow a basic processing', function(signalAsyncTestFinished) {
 				var out = CUT.make_new(function process(req, res) {
+					expect(res.middleware_.processing_chain_index).to.eq(1);
 					res.return_code = http_constants.status_codes.status_400_client_error_bad_request;
 					res.content = "I'm a teapot !";
 					res.send();
@@ -64,6 +79,7 @@ function(chai, Cyp, CUT, Request, Response, http_constants) {
 				var promise = out.initiate_processing(request);
 
 				Cyp.finish_test_expecting_promise_to_be_fulfilled_with_conditions(promise, signalAsyncTestFinished, function(response) {
+					expect(response.middleware_.processing_chain_index).to.eq(0);
 					response.method.should.equal('BREW');
 					response.uri.should.equal('/stanford/teapot');
 					response.return_code.should.equal(http_constants.status_codes.status_400_client_error_bad_request);
@@ -74,10 +90,12 @@ function(chai, Cyp, CUT, Request, Response, http_constants) {
 
 			it('should allow a basic back processing', function(signalAsyncTestFinished) {
 				var out = CUT.make_new(function process(req, res) {
+							expect(res.middleware_.processing_chain_index).to.eq(1);
 					res.content = "I'm a teapot !";
 					res.send();
 				},
 				function process(req, res) {
+					expect(res.middleware_.processing_chain_index).to.eq(1);
 					res.return_code = http_constants.status_codes.status_400_client_error_bad_request;
 					res.content += " Really, dude.";
 					res.send();
@@ -109,10 +127,12 @@ function(chai, Cyp, CUT, Request, Response, http_constants) {
 
 			it('should allow a chained processing', function(signalAsyncTestFinished) {
 				var out_head = CUT.make_new(function process(req, res, next) {
+					expect(res.middleware_.processing_chain_index).to.eq(1);
 					res.meta["tag"] = "out_head was here !";
 					next();
 				});
 				var out_tail = CUT.make_new(function process(req, res, next) {
+					expect(res.middleware_.processing_chain_index).to.eq(2);
 					res.return_code = http_constants.status_codes.status_400_client_error_bad_request;
 					res.content = "I'm a teapot !";
 					res.send();
@@ -136,6 +156,7 @@ function(chai, Cyp, CUT, Request, Response, http_constants) {
 				var out_head = CUT.make_new(function process(req, res, next) {
 					// init of control fields
 					// mark our passage
+					expect(res.middleware_.processing_chain_index).to.eq(1);
 					res.content += "H1>";
 					next(function additional_back_process(req, res) {
 						res.content += "<H1";
@@ -143,16 +164,19 @@ function(chai, Cyp, CUT, Request, Response, http_constants) {
 					});
 				},
 				function back_process(req, res, next) {
+					expect(res.middleware_.processing_chain_index).to.eq(1);
 					res.content += "<H1b";
 					res.send();
 				});
 
 				var out_tail = CUT.make_new(function process(req, res) {
+					expect(res.middleware_.processing_chain_index).to.eq(2);
 					res.return_code = http_constants.status_codes.status_400_client_error_bad_request;
 					res.content += "H2>";
 					res.send();
 				},
 				function back_process(req, res) {
+					expect(res.middleware_.processing_chain_index).to.eq(2);
 					res.content += "<H2";
 					res.send();
 				});
@@ -163,6 +187,7 @@ function(chai, Cyp, CUT, Request, Response, http_constants) {
 				var request = Request.make_new_stanford_teapot();
 				var promise = out_head.initiate_processing(request);
 				Cyp.finish_test_expecting_promise_to_be_fulfilled_with_conditions(promise, signalAsyncTestFinished, function(response) {
+					expect(response.middleware_.processing_chain_index).to.eq(0);
 					console.log(response);
 					response.method.should.equal('BREW');
 					response.uri.should.equal('/stanford/teapot');

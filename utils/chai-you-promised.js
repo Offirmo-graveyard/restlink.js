@@ -56,8 +56,11 @@ function(chai, when) {
 			// - if error = anything else -> OK, will trigger a chai error report
 			if(typeof reason === 'undefined')
 				error = new Error('Promise was not fulfilled as expected, and even worse, it was rejected with no reason given !');
-			else
+			else {
 				error = new Error('Promise was not fulfilled as expected. It was rejected with reason : "' + reason + '"');
+				if(reason instanceof Error)
+					console.error("Promise was not fulfilled as expected. It was rejected with reason :", reason, reason.stack);
+			}
 			done_func(error);
 		});
 	}

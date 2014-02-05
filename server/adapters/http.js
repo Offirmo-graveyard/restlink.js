@@ -106,6 +106,8 @@ function(_, when, http, url, Request, BaseServerAdapter, EE, SerializationUtils)
 	}
 
 
+	// this function is called by the node http server
+	// on incoming request
 	function server_callback(http_request, http_response) {
 		// exception safety is important
 		// we want to be sure to generate an error message and not crash the server
@@ -163,8 +165,8 @@ function(_, when, http, url, Request, BaseServerAdapter, EE, SerializationUtils)
 				// try/catch of course, exception safety
 				try {
 					// finish dealing with content
-					// 1) attempt content-type guess if needed
-					if(! http_request.headers.hasOwnProperty('Content-Type')) {
+					// 1) attempt content-type guess **if needed**
+					if(restlink_request.content && !http_request.headers.hasOwnProperty('Content-Type')) {
 						// try to guess the content by attempting a JSON deserialisation
 						try {
 							restlink_request.content = JSON.parse(restlink_request.content);
@@ -176,6 +178,7 @@ function(_, when, http, url, Request, BaseServerAdapter, EE, SerializationUtils)
 							restlink_request.content_type = "application/octet-stream"; // the default, unknown
 						}
 					}
+
 					// 2) create/fuse content from url params if any
 					if(Object.getOwnPropertyNames(parsed_url.query).length !== 0) {
 						// there are params in the url

@@ -36,7 +36,6 @@ function(chai, Cyp, when, CUT, Response, EE) {
 				CUT.process(response, fake_request);
 
 				expect( response.middleware_ ).to.exist;
-				expect( response ).to.respondTo("send");
 			});
 
 			it('should not work in mandatory args are missing', function() {
@@ -49,35 +48,6 @@ function(chai, Cyp, when, CUT, Response, EE) {
 				var tempfn2 = function() { CUT.process(response); };
 				tempfn2.should.throw(Error, "Offirmo Middleware : A request is needed to enrich a response !");
 			});
-
-		}); // describe feature
-
-
-		describe('response sending', function() {
-
-			it('should correctly handle failure case', function(signalAsyncTestFinished) {
-
-				var fake_request = { is_long_living:true }; // bad, empty !
-				var out = Response.make_new();
-				CUT.process(out, fake_request);
-
-				// will fail since we expect infos inside the request
-				// but should fail in a clean, async-safe manner.
-				var tempfn = function() { out.send(); };
-				tempfn.should.throw(EE.RuntimeError, "Cannot read property 'back_processing_chain_' of undefined");
-
-				Cyp.finish_test_expecting_promise_to_be_rejected_with_error(
-						out.middleware_.final_deferred_.promise,
-						signalAsyncTestFinished,
-						EE.RuntimeError,
-						"Cannot read property 'back_processing_chain_' of undefined"
-				);
-			});
-
-			// It's not convenient to test that here,
-			// it will get covered in base middleware test.
-			it('[not tested here] should work in nominal case and handle a middleware chain');
-			it('[not tested here] should correctly andle and report errors');
 
 		}); // describe feature
 

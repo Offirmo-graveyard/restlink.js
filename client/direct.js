@@ -34,7 +34,7 @@ function(_, when, EE, BaseClient, http_constants) {
 		if(typeof server_core !== 'object')
 			throw new EE.InvalidArgument("Direct client should not be created manually, and must be provided a server !")
 		// call parent
-		BaseClient.methods.init.apply(this)
+		BaseClient.methods.init.apply(this);
 
 		this.server_core_ = server_core;
 		this.session_ = server_core.create_session();

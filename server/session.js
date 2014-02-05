@@ -64,7 +64,10 @@ function(_, EE, FastTimestamp) {
 		this.session_infos_.is_done = true;
 		this.session_infos_.parent_session = undefined;
 	}
-	methods.register_request = function(request) {
+	function get_timestamp() {
+		return this.session_infos_.timestamp;
+	}
+	methods.register_request = function(request, optional_timestamp) {
 		if( typeof request !== "object")
 			throw new EE.InvalidArgument("Session expected a request object !");
 
@@ -84,14 +87,21 @@ function(_, EE, FastTimestamp) {
 		// pack our additions under a common prop
 		request.session_infos_ = {
 			parent_session : this, // ref to parent session
-			timestamp : FastTimestamp.get_timestamp(),
-			is_done : false // are we done with this request ? (either fulfilled or rejected/expired)
+			// Important !
+			// For a proper replay ability,
+			// current time should not be taken from new Date()
+			// but from this field (@see function below)
+			// This field is set by the adapter sending the requests
+			timestamp : optional_timestamp || FastTimestamp.get_timestamp(),
+			// are we done with this request ? (either fulfilled or rejected/expired)
+			is_done : false
 		};
 
 		// add some methods
 		request.get_session = request_additions_get_session;
 		request.is_done = request_additions_is_done;
 		request.done = request_additions_set_to_done;
+		request.get_timestamp = get_timestamp;
 
 		// keep track of this request
 		// for further inspection, invalidation or timeout

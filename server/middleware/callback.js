@@ -31,7 +31,7 @@ function(_, RestlinkMiddlewareBase, RouteIndexedContainer, EE, http_constants) {
 
 
 	////////////////////////////////////
-	//defaults. = ;
+	defaults.denomination_ = "CallbackMW";
 
 
 	////////////////////////////////////
@@ -166,7 +166,7 @@ function(_, RestlinkMiddlewareBase, RouteIndexedContainer, EE, http_constants) {
 		RestlinkMiddlewareBase.klass.prototype.constructor.apply(this, [ processing_function ]);
 
 		// now apply our own defaults (in this order this time)
-		_.defaults( this, defaults );
+		_.extend( this, defaults );
 	};
 
 	// prototype chain (class) inheritance from base

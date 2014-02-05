@@ -8,7 +8,7 @@ define(
 	'underscore',
 	'restlink/server/middleware/base'
 ],
-function(_, RestlinkMiddlewareBase) {
+function(_, BaseMiddleware) {
 	"use strict";
 
 	////////////////////////////////////
@@ -21,6 +21,7 @@ function(_, RestlinkMiddlewareBase) {
 	constants.modes = ["simple"];
 
 	////////////////////////////////////
+	defaults.denomination_ = "LoggerMW";
 	defaults.mode_ = "simple";
 
 	////////////////////////////////////
@@ -31,23 +32,25 @@ function(_, RestlinkMiddlewareBase) {
 
 	function processing_function(request, response, next) {
 		this.log_function_(
-				request.timestamp
+				(request.get_timestamp ? request.get_timestamp() : undefined)
 				+ " > request "
 				+ request.uri
 				+ "." + request.method
-				+ "(" + request.content + ")"
+				//+ "(" + request.content + ")"
+				, request.content
 			);
 		next();
 	}
 	function back_processing_function(request, response) {
 		this.log_function_(
-				response.timestamp
+				(response.get_timestamp ? response.get_timestamp() : undefined)
 				+ " < response to "
-				+ request.uri
-				+ "." + request.method
+				+ response.uri
+				+ "." + response.method
 				+ "(...) : "
 				+ "[" + response.return_code + "] "
-				+ '"' + response.content + '"'
+				//+ '"' + response.content + '"'
+				, response.content
 			);
 		response.send();
 	}
@@ -55,11 +58,11 @@ function(_, RestlinkMiddlewareBase) {
 	////////////////////////////////////
 	// inheriting and extending base fields
 
-	// prototypal inheritance from RestlinkMiddlewareBase
-	_.defaults( constants,  RestlinkMiddlewareBase.constants );
-	_.defaults( exceptions, RestlinkMiddlewareBase.exceptions );
-	_.defaults( defaults,   RestlinkMiddlewareBase.defaults );
-	_.defaults( methods,    RestlinkMiddlewareBase.methods );
+	// prototypal inheritance from BaseMiddleware
+	_.defaults( constants,  BaseMiddleware.constants );
+	_.defaults( exceptions, BaseMiddleware.exceptions );
+	_.defaults( defaults,   BaseMiddleware.defaults );
+	_.defaults( methods,    BaseMiddleware.methods );
 
 	Object.freeze(constants);
 	Object.freeze(exceptions);
@@ -75,11 +78,11 @@ function(_, RestlinkMiddlewareBase) {
 			mode = undefined;
 		}
 
-		// call parent constructor
-		RestlinkMiddlewareBase.klass.prototype.constructor.apply(this, [ processing_function, back_processing_function ]);
-
-		// now apply our own defaults (in this order this time)
+		// first set our own defaults
 		_.defaults( this, defaults );
+
+		// call parent constructor
+		BaseMiddleware.klass.prototype.constructor.apply(this, [ processing_function, back_processing_function ]);
 
 		// other custom processing
 		if(typeof mode !== "undefined") {
@@ -91,7 +94,7 @@ function(_, RestlinkMiddlewareBase) {
 	};
 
 	// in this case, "class" inheritance via prototype chain
-	DefinedClass.prototype = Object.create(RestlinkMiddlewareBase.klass.prototype);
+	DefinedClass.prototype = Object.create(BaseMiddleware.klass.prototype);
 	DefinedClass.prototype.constructor = DefinedClass;
 
 	DefinedClass.prototype.constants  = constants;

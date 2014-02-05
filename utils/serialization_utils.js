@@ -34,7 +34,18 @@ function(_, EE) {
 			if(typeof obj.content === 'object') {
 				// TODO check more if correct JSON
 				// auto serialization for convenience
-				obj.content = JSON.stringify(obj.content);
+				// Error objects are special objects : need a trick
+				// http://stackoverflow.com/questions/18391212/is-it-not-possible-to-stringify-an-error-using-json-stringify
+				if(obj.content instanceof Error) {
+					var error_as_plain_object = {};
+					Object.getOwnPropertyNames(obj.content).forEach(function(key) {
+						error_as_plain_object[key] = obj.content[key];
+					});
+					obj.content = JSON.stringify(error_as_plain_object);
+				}
+				else {
+					obj.content = JSON.stringify(obj.content);
+				}
 				return;
 			}
 

@@ -48,8 +48,9 @@ function request_enrichment_module_def(_, when, EE) {
 		// root of all our additions
 		// in order to keep the response object clean
 		request.middleware_ = {
-			match_infos_ : undefined, // lazy-computed : undef at start
-			                          // will contain matching infos (fully decoded url and co)
+			// will contain matching infos (fully decoded url and co)
+			// lazy-computed : undef at start
+			match_infos_ : undefined,
 			// chain of back processing functions
 			// through which a response will have to go through (LIFO)
 			// important to store it in the request since it may be reused by several responses

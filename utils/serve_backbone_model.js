@@ -44,7 +44,7 @@ function(_, Backbone, when, EE, CallbackMiddleware, http_constants) {
 		// Our BB sync implementations *may* hint us about the status code.
 		// Useful especially for the 404
 		if(bbe.http_status_hint) {
-			response.set_to_error(bbe.http_status_hint, bbe);
+			response.set_to_error(bbe.http_status_hint /*, bbe*/);
 		}
 		else {
 			response.set_to_internal_error(bbe);
@@ -264,8 +264,8 @@ function(_, Backbone, when, EE, CallbackMiddleware, http_constants) {
 			throw EE.InvariantNotMetError('REST BB model service is missing its internal data !');
 		}
 
-		// check content type
-		if(!request.content_type.endsWith('json')) {
+		// check content type (only if there is a content)
+		if(request.content && !request.content_type.endsWith('json')) {
 			// don't know such content type...
 			response.set_to_not_implemented();
 			response.content = "Content type not suppported.";

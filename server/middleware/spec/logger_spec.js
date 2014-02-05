@@ -35,6 +35,12 @@ function(chai, Cyp, CUT, BaseMiddleware, ServerCore, Request, http_constants) {
 				out.should.be.an.instanceOf(BaseMiddleware.klass);
 			});
 
+			it('should have correct default values', function() {
+				var out = CUT.make_new();
+				expect( out.get_denomination() ).to.eq("LoggerMW");
+				expect( out.mode_ ).to.eq("simple");
+			});
+
 		}); // describe feature
 
 
@@ -74,6 +80,7 @@ function(chai, Cyp, CUT, BaseMiddleware, ServerCore, Request, http_constants) {
 				};
 
 				var out = CUT.make_new(custom_log_function);
+
 				// we MUST have another handler after us since logger doesn't send the response
 				out.use(BaseMiddleware.make_new(function process(req, res, next) {
 					res.set_to_not_implemented("Server is misconfigured. Please add middlewares to handle requests !");
@@ -84,18 +91,18 @@ function(chai, Cyp, CUT, BaseMiddleware, ServerCore, Request, http_constants) {
 				var promise = out.initiate_processing(request);
 
 				Cyp.finish_test_expecting_promise_to_be_fulfilled_with_conditions(promise, signalAsyncTestFinished, function(response) {
-					var exepected_buffer = request.timestamp
+					var expected_buffer = request.timestamp
 							+ " > request /stanford/teapot.BREW(undefined)"
 							+ response.timestamp
 							+ ' < response to /stanford/teapot.BREW(...) : [501] "Server is misconfigured. Please add middlewares to handle requests !"';
 					//console.log(response);
-					//console.log(exepected_buffer);
+					//console.log(expected_buffer);
 					//console.log(buffer);
 					response.method.should.equal('BREW');
 					response.uri.should.equal('/stanford/teapot');
 					response.return_code.should.equal(http_constants.status_codes.status_501_server_error_not_implemented);
 					response.content.should.equal("Server is misconfigured. Please add middlewares to handle requests !");
-					buffer.should.equal(exepected_buffer);
+					buffer.should.equal(expected_buffer);
 				});
 			});
 

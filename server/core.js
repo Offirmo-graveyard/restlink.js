@@ -52,8 +52,6 @@ function(_, when, EE, StartableObject, RestIndexedContainer, ServerSession, Seri
 
 
 	////////////////////////////////////
-	//methods. = ;
-
 	methods.add_adapter = function(adapter) {
 		if(typeof adapter !== 'object')
 			throw new EE.InvalidArgument("Invalid adapter provided !");

@@ -58,12 +58,27 @@ function(_, Backbone, when, EE, CallbackMiddleware, http_constants) {
 			throw EE.InvariantNotMet('REST BB model service is missing its internal data !');
 		}
 
+		// check the content
+		var content = {};
+		if(typeof request.content === 'undefined') {
+			// create with no content, OK
+		}
+		else if(typeof request.content === 'object') {
+			content = request.content;
+		}
+		else {
+			// what is this kind of content ?
+			response.set_to_error(http_constants.status_codes.status_406_client_error_not_acceptable);
+			response.send();
+			return;
+		}
+
 		var payload = get_bbmodel_object_prop(match_infos.payload);
 		var Model = payload.model;
 		try {
 			// content is supposed to contains the attributes
 			// TODO SEC filter attributes with whitelist !
-			var new_instance = new Model(request.content);
+			var new_instance = new Model(content);
 			var promise = new_instance.save();
 			var safety_promise = promise.then(function(attributes) {
 				response.return_code = http_constants.status_codes.status_201_created;
@@ -148,6 +163,14 @@ function(_, Backbone, when, EE, CallbackMiddleware, http_constants) {
 		if(!match_infos.found || !test_bbmodel_object_prop(match_infos.payload)) {
 			// Uh ?
 			throw EE.InvariantNotMet('REST BB model service is missing its internal data !');
+		}
+
+		// we need a content for this one
+		if(typeof request.content !== 'object') {
+			// what is this kind of content ?
+			response.set_to_error(http_constants.status_codes.status_406_client_error_not_acceptable);
+			response.send();
+			return;
 		}
 
 		// get the id

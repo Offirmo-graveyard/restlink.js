@@ -31,17 +31,24 @@ function(_, EE) {
 				return;
 			}
 
+			// auto serialization for convenience.
 			if(typeof obj.content === 'object') {
-				// TODO check more if correct JSON
-				// auto serialization for convenience
-				// Error objects are special objects : need a trick
+				// Error objects are special objects : JSON.stringify doesn't work on them
 				// http://stackoverflow.com/questions/18391212/is-it-not-possible-to-stringify-an-error-using-json-stringify
 				if(obj.content instanceof Error) {
+					obj.content = ''
+							+ 'Internal Server Error\n'
+							+ 'Exception caught\n'
+							+ '* name    : ' + e.name + '\n'
+							+ '* message : ' + e.message + '\n'
+							+ '* stack   : ' + e.stack;
+					/*
 					var error_as_plain_object = {};
 					Object.getOwnPropertyNames(obj.content).forEach(function(key) {
 						error_as_plain_object[key] = obj.content[key];
 					});
 					obj.content = JSON.stringify(error_as_plain_object);
+					*/
 				}
 				else {
 					obj.content = JSON.stringify(obj.content);

@@ -89,7 +89,8 @@ function(_, when, http, url, Request, BaseServerAdapter, EE, SerializationUtils)
 			var type = (typeof restlink_res.content);
 			if( type === 'string' ) {
 				// OK !
-				http_res.writeHead(restlink_res.return_code, {"Content-Type": restlink_res.content_type});
+				var meta = _.defaults({}, {"Content-Type": restlink_res.content_type}, restlink_res.meta);
+				http_res.writeHead(restlink_res.return_code, meta);
 				// TODO meta
 				http_res.end(restlink_res.content);
 			}

@@ -65,6 +65,14 @@ function(chai, _, CUT, EE) {
 				// id directly after root, bad
 				tempfn = function() { out.ensure("/:id"); };
 				tempfn.should.throw(CUT.exceptions.MalformedRouteError, "Route malformed : root can't be followed by an id !");
+
+				// * is allowed in a query but not in the index
+				tempfn = function() { out.ensure( '*' ); };
+				tempfn.should.throw(CUT.exceptions.MalformedRouteError);
+
+				// forbidden characters
+				tempfn = function() { out.ensure( "/&" ); };
+				tempfn.should.throw(CUT.exceptions.MalformedRouteError, "Route malformed : illegal segment format !");
 			});
 
 			it('should ignore trailing slash', function() {
@@ -213,7 +221,16 @@ function(chai, _, CUT, EE) {
 				match_infos.segments[6].should.have.property('value',   '2b');
 			});
 
-			it('should handle ill-formed requests');
+			it('should work with an *', function() {
+				var out = CUT.make_new();
+
+				var match_infos = out.detailed_at("*");
+				match_infos.should.exist;
+
+				match_infos.found.should.be.false;
+			});
+
+				it('should handle ill-formed requests');
 
 		}); // describe feature
 

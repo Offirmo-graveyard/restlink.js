@@ -51,8 +51,8 @@ function(chai, Cyp, when, CUT, BaseMiddleware, RestIndexedContainer, DebugCore, 
 				var test_callback = function() {}; // fake function, no need for more for now
 
 				// should not cause errors (actual handling tested later)
-				out.add_callback_handler(ric, "/stanford/teapot", "BREW", test_callback);
-				out.add_callback_handler(ric, "/firm/:id",        "GET",  test_callback);
+				CUT.add_callback_handler(ric, "/stanford/teapot", "BREW", test_callback);
+				CUT.add_callback_handler(ric, "/firm/:id",        "GET",  test_callback);
 			});
 
 
@@ -77,9 +77,9 @@ function(chai, Cyp, when, CUT, BaseMiddleware, RestIndexedContainer, DebugCore, 
 					response.send();
 				};
 
-				var payload1 = out.add_callback_handler(core.rest_indexed_shared_container, "/stanford/teapot", "BREW", teapot_BREW_callback);
+				var payload1 = CUT.add_callback_handler(core.rest_indexed_shared_container, "/stanford/teapot", "BREW", teapot_BREW_callback);
 				expect( payload1).to.be.an.object;
-				var payload2 = out.add_callback_handler(core.rest_indexed_shared_container, "/firm/:id",        "GET",  firm_GET_callback);
+				var payload2 = CUT.add_callback_handler(core.rest_indexed_shared_container, "/firm/:id",        "GET",  firm_GET_callback);
 				expect( payload2).to.be.an.object;
 
 				var request = Request.make_new_stanford_teapot();
@@ -134,23 +134,22 @@ function(chai, Cyp, when, CUT, BaseMiddleware, RestIndexedContainer, DebugCore, 
 			});
 
 
-			it("should return a 501 not_implemented error when called on an unknown action", function(signalAsyncTestFinished) {
+			it("should forward to next MW when called on an unknown action", function(signalAsyncTestFinished) {
 				var out = CUT.make_new();
 
 				var core = DebugCore.make_new();
 				core.use(out);
 
 				var callback = function() {};
-				out.add_callback_handler(core.rest_indexed_shared_container, "/stanford/teapot", "GET", callback);
+				CUT.add_callback_handler(core.rest_indexed_shared_container, "/stanford/teapot", "GET", callback);
 
 				var request = Request.make_new_stanford_teapot();
 				core.startup_and_create_session(request);
 				var promise = core.process_request(request);
 				Cyp.finish_test_expecting_promise_to_be_fulfilled_with_conditions(promise, signalAsyncTestFinished, function(response) {
-					response.method.should.equal('BREW');
-					response.uri.should.equal('/stanford/teapot');
-					response.return_code.should.equal(http_constants.status_codes.status_501_server_error_not_implemented);
-					response.content.should.equals('Not Implemented');
+					response.return_code.should.equal(http_constants.status_codes.status_500_server_error_internal_error);
+					response.content.should.be.an.instanceOf(Error);
+					expect(response.content.message).to.equals("Can't forward to next middleware, having none !");
 				});
 			});
 

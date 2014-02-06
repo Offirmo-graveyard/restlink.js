@@ -77,6 +77,7 @@ function(_, when, http, url, Request, BaseServerAdapter, EE, SerializationUtils)
 					+ 'Internal Server Error\n'
 					+ 'Caught : ' + e);
 		}
+		console.log("< [http adapter] response sent (on exception).");
 	}
 
 	// convert restlink response to HTTP response
@@ -84,22 +85,28 @@ function(_, when, http, url, Request, BaseServerAdapter, EE, SerializationUtils)
 		// generate the HTTP response
 		// try/catch in case restlink_response is not what we expect
 		try {
+			// meta
+			var meta = restlink_res.meta;
+			meta = _.defaults(meta, {'Access-Control-Allow-Origin':'*'}); // mandatory for CORS
 			// content : must be a String or a Buffer
 			SerializationUtils.auto_serialize_content_if_needed(restlink_res);
 			var type = (typeof restlink_res.content);
 			if( type === 'string' ) {
 				// OK !
-				var meta = _.defaults({}, {"Content-Type": restlink_res.content_type}, restlink_res.meta);
+				// add meta content-type in case if not already here
+				meta = _.defaults(meta, {"Content-Type": restlink_res.content_type});
 				http_res.writeHead(restlink_res.return_code, meta);
-				// TODO meta
 				http_res.end(restlink_res.content);
 			}
 			else {
+				// override content-type
+				meta = _.defaults({"Content-Type": "text/plain"}, meta);
 				http_res.writeHead(500, {"Content-Type": "text/plain"});
 				http_res.end(''
 						+ 'Internal Server Error\n'
 						+ "I don't know how to serialize generated response content !");
 			}
+			console.log("< [http adapter] response sent.");
 		}
 		catch (e) {
 			send_http_response_on_throw(http_res, e);
@@ -114,6 +121,8 @@ function(_, when, http, url, Request, BaseServerAdapter, EE, SerializationUtils)
 		// we want to be sure to generate an error message and not crash the server
 		// all non-trivial code must be enclosed by try/catch
 		try {
+			console.log("> [http adapter] request received...");
+
 			// url can't be taken "as is"
 			// it may contain options
 			var parsed_url = url.parse(http_request.url, true);

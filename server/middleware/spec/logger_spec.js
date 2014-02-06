@@ -75,7 +75,7 @@ function(chai, Cyp, CUT, BaseMiddleware, ServerCore, Request, http_constants) {
 				var buffer = "";
 				var custom_log_function = function() {
 					for(var i = 0; i<arguments.length; ++i) {
-						buffer += arguments[i].toString();
+						buffer += (arguments[i] ? arguments[i].toString() : 'undefined');
 					}
 				};
 
@@ -92,9 +92,9 @@ function(chai, Cyp, CUT, BaseMiddleware, ServerCore, Request, http_constants) {
 
 				Cyp.finish_test_expecting_promise_to_be_fulfilled_with_conditions(promise, signalAsyncTestFinished, function(response) {
 					var expected_buffer = request.timestamp
-							+ " > request /stanford/teapot.BREW(undefined)"
+							+ " > request /stanford/teapot.BREW : undefined"
 							+ response.timestamp
-							+ ' < response to /stanford/teapot.BREW(...) : [501] "Server is misconfigured. Please add middlewares to handle requests !"';
+							+ ' < response to /stanford/teapot.BREW : [501] Server is misconfigured. Please add middlewares to handle requests !';
 					//console.log(response);
 					//console.log(expected_buffer);
 					//console.log(buffer);

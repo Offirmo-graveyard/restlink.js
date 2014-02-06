@@ -63,9 +63,10 @@ function(_, RouteIndexedContainer, EE) {
 		return ri_entry ? ri_entry[action] : undefined;
 	};
 
+	// this one allows action to be undef
 	methods.internal_detailed_at = function(route, action) {
 		if(!_.isString(route)) throw new EE.InvalidArgument("route arg should be a string !");
-		if(!_.isString(action)) throw new EE.InvalidArgument("action arg should be a string !");
+		if((typeof action !== 'undefined') && !_.isString(action)) throw new EE.InvalidArgument("action arg should be a string !");
 
 		var ri_match_infos = this.internal_container_.detailed_at(route);
 
@@ -110,9 +111,16 @@ function(_, RouteIndexedContainer, EE) {
 		return this.internal_detailed_at(route, action);
 	};
 
-	methods.shared_detailed_at = function(route, action) {
-		return this.internal_detailed_at(route, action);
-	};
+	// suppose an existing match_infos
+	function list_matched_methods(match_infos) {
+		var methods = [];
+		if(match_infos.route_found) {
+			Object.getOwnPropertyNames(match_infos.payload).forEach(function(method) {
+				methods.push(method);
+			});
+		}
+		return methods;
+	}
 
 	////////////////////////////////////
 	Object.freeze(constants);
@@ -134,6 +142,8 @@ function(_, RouteIndexedContainer, EE) {
 	return {
 		// objects are created via a factory, more future-proof
 		'make_new': function() { return new DefinedClass(); },
+		// "class" methods
+		'list_matched_methods' : list_matched_methods,
 		// exposing these allows inheritance
 		'constants'  : constants,
 		'exceptions' : exceptions,

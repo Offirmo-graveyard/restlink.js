@@ -17,6 +17,7 @@ Strong points :
 
 License : public domain (http://unlicense.org/)
 
+
 .defer
 .then
 .spread
@@ -47,20 +48,29 @@ http://www.linkedin.com/groups/Which-is-best-framework-building-2906459.S.582836
 https://github.com/mcavage/node-restify
 https://github.com/wprl/baucis
 
-REST routes :
+Interesting reads
+* http://www.codeshttp.com/
+* http://julien-pauli.developpez.com/tutoriels/web/http/?page=page_3
 
-  BB OPTIONS              (create - internal)
-  BB POST /order          create
-     POST /order/123      create/update
-*    POST /orders         create_multiple ?
-  BB DELETE /order/123    delete
-*    DELETE /orders       delete all
-*    DELETE /order        delete all (variant)
-     PUT /order/123       create/update
-     GET /orders          read all
-*    GET /order           read all
-     GET /order/123       read
-     GET /order?foo=bar   find
+REST routes :
+@see http://guides.rubyonrails.org/routing.html
+   -> RoR creates 7 routes for a resource
+
+  BB     OPTIONS              meta
+  BB     POST /order          create
+         POST /order/123      create/update
+*    RoR POST /orders         create_multiple ?
+  BB RoR DELETE /order/123    delete
+*        DELETE /orders       delete all
+*        DELETE /order        delete all (variant)
+     RoR PUT /order/123       create/update
+     RoR PATCH /order/123     update
+     RoR GET /orders          index = read all
+     RoR GET /orders/new      [non API] RoR return a form to create such a rsrc
+     RoR GET /orders/123/edit [non API] RoR return a form to edit this rsrc
+*        GET /order           index = read all
+     RoR GET /order/123       read
+         GET /order?foo=bar   find
 
 
 TOREVIEW

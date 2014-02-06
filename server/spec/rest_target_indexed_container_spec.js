@@ -63,7 +63,7 @@ function(chai, _, CUT, EE) {
 					out.ensure( "/agent",     "PUT").bar = -3;
 
 					out.at( "/agent/:id", "GET").foo.should.equals(1);
-					out.at( "/agent",     "PUT").foo.should.equals(3)
+					out.at( "/agent",     "PUT").foo.should.equals(3);
 
 					out.at( "/agent/:id", "GET").bar.should.equals(-1);
 					out.at( "/agent",     "PUT").bar.should.equals(-3);
@@ -76,7 +76,7 @@ function(chai, _, CUT, EE) {
 				it('should correctly handle inexistent data', function() {
 					var out = CUT.make_new();
 
-					var match_infos = out.shared_detailed_at("/firm/ACME/order/513/part/2b", "PUT");
+					var match_infos = out.detailed_at("/firm/ACME/order/513/part/2b", "PUT");
 
 					match_infos.should.exist;
 					match_infos.found.should.be.false;
@@ -84,9 +84,9 @@ function(chai, _, CUT, EE) {
 					match_infos.action_found.should.be.false;
 					match_infos.found_no_actions_at_all.should.be.true;
 
-					out.internal_ensure("/firm/:id/order/:id/part/:id", "PUT", "test key").toto = 1
+					out.internal_ensure("/firm/:id/order/:id/part/:id", "PUT").toto = 1;
 
-					var match_infos = out.shared_detailed_at("/firm/ACME/order/513/part/2b", "GET");
+					var match_infos = out.detailed_at("/firm/ACME/order/513/part/2b", "GET");
 					match_infos.should.exist;
 					match_infos.found.should.be.false;
 					match_infos.route_found.should.be.true;
@@ -97,7 +97,7 @@ function(chai, _, CUT, EE) {
 				it('should correctly handle simple root /', function() {
 					var out = CUT.make_new();
 
-					var match_infos = out.shared_detailed_at("/", "GET");
+					var match_infos = out.detailed_at("/", "GET");
 
 					match_infos.should.exist;
 					match_infos.found.should.be.false;
@@ -110,9 +110,9 @@ function(chai, _, CUT, EE) {
 					var out = CUT.make_new();
 
 					// preparation
-					out.ensure("/firm/:id/order/:id/part/:id", "PUT").toto = 1
+					out.ensure("/firm/:id/order/:id/part/:id", "PUT").toto = 1;
 					//
-					var match_infos = out.shared_detailed_at("/firm/ACME/order/513/part/2b", "PUT");
+					var match_infos = out.detailed_at("/firm/ACME/order/513/part/2b", "PUT");
 					match_infos.should.exist;
 
 					match_infos.found.should.be.true;
@@ -190,20 +190,20 @@ function(chai, _, CUT, EE) {
 				it('should check parameters', function() {
 					var out = CUT.make_new();
 
-					var tempfn = function() { out.ensure("/agent"); }
+					var tempfn = function() { out.ensure("/agent"); };
 					tempfn.should.throw(EE.InvalidArgument, "action arg should be a string !");
 
-					tempfn = function() { out.ensure("/agent", 3); }
+					tempfn = function() { out.ensure("/agent", 3); };
 					tempfn.should.throw(EE.InvalidArgument, "action arg should be a string !");
 
-					tempfn = function() { out.ensure(undefined, "GET"); }
+					tempfn = function() { out.ensure(undefined, "GET"); };
 					tempfn.should.throw(EE.InvalidArgument, "route arg should be a string !");
 
-
-					var tempfn = function() { out.at("/agent"); }
+					tempfn = function() { out.at("/agent"); };
 					tempfn.should.throw(EE.InvalidArgument, "action arg should be a string !");
 
-					var tempfn = function() { out.detailed_at("/agent"); }
+					// this one works with action undef, so check bad type
+					tempfn = function() { out.detailed_at("/agent", 5); };
 					tempfn.should.throw(EE.InvalidArgument, "action arg should be a string !");
 				});
 
@@ -224,6 +224,30 @@ function(chai, _, CUT, EE) {
 					out.at("/stanford/teapot", "BREW").foo.should.equals(4);
 					out.at("/stanford/teapot", "GET").foo.should.equals(5);
 				});
+
+				it('should allow actions listing', function() {
+					var out = CUT.make_new();
+
+					// preparation
+					out.ensure("/order/:id", "GET").foo = 1;
+					out.ensure("/order/:id", "PUT").foo = 2;
+					out.ensure("/order/:id", "GET").bar = 3;
+					out.ensure("/stanford/teapot", "BREW").foo = 4;
+					out.ensure("/stanford/teapot", "GET").foo = 5;
+
+					// check
+					var match1 = out.detailed_at("/order/6");
+					expect(CUT.list_matched_methods(match1)).to.have.length(2);
+					expect(CUT.list_matched_methods(match1)).to.include.members( [ 'GET', 'PUT' ] );
+
+					var match2 = out.detailed_at("/stanford/teapot");
+					expect(CUT.list_matched_methods(match2)).to.have.length(2);
+					expect(CUT.list_matched_methods(match2)).to.include.members( [ 'BREW', 'GET' ] );
+
+					var match3 = out.detailed_at("/toto");
+					expect(CUT.list_matched_methods(match3)).to.have.length(0);
+
+				});
 			}); // describe feature
 
 			describe('matching', function() {
@@ -234,7 +258,7 @@ function(chai, _, CUT, EE) {
 					var out = CUT.make_new();
 
 					// preparation
-					out.ensure("/firm/:id/order/:id/part/:id", "PUT").toto = 1
+					out.ensure("/firm/:id/order/:id/part/:id", "PUT").toto = 1;
 					//
 					var match_infos = out.detailed_at("/firm/ACME/order/513/part/2b", "PUT");
 					match_infos.payload.toto.should.equals(1);

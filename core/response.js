@@ -69,6 +69,8 @@ function(_, http_constants) {
 		}
 		return this; // for fluid
 	};
+	// note : serialization utils handle the case where content = Error
+	// so it's ok to pass an Error here
 	methods.set_to_internal_error = function(optional_content) {
 		return this.set_to_error(http_constants.status_codes.status_500_server_error_internal_error, optional_content);
 	};

@@ -513,12 +513,14 @@ serve_model_at(route, model, options)</y:NodeLabel>
     <node id="n26">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="69.16666666666652" width="157.5" x="944.3333333333335" y="226.33333333333326"/>
+          <y:Geometry height="99.66666666666674" width="192.5" x="944.3333333333335" y="226.33333333333326"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="62.8046875" modelName="internal" modelPosition="tl" textColor="#000000" visible="true" width="181.451171875" x="4.0" y="4.0">+middleware_
-   back_processing_chain_index_
-  final_deferred_
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="92.20703125" modelName="internal" modelPosition="tl" textColor="#000000" visible="true" width="174.77734375" x="4.0" y="4.0">+middleware_
+   processing_chain_index
+   send_depth
+   back_processing_chain_index
+   final_deferred
 +send()</y:NodeLabel>
           <y:Shape type="rectangle"/>
         </y:ShapeNode>

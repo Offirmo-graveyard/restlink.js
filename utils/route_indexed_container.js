@@ -86,9 +86,11 @@ function(_, EE) {
 	}
 
 	function check_and_split_route_into_segments_(route) {
-		// special case
+		// special cases
 		if(route === "/")
 			return []; // empty
+		if(route === "*")
+			return [ '*' ]; // never matching
 
 		if(route.length > constants.max_route_length)
 			throw new exceptions.MalformedRouteError("Route malformed : route too long !");
@@ -258,17 +260,11 @@ function(_, EE) {
 	};
 
 	// create if needed
-	methods.create_nodes_as_needed = function(route) {
-		var match_infos = this.find_and_optionally_create_node_(route, true, true);
-		return match_infos.segments[match_infos.segments.length-1].internal_node;
-	};
-
-	// returns the payload
-	// create if needed
+	// and returns the payload
 	methods.ensure = function(route) {
-		var node = this.create_nodes_as_needed(route);
-
-		return node.payload_; // allow immediate modification
+		var match_infos = this.find_and_optionally_create_node_(route, true, true);
+		var last_node = match_infos.segments[match_infos.segments.length-1].internal_node;
+		return last_node.payload_; // allow immediate modification
 	};
 
 	// returns the payload
@@ -278,7 +274,7 @@ function(_, EE) {
 		return node ? node.payload_ : undefined;
 	};
 
-	// returns the payload inside an objects along with other match inhos
+	// returns the payload inside an objects along with other match infos
 	methods.detailed_at = function(route) {
 		return this.find_and_optionally_create_node_(route, false, false);
 	};

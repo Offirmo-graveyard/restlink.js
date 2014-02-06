@@ -19,6 +19,7 @@
 		"base-objects":        "latest",
 		"extended-exceptions": "latest",
 		"network-constants":   "latest",
+		"performance-now":     "latest",
 		"underscore":          "latest",
 		"when":                "latest"
 	},

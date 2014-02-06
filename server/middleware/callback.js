@@ -1,4 +1,4 @@
-/* The RestLink request handler middleware
+/* The restLink request handler middleware
  * that dispatch requests to previously registered functions.
  */
 if (typeof define !== 'function') { var define = require('amdefine')(module); }
@@ -55,7 +55,6 @@ function(_, RestlinkMiddlewareBase, RouteIndexedContainer, EE, http_constants) {
 	// our custom processing function
 	function processing_function(request, response, next, that) {
 
-		var handled = false; // for now
 		try {
 			var match_infos = request.get_match_infos();
 			if(!match_infos.route_found) {
@@ -63,40 +62,19 @@ function(_, RestlinkMiddlewareBase, RouteIndexedContainer, EE, http_constants) {
 				// not handled.
 			}
 			else if(!match_infos.action_found) {
-				// url found but not with this action
-				// what should we return ?
-				// 501 Not Implemented ?
-				// 405 Method Not Allowed ?
-				// or 404 Not Found ? (if GET is not here...)
-				if(match_infos.found_no_actions_at_all) {
-					// there is no actions at all
-					// must be an auto-generated intermediate segment,
-					// not a real resource
-					response.set_to_not_found();
-				}
-				else if(request.method.toLowerCase() in http_constants.methods) {
-					// this is a known method so we're kinda expected to provide it
-					// if its not here, this must mean it's not allowed
-					response.set_to_error(
-							http_constants.status_codes.status_405_client_error_method_not_allowed,
-							http_constants.status_messages[405]);
-					response.content_type = "text/plain";
-				}
-				else {
-					// this is a non-standard method
-					// most likely an error
-					response.set_to_not_implemented();
-				}
-				response.send();
-				handled = true;
+				// url was found, but not with this action.
+				// What should we do ?
+				// Nothing : will forward to next handler.
+				// not handled.
 			}
 			else if(!match_infos.found) {
 				// should have been filtered by above tests !
 				response.set_to_internal_error();
 				response.send();
-				handled = true;
+				return;
 			}
 			else {
+				// run the callback if any, or else : not handled
 				if(test_callback_object_prop(match_infos.payload)) {
 					var my_data = get_callback_object_prop( match_infos.payload );
 
@@ -104,42 +82,38 @@ function(_, RestlinkMiddlewareBase, RouteIndexedContainer, EE, http_constants) {
 						// should call send when ready.
 						// May not call next.
 						my_data.callback(request, response);
-						handled = true; // hopefully, if the callback is well written...
+						return;
 					}
 				}
 			}
 		}
 		catch(e) {
+			// TODO move those specialized tests somewhere else
 			if (e instanceof RouteIndexedContainer.exceptions.RouteTooLongError) {
 				response.set_to_error(http_constants.status_codes.status_414_client_error_request_uri_too_long);
 				response.send();
-				handled = true;
+				return;
 			}
 			else if (e instanceof RouteIndexedContainer.exceptions.MalformedRouteError) {
 				response.set_to_error(http_constants.status_codes.status_400_client_error_bad_request);
 				response.send();
-				handled = true;
+				return;
 			}
-			else {// unknown other error
-				response.content_type = 'text/plain';
-				response.set_to_internal_error(e.name + "\n" + e.message + "\n" + e.stack);
+			else { // unknown other error
+				response.set_to_internal_error(e);
 				response.send();
-				handled = true;
+				return;
 			}
 		}
 
-		if(handled) {
-			// do nothing, since it's handled...
-		}
-		else {
-			// not handled yet ?
-			next();
-		}
+		// we couldn't handle : maybe someone else can !
+		next();
 	}
 
+	// "class method"
 	// register a callback to the designated route+action
 	// returns the shared payload for the route+action, useful for adding data for the callback
-	methods.add_callback_handler = function(rest_indexed_container, route, action, callback, replace_existing) {
+	function add_callback_handler(rest_indexed_container, route, action, callback, replace_existing) {
 		if (typeof replace_existing === 'undefined') { replace_existing = false; }
 
 		var payload = rest_indexed_container.ensure(route, action);
@@ -151,7 +125,7 @@ function(_, RestlinkMiddlewareBase, RouteIndexedContainer, EE, http_constants) {
 		entry.callback = callback;
 
 		return payload;
-	};
+	}
 
 	////////////////////////////////////
 
@@ -190,7 +164,7 @@ function(_, RestlinkMiddlewareBase, RouteIndexedContainer, EE, http_constants) {
 		'defaults'   : defaults,
 		'methods'    : methods,
 		// class methods (should not call this of course)
-		'add_callback_handler' : methods.add_callback_handler
+		'add_callback_handler' : add_callback_handler
 
 	};
 }); // requirejs module

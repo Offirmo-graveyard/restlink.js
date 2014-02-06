@@ -10,13 +10,14 @@ define(
 	'base-objects/offinh/named_object',
 	'base-objects/offinh/startable_object',
 	'restlink/server/core',
-	'restlink/server/middleware/base',
 	'restlink/server/middleware/logger',
 	'restlink/server/middleware/callback',
+	'restlink/server/middleware/meta',
+	'restlink/server/middleware/catch_all',
 	'restlink/server/adapters/direct',
 	'restlink/utils/serve_backbone_model'
 ],
-function(_, NamedObject, StartableObject, ServerCore, BaseMiddleware, LoggerMiddleware, CallbackMiddleware, DirectServerAdapter, BBModelServiceUtils) {
+function(_, NamedObject, StartableObject, ServerCore, LoggerMiddleware, CallbackMiddleware, MetaMiddleware, CatchAllMiddleware, DirectServerAdapter, BBModelServiceUtils) {
 	"use strict";
 
 
@@ -36,10 +37,8 @@ function(_, NamedObject, StartableObject, ServerCore, BaseMiddleware, LoggerMidd
 	function build_middleware_chain_default_impl_() {
 		this.core_.use( LoggerMiddleware.make_new() );
 		this.core_.use( CallbackMiddleware.make_new() );
-		this.core_.use( BaseMiddleware.make_new(function process(req, res, next) {
-			res.set_to_not_found();
-			res.send();
-		}) );
+		this.core_.use( MetaMiddleware.make_new() );
+		this.core_.use( CatchAllMiddleware.make_new() );
 	}
 	// to be overriden if needed
 	defaults.build_middleware_chain = build_middleware_chain_default_impl_;

@@ -31,7 +31,7 @@ function request_enrichment_module_def(_, when, EE) {
 					throw new EE.InvalidArgument("Can't compute match infos : session parents are not fully initialized !");
 				}
 				else {
-					request.match_infos_ = server.rest_indexed_shared_container.shared_detailed_at(request.uri, request.method);
+					request.match_infos_ = server.rest_indexed_shared_container.detailed_at(request.uri, request.method);
 				}
 			}
 		}

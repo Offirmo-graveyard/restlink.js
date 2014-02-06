@@ -14,6 +14,8 @@ define(function() {
 	var FastTimestamp = {
 		get_timestamp   : function() {
 			return Date.now();
+			//return window.performance.now();
+			//require(performance-now
 		},
 
 		diff_timestamps_in_millis : function(ts1, ts2) {

@@ -31,24 +31,24 @@ function(_, BaseMiddleware) {
 	defaults.log_function_ = default_log_function; // to be overriden of course
 
 	function processing_function(request, response, next) {
-		this.log_function_(
+		this.log_function_('' +
 				(request.get_timestamp ? request.get_timestamp() : undefined)
 				+ " > request "
 				+ request.uri
 				+ "." + request.method
 				//+ "(" + request.content + ")"
+				+ ' : '
 				, request.content
 			);
 		next();
 	}
 	function back_processing_function(request, response) {
-		this.log_function_(
+		this.log_function_('' +
 				(response.get_timestamp ? response.get_timestamp() : undefined)
 				+ " < response to "
 				+ response.uri
 				+ "." + response.method
-				+ "(...) : "
-				+ "[" + response.return_code + "] "
+				+ " : [" + response.return_code + "] "
 				//+ '"' + response.content + '"'
 				, response.content
 			);

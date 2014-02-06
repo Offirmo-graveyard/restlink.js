@@ -27,17 +27,20 @@ function(_, when, EE) {
 		// root of all our additions
 		// in order to keep the response object clean
 		response.middleware_ = {
-			// the depth we are in the processing chain
+			// the depth we currently are in the processing chain
 			// 0 = not entered yet
 			// 1 = MW 1, etc
 			// useful for indentation of debug logs
 			processing_chain_index : 0,
+			// traversed MW until send() was called
+			// useful for debug
+			traversed_mw_list : [],
 			// where are we in the back processing chain array
 			// (REM : stored in the request)
 			// -1 if not started
-			back_processing_chain_index_ : -1,
+			back_processing_chain_index : -1,
 			// a deferred to be resolved at the end of this response generation
-			final_deferred_ : when.defer()
+			final_deferred : when.defer()
 		};
 	}
 

@@ -188,7 +188,6 @@ function(chai, Cyp, CUT, Request, Response, http_constants) {
 				var promise = out_head.initiate_processing(request);
 				Cyp.finish_test_expecting_promise_to_be_fulfilled_with_conditions(promise, signalAsyncTestFinished, function(response) {
 					expect(response.middleware_.processing_chain_index).to.eq(0);
-					console.log(response);
 					response.method.should.equal('BREW');
 					response.uri.should.equal('/stanford/teapot');
 					response.return_code.should.equal(http_constants.status_codes.status_400_client_error_bad_request);
@@ -202,14 +201,17 @@ function(chai, Cyp, CUT, Request, Response, http_constants) {
 			it('should handle when both send and next are called');
 			// I have no idea how to do that right now...
 
-			it('should handle when next is called from the tail', function() {
+			it('should handle when next is called from the tail', function(signalAsyncTestFinished) {
 				var out = CUT.make_new(function process(req, res, next) {
 					next(); // but no next MW !!
 				});
 
 				var request = Request.make_new_stanford_teapot();
-				var tempfn = function() { out.initiate_processing(request); };
-				tempfn.should.throw(Error, "Can't forward to next middleware, having none !");
+				var promise = out.initiate_processing(request);
+				Cyp.finish_test_expecting_promise_to_be_fulfilled_with_conditions(promise, signalAsyncTestFinished, function(response) {
+					response.return_code.should.equal(http_constants.status_codes.status_500_server_error_internal_error);
+					response.content.should.be.an.instanceOf(Error);
+				});
 			});
 		}); // describe feature
 

@@ -84,7 +84,11 @@ function(_, Backbone, when, EE, CallbackMiddleware, http_constants) {
 				response.return_code = http_constants.status_codes.status_201_created;
 				response.meta['Location'] = compute_full_uri(match_infos.segments, new_instance.url());
 				// content
-				response.content = { id: new_instance.id }; // XXX is this standard ?
+				// 1) Must return full attributes since some may have been created server-side.
+				//    BB expect it and will merge returned data with model attributes.
+				// 2) Must return the id, ok to mix it with the attributes,
+				//    since BB will recognize this special property and correctly affect it
+				response.content = _.defaults(attributes, { id: new_instance.id });
 				response.content_type = 'application/json'; // obviously
 				response.send();
 			},

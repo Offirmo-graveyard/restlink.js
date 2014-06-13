@@ -44,6 +44,8 @@ TODO one day
 - error handling : exceptions ? promises ? -->Should always handle exceptions anyway
 
 See also :
+http://blog.npmjs.org/post/88024339405/nearing-practical-maintainability
+http://feathersjs.com/?#
 http://www.linkedin.com/groups/Which-is-best-framework-building-2906459.S.5828366732095406080
 https://github.com/mcavage/node-restify
 https://github.com/wprl/baucis

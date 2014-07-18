@@ -78,3 +78,5 @@ TOREVIEW
 - singular / plural routes ?
 - ruby REST routes ?
 - how to delete attributes in REST ?
+http://webapplog.com/express-js-4-node-js-and-mongodb-rest-api-tutorial
+https://github.com/originalmachine/distill
